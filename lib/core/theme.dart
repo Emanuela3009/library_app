@@ -7,7 +7,7 @@ final ThemeData myAppTheme = ThemeData(
   scaffoldBackgroundColor: Colors.white,
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.indigo,
-    foregroundColor: Colors.white,
+    foregroundColor: Colors.black,
     elevation: 2,
   ),
   textTheme: const TextTheme(
@@ -24,7 +24,7 @@ final ThemeData myAppTheme = ThemeData(
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
     selectedItemColor: Colors.indigo,
     unselectedItemColor: Colors.grey,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.black,
     elevation: 8,
   ),
 ); 
