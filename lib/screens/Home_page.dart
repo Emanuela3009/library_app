@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'addbook.dart';
+import 'home_screen.dart'; 
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _screens = [
     Center(child: Text('Search')),
     Center(child: Text('Categories')),
-    Center(child: Text('Home')),
+    const HomeScreen(),
     Center(child: Text('Library')),
     Center(child: Text('Activity')),
   ];
@@ -31,7 +32,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Book Library"),
-        leading: IconButton(
+        leading: IconButton(      // allinea il pulsante in alto a sinistra
           icon: const Icon(Icons.add),
           onPressed: () {
             Navigator.push(
@@ -41,7 +42,8 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ),
-      body: _screens[_currentIndex],
+      body:  _screens[_currentIndex],
+
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
