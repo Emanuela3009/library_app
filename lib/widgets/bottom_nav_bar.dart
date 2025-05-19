@@ -54,7 +54,7 @@ class BottomNavBar extends StatelessWidget {
   }
 }*/
 import 'package:flutter/material.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -68,41 +68,22 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SalomonBottomBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      items: [
-        SalomonBottomBarItem(
-          icon: const Icon(Icons.search),
-          title: const Text("Search"),
-          selectedColor: Colors.white,
-          unselectedColor: Colors.black,
-        ),
-        SalomonBottomBarItem(
-          icon: const Icon(Icons.folder_open),
-          title: const Text("Categories"),
-          selectedColor: Colors.white,
-          unselectedColor: Colors.black,
-        ),
-        SalomonBottomBarItem(
-          icon: const Icon(Icons.home),
-          title: const Text("Home"),
-          selectedColor: Colors.white,
-          unselectedColor: Colors.black,
-        ),
-        SalomonBottomBarItem(
-          icon: const Icon(Icons.bookmark),
-          title: const Text("Library"),
-          selectedColor: Colors.white,
-          unselectedColor: Colors.black,
-        ),
-        SalomonBottomBarItem(
-          icon: const Icon(Icons.bar_chart),
-          title: const Text("Activity"),
-          selectedColor: Colors.white,
-          unselectedColor: Colors.black,
-        ),
+    return ConvexAppBar(
+      backgroundColor: Colors.grey,
+      activeColor: Colors.white,
+      color: Colors.black,
+      style: TabStyle.react, // oppure .fixed, .textIn, .flip
+      curveSize: 80,
+      top: -20, // posizione leggermente più in alto
+      items: const [
+        TabItem(icon: Icons.search, title: 'Search'),
+        TabItem(icon: Icons.folder_open, title: 'Categories'),
+        TabItem(icon: Icons.home, title: 'Home'),
+        TabItem(icon: Icons.bookmark, title: 'Library'),
+        TabItem(icon: Icons.bar_chart, title: 'Activity'),
       ],
+      initialActiveIndex: currentIndex,
+      onTap: onTap,
     );
   }
 }
