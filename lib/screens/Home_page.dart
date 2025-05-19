@@ -8,18 +8,18 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Home")),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text("Vai alla seconda pagina"),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddBookPage()),
+      appBar: AppBar(title: const Text("Home Page"),
+              leading: IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                MaterialPageRoute(builder: (context) => const AddBookPage()),
             );
           },
-        ),
-      ),
+        )),
+       
+      
     );
   }
 }
