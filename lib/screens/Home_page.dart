@@ -19,7 +19,10 @@ class HomePage extends StatelessWidget {
           },
         )),
        
-      
+      body: Column( //column serve ad allineare i widget in verticale
+       crossAxisAlignment: CrossAxisAlignment.start, //allinea i widget sulla sinistra
+       
+      )
     );
   }
 }
