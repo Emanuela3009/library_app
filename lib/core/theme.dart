@@ -14,7 +14,7 @@ final ThemeData myAppTheme = ThemeData(
     titleLarge: TextStyle(
       fontSize: 22,
       fontWeight: FontWeight.bold,
-      color: Colors.black,
+      color: Color.fromARGB(255, 11, 24, 109),
     ),
     bodyMedium: TextStyle(
       fontSize: 16,
