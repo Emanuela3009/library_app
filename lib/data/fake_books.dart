@@ -7,7 +7,7 @@ final List<Book> popularBooks = [
     genre: 'Dystopia',
     plot: 'A world under totalitarian surveillance and control.',
     state: 'Completed',
-    imagePath: 'assets/books/1984.jpg',
+    imagePath: 'assets/books/ok.jpg',
   ),
   Book(
     title: 'Brave New World',
@@ -15,7 +15,7 @@ final List<Book> popularBooks = [
     genre: 'Science Fiction',
     plot: 'A futuristic society governed by pleasure and stability.',
     state: 'Completed',
-    imagePath: 'assets/books/brave_new_world.jpg',
+    imagePath: 'assets/books/ok.jpg',
   ),
 ];
 
@@ -26,7 +26,7 @@ final List<Book> readingBooks = [
     genre: 'History',
     plot: 'La storia dell’umanità dalle origini a oggi.',
     state: 'Reading',
-    imagePath: 'assets/books/sapiens.jpg',
+    imagePath: 'assets/books/ok.jpg',
   ),
 ];
 final List<Book> userBooks = [
@@ -36,6 +36,6 @@ Book(
     genre: 'Adventure',
     plot: 'A shepherd travels in search of his personal legend.',
     state: 'Reading',
-    imagePath: 'assets/books/alchemist.jpg',
+    imagePath: 'assets/books/ok.jpg',
   ),
 ];

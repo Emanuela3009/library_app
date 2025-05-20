@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'addbook.dart';
 import 'home_screen.dart'; 
+import 'categories_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,9 +15,9 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 2; // Start da 'Home'
 
   final List<Widget> _screens = [
-    Center(child: Text('Search')),
+    CategoriesPage(),
     Center(child: Text('Categories')),
-    const HomeScreen(),
+     HomeScreen(),
     Center(child: Text('Library')),
     Center(child: Text('Activity')),
   ];
@@ -34,13 +35,15 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Book Library"),
         leading: IconButton(      // allinea il pulsante in alto a sinistra
           icon: const Icon(Icons.add),
-          onPressed: () {
+           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AddBookPage()),
-            );
+            ).then((_) {
+              setState(() {}); // forza aggiornamento della Home al ritorno
+            });
           },
-        ),
+        )
       ),
       body:  _screens[_currentIndex],
 

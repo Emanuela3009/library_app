@@ -87,7 +87,7 @@ class _AddBookPageState extends State<AddBookPage> {
 
                     userBooks.add(newBook); // Aggiunta a lista finta
 
-                    Navigator.pop(context); // Torna alla home
+                  Navigator.pop(context);
                   }
                 },
                 child: const Text("Add Book"),
