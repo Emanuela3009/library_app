@@ -9,6 +9,7 @@ class CategoryDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final books = category.books;
+
     return Scaffold(
       appBar: AppBar(title: Text(category.name)),
       body: Padding(
@@ -16,9 +17,12 @@ class CategoryDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('You have ${category.bookCount} books',
-                style: const TextStyle(fontSize: 16)),
+            Text(
+              'You have ${category.bookCount} books',
+              style: const TextStyle(fontSize: 16),
+            ),
             const SizedBox(height: 16),
+
             Expanded(
               child: GridView.builder(
                 itemCount: books.length,
@@ -29,6 +33,8 @@ class CategoryDetailPage extends StatelessWidget {
                   childAspectRatio: 0.8,
                 ),
                 itemBuilder: (context, index) {
+                  final book = books[index];
+
                   return Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
@@ -36,24 +42,49 @@ class CategoryDetailPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Expanded(child: Placeholder()), // immagine
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              book.imagePath,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 8),
                         Text(
-                          books[index].title,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          book.title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          books[index].author,
+                          book.author,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black87,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        const Text('⭐ 4.9/5',
-                            style: TextStyle(color: Colors.purple)),
+                        Text(
+                          '⭐ ${book.rating?.toStringAsFixed(1) ?? "4.9"}/5',
+                          style: const TextStyle(
+                            color: Colors.purple,
+                            fontSize: 13,
+                          ),
+                        ),
                       ],
                     ),
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),
