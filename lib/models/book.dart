@@ -4,7 +4,10 @@ class Book {
   final String genre;
   final String plot;
   final String state;       // es: in lettura, completato, da leggere
-  final String imagePath;   // path immagine da asset o URL
+  final String imagePath;
+  String? comment;
+  int? rating;
+  String? userState;   // path immagine da asset o URL
 
   Book({
     required this.title,

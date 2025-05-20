@@ -43,7 +43,19 @@ class AppTheme {
     textTheme: const TextTheme(
       headlineLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
       bodyMedium: TextStyle(fontSize: 16),
-    ),
+      
+      titleMedium: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      color: Colors.black87,
+      ),
+      bodyLarge: TextStyle(
+      fontSize: 15,
+      color: Colors.black,
+      ),
+      
+  ),
+
     
     appBarTheme: const AppBarTheme(
       color: CupertinoColors.systemGrey6,
@@ -73,5 +85,27 @@ class AppTheme {
       elevation: 0,
       type: BottomNavigationBarType.fixed,
     ),
+
+
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.black,
+      foregroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      textStyle: const TextStyle(
+        fontFamily: 'Times New Roman',
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+      ),
+    ),
+),
   );
+
+    
+
+
 }
+  
