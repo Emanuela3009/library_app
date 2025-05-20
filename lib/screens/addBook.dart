@@ -73,8 +73,8 @@ void _showImageSourceOptions() {   //funzione che viene chiamata quando l utente
 
   @override
   Widget build(BuildContext context) {
-     final screenWidth = MediaQuery.of(context).size.width;
-    final horizontalPadding = screenWidth * 0.05; // 5% della larghezza
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     final screenHeight = MediaQuery.of(context).size.height;
   
 
@@ -129,21 +129,23 @@ void _showImageSourceOptions() {   //funzione che viene chiamata quando l utente
               ),
 
                SizedBox(height: screenHeight *0.02),
-              GestureDetector(
+              Align(
+                alignment: Alignment.centerLeft,
+                child:GestureDetector(   //widget cliccabile in ogni suo punto 
                   onTap: _showImageSourceOptions,
                   child: _selectedImage != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                      ? ClipRRect(   //se è stata selezionata un immagine : 
+                          borderRadius: BorderRadius.circular(8), //angoli arrondati 
                           child: Image.file(
                             _selectedImage!,
                             height: 180,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
+                            width: screenWidth * 0.5,
+                            fit: BoxFit.contain,
                           ),
                         )
-                      : Container(
-                          height: 180,
-                          width: double.infinity,
+                      : Container(   //se non è stata selezionata un immagine
+                          height:  screenHeight *0.15,
+                          width: screenWidth * 0.4,
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                             borderRadius: BorderRadius.circular(8),
@@ -154,9 +156,11 @@ void _showImageSourceOptions() {   //funzione che viene chiamata quando l utente
                           ),
                         ),
                 ),
+              ),
 
+              SizedBox(height: screenHeight *0.02),
 
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     final newBook = Book(
@@ -168,12 +172,14 @@ void _showImageSourceOptions() {   //funzione che viene chiamata quando l utente
                       imagePath:  _selectedImage?.path ?? 'assets/books/placeholder.jpg',
                     );
 
-                    userBooks.add(newBook); // Aggiunta a lista finta
+                    userBooks.add(newBook); // Aggiunta a lista dei libri dell utente
 
                   Navigator.pop(context);
                   }
                 },
-                child: const Text("Add Book"),
+                icon: const Icon(Icons.add),
+                label: const Text("Add book"),
+                
               ),
             ],
           ),

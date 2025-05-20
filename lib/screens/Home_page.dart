@@ -15,16 +15,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 2; // Start da 'Home'
 
-  final List<Widget> _screens = [
-    CategoriesPage(),
-    Center(child: Text('Categories')),
-     HomeScreen(),
-    Center(child: Text('Search')),
-    CategoriesPage(),
-   const HomeScreen(),
-    Center(child: Text('Library')),
-    Center(child: Text('Activity')),
-  ];
+  Widget _getScreen(int index) {
+  switch (index) {
+    case 0:
+     return const Center(child: Text('Categories'));
+    case 1:
+      return CategoriesPage();
+    case 2:
+      return const HomeScreen(); // ← qui viene sempre ricreato!
+    case 3:
+      return const Center(child: Text('Search'));
+    case 4:
+      return const Center(child: Text('Library'));
+    case 5:
+      return const Center(child: Text('Activity'));
+    default:
+      return const HomeScreen();
+  }
+}
 
   void _onItemTapped(int index) {
     setState(() {
@@ -49,7 +57,7 @@ class _HomePageState extends State<HomePage> {
           },
         )
       ),
-      body:  _screens[_currentIndex],
+      body: _getScreen(_currentIndex),
 
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
