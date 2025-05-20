@@ -193,7 +193,6 @@ void initState() {
                     borderRadius: BorderRadius.circular(8)),
               ),
               maxLines: 1,
-              onChanged: (value) => comment = value,
             ),
 
              SizedBox(height: screenHeight * 0.01),
