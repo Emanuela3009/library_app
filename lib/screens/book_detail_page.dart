@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../core/theme.dart';
 import '../data/fake_books.dart';
-import 'categories_page.dart';
+import '../data/fake_categories.dart';
 import '../../models/category.dart';
-
 
 
 class BookDetailPage extends StatefulWidget {
@@ -20,8 +19,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
 
 
 
-  void _showAddBookDialog(BuildContext context) {
-  String? selectedCategory;
+ void _showAddBookDialog(BuildContext context) {
+  final theme = Theme.of(context);
+  Category? selectedCategory;
 
   showDialog(
     context: context,
@@ -30,13 +30,16 @@ class _BookDetailPageState extends State<BookDetailPage> {
         title: const Text('Choose category'),
         content: StatefulBuilder(
           builder: (context, setState) {
-            return DropdownButtonFormField<String>(
+            return DropdownButtonFormField<Category>(
               value: selectedCategory,
-              hint: const Text('Select a category'),
-              items: categories 
-                  .map((cat) => DropdownMenuItem(
+              hint: Text('Select a category',
+                                style: theme.textTheme.bodyLarge),
+              items: fakeCategories
+                  .map((cat) => DropdownMenuItem<Category>(
                         value: cat,
-                        child: Text(cat),
+                        child: Text(cat.name,
+                          style: theme.textTheme.bodyLarge,
+                        ),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -50,23 +53,22 @@ class _BookDetailPageState extends State<BookDetailPage> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // annulla
+              Navigator.pop(context); // Annulla
             },
             child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               if (selectedCategory != null) {
-                // Esempio: aggiunge il libro a 'Your Books'
-                if (selectedCategory == 'Your Books') {
-                  userBooks.add(widget.book);
-                }
-
-                // Puoi aggiungere condizioni per altre categorie qui.
+                setState(() {
+                  selectedCategory!.bookCount++; // aggiorna contatore della categoria
+                  widget.book.category = selectedCategory!.name; // (opzionale) assegna categoria al libro
+                  userBooks.add(widget.book); // aggiungi il libro alla tua lista locale
+                });
 
                 Navigator.pop(context); // chiudi dialog
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Book added to "$selectedCategory"')),
+                  SnackBar(content: Text('Book added to "${selectedCategory!.name}"')),
                 );
               }
             },
