@@ -30,7 +30,7 @@ class BookCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: Image.asset(
                 book.imagePath,
-                height: 100,
+                height: 80,
                 width: 100,
                 fit: BoxFit.cover,
               ),
