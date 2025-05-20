@@ -61,7 +61,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
             onPressed: () {
               if (selectedCategory != null) {
                 setState(() {
-                  selectedCategory!.bookCount++; // aggiorna contatore della categoria
+                  selectedCategory!.books.add(widget.book);
                   widget.book.category = selectedCategory!.name; // (opzionale) assegna categoria al libro
                   userBooks.add(widget.book); // aggiungi il libro alla tua lista locale
                 });
