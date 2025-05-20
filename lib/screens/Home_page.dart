@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     case 1:
       return CategoriesPage();
     case 2:
-      return const HomeScreen(); // ← qui viene sempre ricreato!
+      return HomeScreen(); // ← qui viene sempre ricreato!
     case 3:
       return const Center(child: Text('Search'));
     case 4:
