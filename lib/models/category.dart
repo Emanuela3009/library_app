@@ -1,7 +1,15 @@
+import 'book.dart';
+
 class Category {
   final String name;
-  final int bookCount;
   final String imagePath;
+  final List<Book> books;
 
-  Category({required this.name, required this.bookCount, required this.imagePath});
+  Category({
+    required this.name,
+    required this.imagePath,
+    this.books = const [],
+  });
+
+  int get bookCount => books.length;
 }

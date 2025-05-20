@@ -11,7 +11,6 @@ class CategoryFormPage extends StatefulWidget {
 class _CategoryFormPageState extends State<CategoryFormPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
-  int _bookCount = 0;
   String _imagePath = '';
 
   @override
@@ -31,20 +30,6 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
                 onSaved: (value) => _name = value!,
               ),
               TextFormField(
-                decoration:
-                    const InputDecoration(labelText: 'Number of books'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  final number = int.tryParse(value ?? '');
-                  if (number == null || number < 0) {
-                    return 'Enter a valid number';
-                  }
-                  return null;
-                },
-                onSaved: (value) =>
-                    _bookCount = int.tryParse(value ?? '0') ?? 0,
-              ),
-              TextFormField(
                 decoration: const InputDecoration(
                   labelText: 'Image path (optional)',
                   hintText: 'e.g. assets/category/fantasy.jpg',
@@ -59,10 +44,10 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
 
                     final newCategory = Category(
                       name: _name,
-                      bookCount: _bookCount,
                       imagePath: _imagePath.isNotEmpty
                           ? _imagePath
                           : 'assets/category/default.jpg',
+                      books: [], // ✅ inizia con lista vuota
                     );
 
                     Navigator.pop(context, newCategory);
