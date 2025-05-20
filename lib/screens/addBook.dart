@@ -1,7 +1,11 @@
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/fake_books.dart'; // contiene userBooks
+
+
+
 
 class AddBookPage extends StatefulWidget {
   const AddBookPage({super.key});
