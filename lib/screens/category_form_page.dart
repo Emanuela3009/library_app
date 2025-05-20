@@ -12,6 +12,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
   final _formKey = GlobalKey<FormState>();
   String _name = '';
   int _bookCount = 0;
+  String _imagePath = '';
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Category name'),
@@ -43,7 +44,14 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
                 onSaved: (value) =>
                     _bookCount = int.tryParse(value ?? '0') ?? 0,
               ),
-              const SizedBox(height: 20),
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Image path (optional)',
+                  hintText: 'e.g. assets/category/fantasy.jpg',
+                ),
+                onSaved: (value) => _imagePath = value?.trim() ?? '',
+              ),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -52,12 +60,24 @@ class _CategoryFormPageState extends State<CategoryFormPage> {
                     final newCategory = Category(
                       name: _name,
                       bookCount: _bookCount,
+                      imagePath: _imagePath.isNotEmpty
+                          ? _imagePath
+                          : 'assets/category/default.jpg',
                     );
 
-                    Navigator.pop(context, newCategory); // ritorna al chiamante
+                    Navigator.pop(context, newCategory);
                   }
                 },
-                child: const Text("Add Category"),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  "Add Category",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),

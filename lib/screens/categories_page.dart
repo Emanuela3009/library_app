@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/category.dart';
+import '../../data/fake_categories.dart'; 
 import 'category_detail_page.dart';
 import 'category_form_page.dart';
 
@@ -11,12 +12,14 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
-  List<Category> categories = [
-    Category(name: 'Romance', bookCount: 3),
-    Category(name: 'Fantasy', bookCount: 1),
-    Category(name: 'Spanish', bookCount: 0),
-    Category(name: 'School', bookCount: 5),
-  ];
+  late List<Category> categories;
+
+  @override
+  void initState() {
+    super.initState();
+   
+    categories = List<Category>.from(fakeCategories);
+  }
 
   void _addCategory(Category newCategory) {
     setState(() {
@@ -63,15 +66,30 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 ),
                 padding: const EdgeInsets.all(12),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(child: Placeholder()),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.asset(
+                          category.imagePath,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text(category.name,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text("${category.bookCount} books",
-                        style: const TextStyle(color: Colors.grey)),
+                    Text(
+                      category.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      "${category.bookCount} books",
+                      style: const TextStyle(color: Colors.grey),
+                    ),
                   ],
                 ),
               ),
