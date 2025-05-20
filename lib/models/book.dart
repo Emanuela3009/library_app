@@ -8,6 +8,7 @@ class Book {
   String? comment;
   int? rating;
   String? userState;   // path immagine da asset o URL
+  String? category;
 
   Book({
     required this.title,

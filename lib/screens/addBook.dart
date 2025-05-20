@@ -1,7 +1,9 @@
-
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
-import '../data/fake_books.dart'; // contiene userBooks
+import '../data/fake_books.dart'; 
+
 
 class AddBookPage extends StatefulWidget {
   const AddBookPage({super.key});
@@ -22,8 +24,60 @@ class _AddBookPageState extends State<AddBookPage> {
   String selectedGenre = 'Fantasy';
   String selectedState = 'To Read';
 
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
+
+void _showImageSourceOptions() {   //funzione che viene chiamata quando l utente vuole scegliere un immagine
+    showModalBottomSheet(    //riquadro  in basso per far scegliere all utente al posto del pop up 
+      context: context,
+      builder: (_) {
+        return SafeArea(
+          child: Wrap(   //oggetti posizionati in colonna
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  _pickImage(ImageSource.gallery);  //chiama la funzione descritta in seguito
+                  Navigator.pop(context);  //chiude il pop up 
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  _pickImage(ImageSource.camera);  //chiama la funzione descritta in seguito
+                  Navigator.pop(context); //chiude il pop up 
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+  //funzione che gestisce la selezione dell’immagine, da fotocamera o galleria
+  Future<void> _pickImage(ImageSource source) async {   //asincrona
+    final pickedFile = 
+        await _picker.pickImage(source: source, imageQuality: 80); //await, aspetta che l utente scelga o scatti la foto
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
+  
+
+
+
   @override
   Widget build(BuildContext context) {
+     final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding = screenWidth * 0.05; // 5% della larghezza
+    final screenHeight = MediaQuery.of(context).size.height;
+  
+
     return Scaffold(
       appBar: AppBar(title: const Text("Add Book")),
       body: 
@@ -39,40 +93,69 @@ class _AddBookPageState extends State<AddBookPage> {
                 validator: (value) => value!.isEmpty ? 'Enter a title' : null,
               ),
 
-              const SizedBox(height: 12),
+               SizedBox(height: screenHeight *0.02 ),
               TextFormField(
                 controller: authorController,
                 decoration: const InputDecoration(labelText: 'Author'),
               ),
 
-              const SizedBox(height: 12),
+               SizedBox(height: screenHeight *0.02 ),
               TextFormField(
                 controller: plotController,
                 decoration: const InputDecoration(labelText: 'Plot'),
                 maxLines: 3,  
               ),
 
-              const SizedBox(height: 12),
+               SizedBox(height: screenHeight *0.02),
               DropdownButtonFormField(
                 value: selectedGenre,
                 decoration: const InputDecoration(labelText: 'Genre'),
                 items: ['Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror']
-                    .map((genre) => DropdownMenuItem(value: genre, child: Text(genre)))
+                    .map((genre) => DropdownMenuItem(value: genre, child: Text(genre,
+                     style: Theme.of(context).textTheme.bodyLarge,)))
                     .toList(),
                 onChanged: (value) => setState(() => selectedGenre = value!),
               ),
 
-              const SizedBox(height: 12),
+               SizedBox(height: screenHeight *0.02 ),
               DropdownButtonFormField(
                 value: selectedState,
                 decoration: const InputDecoration(labelText: 'State'),
                 items: ['To Read', 'Reading', 'Completed']
-                    .map((state) => DropdownMenuItem(value: state, child: Text(state)))
+                    .map((state) => DropdownMenuItem(value: state, child: Text(state,
+                     style: Theme.of(context).textTheme.bodyLarge,)))
                     .toList(),
                 onChanged: (value) => setState(() => selectedState = value!),
               ),
 
-              const SizedBox(height: 24),
+               SizedBox(height: screenHeight *0.02),
+              GestureDetector(
+                  onTap: _showImageSourceOptions,
+                  child: _selectedImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            _selectedImage!,
+                            height: 180,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Container(
+                          height: 180,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: const Center(
+                            child: Text("Tap to add cover image"),
+                          ),
+                        ),
+                ),
+
+
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -82,7 +165,7 @@ class _AddBookPageState extends State<AddBookPage> {
                       genre: selectedGenre,
                       plot: plotController.text,
                       state: selectedState,
-                      imagePath: 'assets/books/placeholder.jpg', // immagine fittizia
+                      imagePath:  _selectedImage?.path ?? 'assets/books/placeholder.jpg',
                     );
 
                     userBooks.add(newBook); // Aggiunta a lista finta
