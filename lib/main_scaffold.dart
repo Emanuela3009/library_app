@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../screens/categories_page.dart'; 
+
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -13,7 +15,7 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   final List<Widget> _screens = [
     Center(child: Text('Home Screen')),
-    Center(child: Text('Categories Screen')),
+    const CategoriesPage(),
     Center(child: Text('Library Screen')),
   ];
 
