@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/category.dart';
+import 'book_detail_page.dart'; // <-- Importa la pagina dei dettagli
 
 class CategoryDetailPage extends StatelessWidget {
   final Category category;
@@ -9,6 +10,7 @@ class CategoryDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final books = category.books;
+
     return Scaffold(
       appBar: AppBar(title: Text(category.name)),
       body: Padding(
@@ -16,44 +18,80 @@ class CategoryDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('You have ${category.bookCount} books',
-                style: const TextStyle(fontSize: 16)),
+            Text(
+              'You have ${category.bookCount} books',
+              style: const TextStyle(fontSize: 16),
+            ),
             const SizedBox(height: 16),
+
+            // ✅ Scrollbar + GridView
             Expanded(
-              child: GridView.builder(
-                itemCount: books.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.8,
+              child: Scrollbar(
+                thumbVisibility: true,
+                child: GridView.builder(
+                  itemCount: books.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.8,
+                  ),
+                  itemBuilder: (context, index) {
+                    final book = books[index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BookDetailPage(book: book),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.asset(
+                                  book.imagePath,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              book.title,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              book.author,
+                              style: const TextStyle(fontSize: 13, color: Colors.black87),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              '⭐ ${book.rating?.toStringAsFixed(1) ?? "4.9"}/5',
+                              style: const TextStyle(color: Colors.purple, fontSize: 13),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      children: [
-                        const Expanded(child: Placeholder()), // immagine
-                        const SizedBox(height: 8),
-                        Text(
-                          books[index].title,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          books[index].author,
-                        ),
-                        const Text('⭐ 4.9/5',
-                            style: TextStyle(color: Colors.purple)),
-                      ],
-                    ),
-                  );
-                },
               ),
-            )
+            ),
           ],
         ),
       ),
