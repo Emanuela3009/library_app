@@ -8,11 +8,7 @@ class CategoryDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final books = List.generate(
-      category.bookCount,
-      (index) => "Book ${index + 1} Heading",
-    );
-
+    final books = category.books;
     return Scaffold(
       appBar: AppBar(title: Text(category.name)),
       body: Padding(
@@ -44,10 +40,12 @@ class CategoryDetailPage extends StatelessWidget {
                         const Expanded(child: Placeholder()), // immagine
                         const SizedBox(height: 8),
                         Text(
-                          books[index],
+                          books[index].title,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        const Text('Sub-heading'),
+                        Text(
+                          books[index].author,
+                        ),
                         const Text('⭐ 4.9/5',
                             style: TextStyle(color: Colors.purple)),
                       ],
