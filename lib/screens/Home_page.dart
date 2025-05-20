@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'addbook.dart';
 import 'home_screen.dart'; 
+import '../screens/categories_page.dart'; 
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,7 +16,7 @@ class _HomePageState extends State<HomePage> {
 
   final List<Widget> _screens = [
     Center(child: Text('Search')),
-    Center(child: Text('Categories')),
+    CategoriesPage(),
     const HomeScreen(),
     Center(child: Text('Library')),
     Center(child: Text('Activity')),
