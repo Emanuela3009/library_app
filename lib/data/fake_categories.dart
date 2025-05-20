@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import '../models/category.dart';
 import '../models/book.dart'; // necessario per usare List<Book>
 import 'fake_books.dart';
@@ -5,21 +6,21 @@ import 'fake_books.dart';
 final List<Category> fakeCategories = [
   Category(
     name: 'Romance',
-    imagePath: 'assets/category/romance.jpg',
+    color: Colors.pink.shade200,
     books: [
       userBooks[0],
     ], // puoi aggiungere dei Book qui se vuoi
   ),
   Category(
     name: 'Fantasy',
-    imagePath: 'assets/category/fantasy.jpg',
+    color: Colors.deepPurple.shade200,
     books: [
       popularBooks[1],
     ],
   ),
   Category(
     name: 'Thriller', 
-    imagePath: 'assets/category/thriller.jpg',
+    color: Colors.red.shade200,
     books: [
       popularBooks[0], // 1984
       readingBooks[0], // Sapiens

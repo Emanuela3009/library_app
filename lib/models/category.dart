@@ -1,14 +1,15 @@
 import 'book.dart';
+import 'package:flutter/material.dart';
 
 class Category {
   final String name;
-  final String imagePath;
   final List<Book> books;
+  final Color color; 
 
   Category({
     required this.name,
-    required this.imagePath,
     this.books = const [],
+    required this.color,
   });
 
   int get bookCount => books.length;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../../models/category.dart';
-import '../../data/fake_categories.dart'; 
+import '../../data/fake_categories.dart';
 import 'category_detail_page.dart';
-import 'category_form_page.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
@@ -17,7 +17,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
   @override
   void initState() {
     super.initState();
-   
     categories = List<Category>.from(fakeCategories);
   }
 
@@ -68,13 +67,13 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Riquadro colorato al posto dell'immagine
                     Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          category.imagePath,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: category.color,
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                     ),
@@ -101,17 +100,81 @@ class _CategoriesPageState extends State<CategoriesPage> {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: ElevatedButton(
-            onPressed: () async {
-              final newCategory = await Navigator.push<Category>(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const CategoryFormPage(),
-                ),
-              );
+            onPressed: () {
+              String newName = '';
+              Color newColor = Colors.grey;
 
-              if (newCategory != null) {
-                _addCategory(newCategory);
-              }
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('New Category'),
+                    content: StatefulBuilder(
+                      builder: (context, setState) {
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextField(
+                              decoration: const InputDecoration(
+                                  labelText: 'Category name'),
+                              onChanged: (value) => newName = value,
+                            ),
+                            const SizedBox(height: 16),
+                            ListTile(
+                              title: const Text('Pick a color'),
+                              trailing: CircleAvatar(
+                                backgroundColor: newColor,
+                              ),
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Choose a color'),
+                                    content: SingleChildScrollView(
+                                      child: ColorPicker(
+                                        pickerColor: newColor,
+                                        onColorChanged: (color) {
+                                          setState(() => newColor = color);
+                                        },
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        child: const Text('OK'),
+                                        onPressed: () =>
+                                            Navigator.pop(context),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (newName.trim().isEmpty) return;
+                          final newCategory = Category(
+                            name: newName.trim(),
+                            color: newColor,
+                            books: [],
+                          );
+                          _addCategory(newCategory);
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Create'),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
