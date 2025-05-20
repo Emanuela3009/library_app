@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'addbook.dart';
 import 'home_screen.dart'; 
+<<<<<<< HEAD
 import 'categories_page.dart';
+=======
+import '../screens/categories_page.dart'; 
+>>>>>>> 584cbea800984ccd36493a5bdbb0cb6297500fa2
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,9 +19,15 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 2; // Start da 'Home'
 
   final List<Widget> _screens = [
+<<<<<<< HEAD
     CategoriesPage(),
     Center(child: Text('Categories')),
      HomeScreen(),
+=======
+    Center(child: Text('Search')),
+    CategoriesPage(),
+    const HomeScreen(),
+>>>>>>> 584cbea800984ccd36493a5bdbb0cb6297500fa2
     Center(child: Text('Library')),
     Center(child: Text('Activity')),
   ];
