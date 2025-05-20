@@ -81,7 +81,7 @@ class CategoryDetailPage extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              '⭐ ${book.rating?.toStringAsFixed(1) ?? "4.9"}/5',
+                              '⭐ ${book.rating?.toStringAsFixed(1) ?? "0.0"}/5',
                               style: const TextStyle(color: Colors.purple, fontSize: 13),
                             ),
                           ],
