@@ -3,7 +3,7 @@ import '../widgets/bottom_nav_bar.dart';
 import 'addbook.dart';
 import 'home_screen.dart'; 
 import 'categories_page.dart';
-import '../screens/categories_page.dart'; 
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

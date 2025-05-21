@@ -49,16 +49,18 @@ class _BookDetailPageState extends State<BookDetailPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Choose category'),
+          title:  Text('Choose category'),
           content: StatefulBuilder(
             builder: (context, setState) {
               return DropdownButtonFormField<Category>(
                 value: selectedCategory,
-                hint: const Text('Select a category'),
+                hint:  Text('Select a category',
+                style: theme.textTheme.bodyLarge),
                 items: allCategories.map((cat) {
                   return DropdownMenuItem<Category>(
                     value: cat,
-                    child: Text(cat.name),
+                    child: Text(cat.name,
+                    style: Theme.of(context).textTheme.bodyLarge,),
                   );
                 }).toList(),
                 onChanged: (value) {
