@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //Currently Reading
           Padding(
             padding: const EdgeInsets.all(16),   //inserisce padding all interno del widget 
-            child: Text("Currently reading", style: Theme.of(context).textTheme.titleLarge),
+            child: Text("Currently reading", style: Theme.of(context).textTheme.titleMedium),
           ),
           
           SizedBox(
@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //Popular Now
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text("Popular now", style: Theme.of(context).textTheme.titleLarge),
+            child: Text("Popular now", style: Theme.of(context).textTheme.titleMedium),
           ),
           SizedBox(
           height: 160,
@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //Your Books
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text("Your books", style: Theme.of(context).textTheme.titleLarge),
+            child: Text("Your books", style: Theme.of(context).textTheme.titleMedium),
           ),
         SizedBox(
           height: 160,
