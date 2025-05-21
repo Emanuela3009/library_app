@@ -8,8 +8,8 @@ final List<Book> popularBooks = [
     genre: "Classic",
     plot: "A mysterious millionaire throws lavish parties in the 1920s.",
     imagePath: "assets/books/ok.jpg",
-    rating: 5,
-    userState: "Completed",
+    rating: 0,
+    userState: "To Read",
   ),
   Book(
     title: "Harry Potter and the Philosopher's Stone",
@@ -17,8 +17,8 @@ final List<Book> popularBooks = [
     genre: "Fantasy",
     plot: "A young wizard discovers his destiny at Hogwarts.",
     imagePath: "assets/books/ok.jpg",
-    rating: 4,
-    userState: "Reading",
+    rating: 0,
+    userState: "to Read",
   ),
   Book(
     title: "1984",
@@ -26,7 +26,7 @@ final List<Book> popularBooks = [
     genre: "Dystopian",
     plot: "A man lives under constant surveillance in a totalitarian regime.",
     imagePath: "assets/books/ok.jpg",
-    rating: 4,
+    rating: 0,
     userState: "To Read",
   ),
 ];
