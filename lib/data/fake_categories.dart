@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/category.dart';
-import '../models/book.dart'; // necessario per usare List<Book>
+import '../models/book.dart'; 
 import 'fake_books.dart';
 
 final List<Category> fakeCategories = [
