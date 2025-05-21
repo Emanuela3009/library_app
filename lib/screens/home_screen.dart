@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
-import '../data/fake_books.dart';
+import '../data/database_helper.dart';
 import '../widgets/book_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,14 +12,34 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  
+  List<Book> allBooks = [];
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadBooksFromDatabase();
+  }
+
+  Future<void> _loadBooksFromDatabase() async {
+    final books = await DatabaseHelper.instance.getAllBooks();
+    setState(() {
+      allBooks = books;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
+    final popularBooks = allBooks.take(3).toList();
+    final userBooks = allBooks.where((b) => b.userState != null).toList();
+
     return SingleChildScrollView(
       child: Column(     //allina verticalmente 
         crossAxisAlignment: CrossAxisAlignment.start,  //allinea a sinistra 
         children: [
 
-          //sezione 1
+          //Currently Reading
           Padding(
             padding: const EdgeInsets.all(16),   //inserisce padding all interno del widget 
             child: Text("Currently reading", style: Theme.of(context).textTheme.titleLarge),
@@ -35,9 +55,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
           
-           // magari un ListView orizzontalev
+         
 
-          //sezione 2
+          //Popular Now
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text("Popular now", style: Theme.of(context).textTheme.titleLarge),
@@ -53,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
 
-          //sezione 3
+          //Your Books
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text("Your books", style: Theme.of(context).textTheme.titleLarge),

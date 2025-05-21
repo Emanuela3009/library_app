@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
-import '../data/fake_books.dart'; 
+import '../data/database_helper.dart';
 
 
 class AddBookPage extends StatefulWidget {
@@ -161,18 +161,18 @@ void _showImageSourceOptions() {   //funzione che viene chiamata quando l utente
               SizedBox(height: screenHeight *0.02),
 
               ElevatedButton.icon(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     final newBook = Book(
                       title: titleController.text,
                       author: authorController.text,
                       genre: selectedGenre,
                       plot: plotController.text,
-                      state: selectedState,
                       imagePath:  _selectedImage?.path ?? 'assets/books/placeholder.jpg',
+                      userState: selectedState,
                     );
 
-                    userBooks.add(newBook); // Aggiunta a lista dei libri dell utente
+                    await DatabaseHelper.instance.insertBook(newBook); // Aggiunta a lista dei libri dell utente
 
                   Navigator.pop(context);
                   }
@@ -187,4 +187,5 @@ void _showImageSourceOptions() {   //funzione che viene chiamata quando l utente
       ),
     );
   }
-}
+} 
+

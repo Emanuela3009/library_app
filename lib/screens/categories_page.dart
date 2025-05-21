@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../../models/category.dart';
-import '../../data/fake_categories.dart';
+import '../../data/database_helper.dart';
 import 'category_detail_page.dart';
 
 class CategoriesPage extends StatefulWidget {
@@ -12,19 +12,30 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
-  late List<Category> categories;
+   List<Category> categories = [];
 
   @override
   void initState() {
     super.initState();
-    categories = List<Category>.from(fakeCategories);
+    _loadCategories();
   }
 
-  void _addCategory(Category newCategory) {
+  void _loadCategories() async {
+    final loaded = await DatabaseHelper.instance.getAllCategories();
     setState(() {
-      categories.add(newCategory);
+      categories = loaded;
     });
   }
+
+  Future<void> _addCategory(String name, Color color) async {
+    final newCategory = Category(
+      name: name.trim(),
+      colorValue: color.value,
+    );
+    await DatabaseHelper.instance.insertCategory(newCategory);
+    _loadCategories(); // ricarica categorie dopo inserimento
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +83,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: category.color,
+                          color: category.color ?? Colors.grey,
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
@@ -85,9 +96,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         fontSize: 16,
                       ),
                     ),
-                    Text(
-                      "${category.bookCount} books",
-                      style: const TextStyle(color: Colors.grey),
+                    const Text(
+                      "Category",
+                      style: TextStyle(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -159,14 +170,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         child: const Text('Cancel'),
                       ),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (newName.trim().isEmpty) return;
-                          final newCategory = Category(
-                            name: newName.trim(),
-                            color: newColor,
-                            books: [],
-                          );
-                          _addCategory(newCategory);
+                          await _addCategory(newName, newColor);
                           Navigator.pop(context);
                         },
                         child: const Text('Create'),

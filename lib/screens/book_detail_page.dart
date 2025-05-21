@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
-import '../core/theme.dart';
-import '../data/fake_books.dart';
-import '../data/fake_categories.dart';
-import '../../models/category.dart';
+import '../models/category.dart';
+import '../data/database_helper.dart';
 
 
 class BookDetailPage extends StatefulWidget {
@@ -17,82 +15,83 @@ class BookDetailPage extends StatefulWidget {
 
 class _BookDetailPageState extends State<BookDetailPage> {
 
-
-
- void _showAddBookDialog(BuildContext context) {
-  final theme = Theme.of(context);
-  Category? selectedCategory;
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('Choose category'),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return DropdownButtonFormField<Category>(
-              value: selectedCategory,
-              hint: Text('Select a category',
-                                style: theme.textTheme.bodyLarge),
-              items: fakeCategories
-                  .map((cat) => DropdownMenuItem<Category>(
-                        value: cat,
-                        child: Text(cat.name,
-                          style: theme.textTheme.bodyLarge,
-                        ),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedCategory = value!;
-                });
-              },
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Annulla
-            },
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (selectedCategory != null) {
-                setState(() {
-                  selectedCategory!.books.add(widget.book);
-                  widget.book.category = selectedCategory!.name; // (opzionale) assegna categoria al libro
-                  userBooks.add(widget.book); // aggiungi il libro alla tua lista locale
-                });
-
-                Navigator.pop(context); // chiudi dialog
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Book added to "${selectedCategory!.name}"')),
-                );
-              }
-            },
-            child: const Text('Add'),
-          ),
-        ],
-      );
-    },
-  );
-}
-  
-  int rating = 0; // valore selezionato da 0 a 5
+  List<Category> allCategories = [];
+  int rating = 0;
   String comment = '';
   String selectedState = '';
   final commentController = TextEditingController();
 
   @override
-void initState() {
-  super.initState();
-  final book = widget.book;
+  void initState() {
+    super.initState();
+    final book = widget.book;
+    selectedState = book.userState ?? 'To Read';
+    rating = book.rating ?? 0;
+    commentController.text = book.comment ?? '';
 
-  selectedState = book.userState ?? book.state;
-  rating = book.rating ?? 0;
-  commentController.text = book.comment ?? '';
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    final categories = await DatabaseHelper.instance.getAllCategories();
+    setState(() {
+      allCategories = categories;
+    });
+  }
+
+
+  void _showAddBookDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    Category? selectedCategory;
+
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Choose category'),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return DropdownButtonFormField<Category>(
+                value: selectedCategory,
+                hint: const Text('Select a category'),
+                items: allCategories.map((cat) {
+                  return DropdownMenuItem<Category>(
+                    value: cat,
+                    child: Text(cat.name),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedCategory = value!;
+                  });
+                },
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (selectedCategory != null) {
+                  widget.book.categoryId = selectedCategory!.id;
+                  await DatabaseHelper.instance.insertBook(widget.book);
+
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Book added to "${selectedCategory!.name}"')),
+                  );
+                }
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
 }
 
   @override
@@ -100,14 +99,15 @@ void initState() {
     commentController.dispose();
     super.dispose();
   }
-
-
+  
+  
   @override
   Widget build(BuildContext context) {
+    final book = widget.book;
     final screenWidth = MediaQuery.of(context).size.width;
     final horizontalPadding = screenWidth * 0.05; // 5% della larghezza
     final screenHeight = MediaQuery.of(context).size.height;
-     final book = widget.book;
+     
   
     
   return WillPopScope(

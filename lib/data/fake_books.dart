@@ -1,41 +1,32 @@
 import '../models/book.dart';
 
+// Libri predefiniti da inserire nel database alla prima esecuzione
 final List<Book> popularBooks = [
   Book(
-    title: '1984',
-    author: 'George Orwell',
-    genre: 'Dystopia',
-    plot: 'A world under totalitarian surveillance and control.',
-    state: 'Completed',
-    imagePath: 'assets/books/ok.jpg',
+    title: "The Great Gatsby",
+    author: "F. Scott Fitzgerald",
+    genre: "Classic",
+    plot: "A mysterious millionaire throws lavish parties in the 1920s.",
+    imagePath: "assets/books/ok.jpg",
+    rating: 5,
+    userState: "Completed",
   ),
   Book(
-    title: 'Brave New World',
-    author: 'Aldous Huxley',
-    genre: 'Science Fiction',
-    plot: 'A futuristic society governed by pleasure and stability.',
-    state: 'Completed',
-    imagePath: 'assets/books/ok.jpg',
+    title: "Harry Potter and the Philosopher's Stone",
+    author: "J.K. Rowling",
+    genre: "Fantasy",
+    plot: "A young wizard discovers his destiny at Hogwarts.",
+    imagePath: "assets/books/ok.jpg",
+    rating: 4,
+    userState: "Reading",
   ),
-];
-
-final List<Book> readingBooks = [
   Book(
-    title: 'Sapiens',
-    author: 'Yuval Harari',
-    genre: 'History',
-    plot: 'La storia dell’umanità dalle origini a oggi.',
-    state: 'Reading',
-    imagePath: 'assets/books/ok.jpg',
-  ),
-];
-final List<Book> userBooks = [
-Book(
-    title: 'The Alchemist',
-    author: 'Paulo Coelho',
-    genre: 'Adventure',
-    plot: 'A shepherd travels in search of his personal legend.',
-    state: 'Reading',
-    imagePath: 'assets/books/ok.jpg',
+    title: "1984",
+    author: "George Orwell",
+    genre: "Dystopian",
+    plot: "A man lives under constant surveillance in a totalitarian regime.",
+    imagePath: "assets/books/ok.jpg",
+    rating: 4,
+    userState: "To Read",
   ),
 ];

@@ -1,25 +1,48 @@
 import 'package:flutter/material.dart';
 import '../../models/category.dart';
+import '../../models/book.dart';
+import '../../data/database_helper.dart';
 import 'book_detail_page.dart'; // <-- Importa la pagina dei dettagli
 
-class CategoryDetailPage extends StatelessWidget {
+class CategoryDetailPage extends StatefulWidget {
   final Category category;
 
   const CategoryDetailPage({super.key, required this.category});
+  @override
+  State<CategoryDetailPage> createState() => _CategoryDetailPageState();
+}
+
+
+class _CategoryDetailPageState extends State<CategoryDetailPage> {
+
+   List<Book> books = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBooks();
+  }
+
+  Future<void> _loadBooks() async {
+    final allBooks = await DatabaseHelper.instance.getAllBooks();
+    setState(() {
+      books = allBooks.where((book) => book.categoryId == widget.category.id).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final books = category.books;
 
     return Scaffold(
-      appBar: AppBar(title: Text(category.name)),
+      appBar: AppBar(title: Text(widget.category.name)),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'You have ${category.bookCount} books',
+              'You have ${books.length} books',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
