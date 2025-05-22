@@ -19,15 +19,15 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed, // fissa tutte le icone
-      backgroundColor: Colors.grey,
-      selectedItemColor: Colors.white,    // colore dell'icona selezionata
-      unselectedItemColor: Colors.black,    // colore delle altre icone
+      backgroundColor:const Color.fromARGB(255, 30, 42, 120), // colore della barra è blu scuro
+      selectedItemColor: Colors.white,    // l’elemento selezionato è bianco
+      unselectedItemColor: const Color.fromARGB(255, 143, 170, 220), // gli elementi non selezionati sono azzurri
       selectedFontSize: 12,
       unselectedFontSize: 12,
       iconSize: 26,
       showUnselectedLabels: true,
       currentIndex: currentIndex, // evidenzia la voce attuale
-      onTap: onTap, // esegue la funzione passata quando clicchi su un'icona
+      onTap: onTap, // esegue la funzione specifica passata quando clicchi su un'icona 
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.search),

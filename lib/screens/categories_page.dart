@@ -12,7 +12,7 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
-   List<Category> categories = [];
+  List<Category> categories = [];
 
   @override
   void initState() {
@@ -36,11 +36,16 @@ class _CategoriesPageState extends State<CategoriesPage> {
     _loadCategories(); // ricarica categorie dopo inserimento
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Categories')),
+      appBar: AppBar(
+        // Titolo gestito dal tema → headlineLarge
+        title: Text(
+          'Categories',
+          style: Theme.of(context).textTheme.headlineLarge,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
@@ -89,16 +94,19 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
+                    // Nome categoria → usa il titolo dal tema
                     Text(
-                      category.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    category.name,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: const Color.fromARGB(255, 22, 78, 199), // nuovo blu per il titolo categoria
                     ),
-                    const Text(
-                      "Category",
-                      style: TextStyle(color: Colors.grey),
+                    ),
+                    // Sottotitolo → usa testo corpo medio dal tema
+                    Text(
+                    "Category",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: const Color.fromARGB(255, 22, 78, 199), // blu scuro
+                    ),
                     ),
                   ],
                 ),
@@ -113,34 +121,67 @@ class _CategoriesPageState extends State<CategoriesPage> {
           child: ElevatedButton(
             onPressed: () {
               String newName = '';
-              Color newColor = Colors.grey;
+              Color newColor = const Color.fromARGB(255, 106, 147, 221);  //colore del picker
 
               showDialog(
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: const Text('New Category'),
+                    title: Text(
+                      'New Category',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     content: StatefulBuilder(
                       builder: (context, setState) {
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            TextField(
-                              decoration: const InputDecoration(
-                                  labelText: 'Category name'),
-                              onChanged: (value) => newName = value,
+                          TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Category name',
+                            labelStyle: const TextStyle(
+                              color: Color.fromARGB(255, 19, 39, 168),
+                              fontWeight: FontWeight.w500,
                             ),
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(255, 19, 39, 168), // linea per immettere 
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(255, 22, 78, 199), // la stessa linea ma più spessa quando ci clicchiamo sopra per immettere il testo
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) => newName = value,
+                        ),
+
                             const SizedBox(height: 16),
                             ListTile(
-                              title: const Text('Pick a color'),
-                              trailing: CircleAvatar(
+                              title: Text(
+                                'Pick a color',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontSize: 18, // più grande di bodyMedium
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromARGB(255, 22, 78, 199),
+                                ),
+                              ),
+                              trailing: CircleAvatar(  //cerchio per selezionare il colore dalla palette
                                 backgroundColor: newColor,
                               ),
                               onTap: () {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
-                                    title: const Text('Choose a color'),
+                                    title: Text(
+                                      'Choose a color',
+                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        color: const Color.fromARGB(255, 30, 42, 120), // blu scuro
+                                      ),
+                                    ),
                                     content: SingleChildScrollView(
                                       child: ColorPicker(
                                         pickerColor: newColor,
@@ -149,13 +190,15 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                         },
                                       ),
                                     ),
-                                    actions: [
-                                      TextButton(
-                                        child: const Text('OK'),
-                                        onPressed: () =>
-                                            Navigator.pop(context),
-                                      )
-                                    ],
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: Text(
+                                            'OK',
+                                            style: Theme.of(context).textTheme.labelSmall,
+                                          ),
+                                        )
+                                      ],
                                   ),
                                 );
                               },
@@ -165,10 +208,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       },
                     ),
                     actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancel'),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'Cancel',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: const Color.fromARGB(255, 22, 78, 199), 
                       ),
+                    ),
+                  ),
+
+ 
                       ElevatedButton(
                         onPressed: () async {
                           if (newName.trim().isEmpty) return;
@@ -182,14 +232,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 },
               );
             },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              backgroundColor: Colors.black,
-              foregroundColor: Colors.white,
-            ),
+            // Il resto già prende stile dal tema globale per i pulsanti
             child: const Text(
               "Create Category",
               style: TextStyle(fontWeight: FontWeight.bold),
