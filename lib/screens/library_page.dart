@@ -1,3 +1,4 @@
+// ✅ FILE: library_page.dart
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
@@ -23,17 +24,8 @@ class _LibraryPageState extends State<LibraryPage> {
     final all = await DatabaseHelper.instance.getAllBooks();
     final books =
         all
-            .where(
-              (b) =>
-                  b.comment != null || b.rating != null || b.categoryId != null,
-            )
-            .toList();
-    all
-        .where(
-          (b) => b.comment != null || b.rating != null || b.categoryId != null,
-        )
-        .toList();
-
+            .where((b) => b.isUserBook)
+            .toList(); // ✅ Mostra solo libri aggiunti manualmente
     setState(() {
       allBooks = books;
     });
@@ -47,7 +39,7 @@ class _LibraryPageState extends State<LibraryPage> {
         padding: const EdgeInsets.all(16),
         child:
             allBooks.isEmpty
-                ? const Center(child: Text("No books yet"))
+                ? const Center(child: Text("No books added yet"))
                 : GridView.builder(
                   itemCount: allBooks.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -58,7 +50,6 @@ class _LibraryPageState extends State<LibraryPage> {
                   ),
                   itemBuilder: (context, index) {
                     final book = allBooks[index];
-
                     return GestureDetector(
                       onTap: () async {
                         await Navigator.push(

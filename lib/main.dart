@@ -1,12 +1,21 @@
+// ✅ FILE: main.dart
 import 'package:flutter/material.dart';
 import 'core/theme.dart';
 import 'screens/Home_page.dart';
 import 'data/database_helper.dart';
 import 'data/fake_books.dart';
 import 'data/fake_categories.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Elimina il vecchio database per applicare modifiche
+  final dbPath = await getDatabasesPath();
+  final path = join(dbPath, 'library_app.db');
+  //await deleteDatabase(path); // ← Rimuovi questa riga dopo il primo avvio
+
   await DatabaseHelper.instance.database;
   await DatabaseHelper.instance.populateInitialBooks(popularBooks);
   await DatabaseHelper.instance.populateInitialCategories(fakeCategories);
@@ -16,15 +25,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
-      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
       home: const HomePage(),
     );
   }
 }
-
