@@ -105,4 +105,9 @@ class DatabaseHelper {
       }
     }
   }
+
+  Future<void> deleteBook(int id) async {
+    final db = await database;
+    await db.delete('books', where: 'id = ?', whereArgs: [id]);
+  }
 }
