@@ -7,8 +7,9 @@ class Book {
   final String imagePath;
   String? comment;
   int? rating;
-  String? userState;     // "To Read", "Reading", "Completed"
-  int? categoryId;       // foreign key verso Category
+  String? userState;
+  int? categoryId;
+  bool isUserBook; // ✅ CAMPO AGGIUNTO
 
   Book({
     this.id,
@@ -21,6 +22,7 @@ class Book {
     this.rating,
     this.userState,
     this.categoryId,
+    this.isUserBook = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -34,10 +36,9 @@ class Book {
       'rating': rating,
       'userState': userState,
       'categoryId': categoryId,
+      'isUserBook': isUserBook ? 1 : 0,
     };
-
     if (id != null) map['id'] = id;
-
     return map;
   }
 
@@ -53,6 +54,7 @@ class Book {
       rating: map['rating'],
       userState: map['userState'],
       categoryId: map['categoryId'],
+      isUserBook: (map['isUserBook'] ?? 0) == 1,
     );
   }
 }

@@ -1,11 +1,7 @@
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/book.dart';
 import '../models/category.dart';
-
-
-//Implementa il pattern Singleton: significa che puoi accedere al database da qualunque parte dell’app con DatabaseHelper.instance.
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -17,14 +13,13 @@ class DatabaseHelper {
     return _database ??= await _initDatabase();
   }
 
-//Crea fisicamente il file del database
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'library_app.db');
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // ✅ aggiornata per forzare la ricreazione con nuova colonna
       onCreate: _onCreate,
     );
   }
@@ -41,7 +36,8 @@ class DatabaseHelper {
         comment TEXT,
         rating INTEGER,
         userState TEXT,
-        categoryId INTEGER
+        categoryId INTEGER,
+        isUserBook INTEGER DEFAULT 0
       )
     ''');
 
@@ -56,7 +52,11 @@ class DatabaseHelper {
 
   Future<int> insertBook(Book book) async {
     final db = await database;
-    return await db.insert('books', book.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      'books',
+      book.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<Book>> getAllBooks() async {
@@ -67,7 +67,11 @@ class DatabaseHelper {
 
   Future<int> insertCategory(Category category) async {
     final db = await database;
-    return await db.insert('categories', category.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db.insert(
+      'categories',
+      category.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<Category>> getAllCategories() async {
@@ -76,33 +80,29 @@ class DatabaseHelper {
     return result.map((map) => Category.fromMap(map)).toList();
   }
 
-
   Future<void> populateInitialBooks(List<Book> initialBooks) async {
-  final db = await database;
-
-  // Controlla se la tabella "books" è già popolata
-  final count = Sqflite.firstIntValue(
-    await db.rawQuery('SELECT COUNT(*) FROM books'),
-  );
-
-  // Se è vuota, inserisce i libri iniziali
-  if (count == 0) {
-    for (var book in initialBooks) {
-      await insertBook(book);
+    final db = await database;
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery('SELECT COUNT(*) FROM books'),
+    );
+    if (count == 0) {
+      for (var book in initialBooks) {
+        await insertBook(book);
+      }
     }
   }
-}
 
-Future<void> populateInitialCategories(List<Category> initialCategories) async {
-  final db = await database;
-  final count = Sqflite.firstIntValue(
-    await db.rawQuery('SELECT COUNT(*) FROM categories'),
-  );
-
-  if (count == 0) {
-    for (var category in initialCategories) {
-      await insertCategory(category);
+  Future<void> populateInitialCategories(
+    List<Category> initialCategories,
+  ) async {
+    final db = await database;
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery('SELECT COUNT(*) FROM categories'),
+    );
+    if (count == 0) {
+      for (var category in initialCategories) {
+        await insertCategory(category);
+      }
     }
   }
-}
 }
