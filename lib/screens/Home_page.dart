@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'addbook.dart';
-import 'home_screen.dart'; 
+import 'home_screen.dart';
 import 'categories_page.dart';
-
+import 'library_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,23 +16,21 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 2; // Start da 'Home'
 
   Widget _getScreen(int index) {
-  switch (index) {
-    case 0:
-     return const Center(child: Text('Categories'));
-    case 1:
-      return CategoriesPage();
-    case 2:
-      return HomeScreen(); // ← qui viene sempre ricreato!
-    case 3:
-      return const Center(child: Text('Search'));
-    case 4:
-      return const Center(child: Text('Library'));
-    case 5:
-      return const Center(child: Text('Activity'));
-    default:
-      return const HomeScreen();
+    switch (index) {
+      case 0:
+        return const Center(child: Text('Search'));
+      case 1:
+        return CategoriesPage();
+      case 2:
+        return HomeScreen();
+      case 3:
+        return const LibraryPage();
+      case 4:
+        return const Center(child: Text('Activity'));
+      default:
+        return const HomeScreen();
+    }
   }
-}
 
   void _onItemTapped(int index) {
     setState(() {
@@ -45,9 +43,10 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Book Library"),
-        leading: IconButton(      // allinea il pulsante in alto a sinistra
+        leading: IconButton(
+          // allinea il pulsante in alto a sinistra
           icon: const Icon(Icons.add),
-           onPressed: () {
+          onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AddBookPage()),
@@ -55,7 +54,7 @@ class _HomePageState extends State<HomePage> {
               setState(() {}); // forza aggiornamento della Home al ritorno
             });
           },
-        )
+        ),
       ),
       body: _getScreen(_currentIndex),
 
