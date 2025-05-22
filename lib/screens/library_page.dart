@@ -28,6 +28,11 @@ class _LibraryPageState extends State<LibraryPage> {
                   b.comment != null || b.rating != null || b.categoryId != null,
             )
             .toList();
+    all
+        .where(
+          (b) => b.comment != null || b.rating != null || b.categoryId != null,
+        )
+        .toList();
 
     setState(() {
       allBooks = books;
