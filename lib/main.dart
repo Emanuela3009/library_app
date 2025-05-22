@@ -1,4 +1,4 @@
-// ✅ FILE: main.dart
+// ✅ FILE: main.dart (con reset opzionale del database solo da terminale)
 import 'package:flutter/material.dart';
 import 'core/theme.dart';
 import 'screens/Home_page.dart';
@@ -13,11 +13,17 @@ void main() async {
 
   final dbPath = await getDatabasesPath();
   final path = join(dbPath, 'library_app.db');
-  //await deleteDatabase(path); // ← Rimuovi questa riga dopo il primo avvio
+
+  // ✅ Cancella il database SOLO se si avvia con: flutter run --dart-define=RESET_DB=true
+  if (bool.hasEnvironment("RESET_DB") &&
+      const bool.fromEnvironment("RESET_DB")) {
+    await deleteDatabase(path);
+  }
 
   await DatabaseHelper.instance.database;
   await DatabaseHelper.instance.populateInitialBooks(popularBooks);
   await DatabaseHelper.instance.populateInitialCategories(fakeCategories);
+
   runApp(const MyApp());
 }
 
