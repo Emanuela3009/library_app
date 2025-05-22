@@ -18,7 +18,7 @@ final List<Book> popularBooks = [
     plot: "A young wizard discovers his destiny at Hogwarts.",
     imagePath: "assets/books/ok.jpg",
     rating: 0,
-    userState: "to Read",
+    userState: "To Read",
   ),
   Book(
     title: "1984",

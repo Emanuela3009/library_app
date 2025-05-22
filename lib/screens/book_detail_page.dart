@@ -18,14 +18,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
   List<Category> allCategories = [];
   int rating = 0;
   String comment = '';
-  String selectedState = '';
+  String selectedState = 'To Read';
   final commentController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     final book = widget.book;
-    selectedState = book.userState ?? 'To Read';
+    selectedState = _normalizeState(book.userState) ?? 'To Read';
     rating = book.rating ?? 0;
     commentController.text = book.comment ?? '';
 
@@ -227,5 +227,19 @@ class _BookDetailPageState extends State<BookDetailPage> {
       ),
     ),
   );
+  }
+}
+
+String? _normalizeState(String? input) {
+  if (input == null) return null;
+  switch (input.trim().toLowerCase()) {
+    case 'to read':
+      return 'To Read';
+    case 'reading':
+      return 'Reading';
+    case 'completed':
+      return 'Completed';
+    default:
+      return null;
   }
 }
