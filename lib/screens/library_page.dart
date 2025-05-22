@@ -20,7 +20,15 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Future<void> _loadBooks() async {
-    final books = await DatabaseHelper.instance.getAllBooks();
+    final all = await DatabaseHelper.instance.getAllBooks();
+    final books =
+        all
+            .where(
+              (b) =>
+                  b.comment != null || b.rating != null || b.categoryId != null,
+            )
+            .toList();
+
     setState(() {
       allBooks = books;
     });
