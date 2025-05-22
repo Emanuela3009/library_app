@@ -14,7 +14,7 @@ void main() async {
   final dbPath = await getDatabasesPath();
   final path = join(dbPath, 'library_app.db');
 
-  // ✅ Cancella il database SOLO se si avvia con: flutter run --dart-define=RESET_DB=true
+  //Cancella il database SOLO se si avvia con: flutter run --dart-define=RESET_DB=true
   if (bool.hasEnvironment("RESET_DB") &&
       const bool.fromEnvironment("RESET_DB")) {
     await deleteDatabase(path);
