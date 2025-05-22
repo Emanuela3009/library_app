@@ -3,6 +3,7 @@ import '../widgets/bottom_nav_bar.dart';
 import 'addbook.dart';
 import 'home_screen.dart';
 import 'categories_page.dart';
+import 'search_page.dart';
 import 'library_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   Widget _getScreen(int index) {
     switch (index) {
       case 0:
-        return const Center(child: Text('Search'));
+        return const SearchPage();
       case 1:
         return const CategoriesPage();
       case 2:
