@@ -1,4 +1,4 @@
-// ✅ FILE: main.dart (con reset opzionale del database solo da terminale)
+// ✅ FILE: main.dart (con reset opzionale del database e messaggio di conferma)
 import 'package:flutter/material.dart';
 import 'core/theme.dart';
 import 'screens/Home_page.dart';
@@ -18,6 +18,7 @@ void main() async {
   if (bool.hasEnvironment("RESET_DB") &&
       const bool.fromEnvironment("RESET_DB")) {
     await deleteDatabase(path);
+    print("📦 Database reset completato! Nuovo schema con isUserBook applicato.");
   }
 
   await DatabaseHelper.instance.database;

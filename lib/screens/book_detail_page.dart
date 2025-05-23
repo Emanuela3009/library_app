@@ -265,6 +265,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     Text(
                       book.title,
                       style: Theme.of(context).textTheme.titleMedium,
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 4),
                     Text(
