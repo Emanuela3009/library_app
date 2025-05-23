@@ -37,7 +37,8 @@ class DatabaseHelper {
         rating INTEGER,
         userState TEXT,
         categoryId INTEGER,
-        isUserBook INTEGER DEFAULT 0
+        isUserBook INTEGER DEFAULT 0,
+        isFavorite INTEGER DEFAULT 0 
       )
     ''');
 

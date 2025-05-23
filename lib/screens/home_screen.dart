@@ -71,7 +71,10 @@ class _HomeScreenState extends State<HomeScreen> {
             scrollDirection: Axis.horizontal,
             itemCount: popularBooks.length,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemBuilder: (context, index) => BookCard(book: popularBooks[index]),
+           itemBuilder: (context, index) => BookCard(
+            book: popularBooks[index],
+            onUpdate: _loadBooksFromDatabase, // AGGIUNTO!
+          ),
           ),
         ),
 
@@ -87,8 +90,11 @@ class _HomeScreenState extends State<HomeScreen> {
             scrollDirection: Axis.horizontal,
             itemCount: userBooks.length,
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemBuilder: (context, index) => BookCard(book: userBooks[index]),
+           itemBuilder: (context, index) => BookCard(
+            book: userBooks[index],
+            onUpdate: _loadBooksFromDatabase, // AGGIUNTO!
           ),
+            ),
         ),
         ],
       ),

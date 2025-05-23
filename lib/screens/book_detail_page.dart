@@ -231,6 +231,26 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 icon: const Icon(Icons.delete),
                 onPressed: _confirmDelete,
               ),
+            
+            IconButton(
+              icon: Icon(
+                widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: Colors.pink,
+              ),
+              onPressed: () async {
+                setState(() {
+                  widget.book.isFavorite = !widget.book.isFavorite;
+                });
+                await DatabaseHelper.instance.insertBook(widget.book);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(widget.book.isFavorite
+                      ? 'Added to favorites'
+                      : 'Removed from favorites'),
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.close),
               onPressed: () {
@@ -250,14 +270,44 @@ class _BookDetailPageState extends State<BookDetailPage> {
           ),
           child: ListView(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  book.imagePath,
-                  height: screenHeight * 0.4,
-                  fit: BoxFit.cover,
+              Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    book.imagePath,
+                    height: screenHeight * 0.4,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(100),
+                    onTap: () async {
+                      setState(() {
+                        widget.book.isFavorite = !widget.book.isFavorite;
+                      });
+                      await DatabaseHelper.instance.insertBook(widget.book);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(widget.book.isFavorite
+                              ? 'Added to favorites'
+                              : 'Removed from favorites'),
+                        ),
+                      );
+                    },
+                    child: Icon(
+                      widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.pink,
+                      size: 28,
+                    ),
+                  ),
+                ),
+              ],
+            ),
               const SizedBox(height: 16),
               Center(
                 child: Column(
