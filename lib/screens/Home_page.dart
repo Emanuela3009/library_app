@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 2; // Start da 'Home'
+  int _homeScreenKey = 0;
 
   Widget _getScreen(int index) {
     switch (index) {
@@ -24,7 +25,7 @@ class _HomePageState extends State<HomePage> {
       case 1:
         return const CategoriesPage();
       case 2:
-        return const HomeScreen();
+        return HomeScreen(key: ValueKey(_homeScreenKey));
       case 3:
         return const LibraryPage();
       case 4:
@@ -53,7 +54,10 @@ class _HomePageState extends State<HomePage> {
               context,
               MaterialPageRoute(builder: (context) => const AddBookPage()),
             ).then((_) {
-              setState(() {}); // aggiorna la Home al ritorno
+              setState(() {
+                _homeScreenKey++; // forza rigenerazione HomeScreen
+                _currentIndex = 2;
+              });
             });
           },
           child: const Padding(

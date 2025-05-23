@@ -31,6 +31,7 @@ class AppTheme {
       bodyLarge: GoogleFonts.quicksand( // Variante corpo più grande
         fontSize: 15,
         color: const Color.fromARGB(255, 39, 37, 176),
+        fontWeight: FontWeight.bold,
       ),
 
       labelSmall: GoogleFonts.quicksand( // Variante testo in grassetto - utile per pulsanti

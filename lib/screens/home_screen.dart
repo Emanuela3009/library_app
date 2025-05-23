@@ -46,12 +46,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           
           SizedBox(
-          height: 160,
+          height: 240,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: readingBooks.length, // o una lista "readingBooks"
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemBuilder: (context, index) => BookCard(book: readingBooks[index]),
+            itemBuilder: (context, index) => BookCard(
+              book: readingBooks[index],
+              onUpdate: _loadBooksFromDatabase, // callback passata
+            ),
           ),
         ),
           
@@ -63,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text("Popular now", style: Theme.of(context).textTheme.titleMedium),
           ),
           SizedBox(
-          height: 160,
+          height: 240,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: popularBooks.length,
@@ -79,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text("Your books", style: Theme.of(context).textTheme.titleMedium),
           ),
         SizedBox(
-          height: 160,
+          height: 240,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: userBooks.length,
