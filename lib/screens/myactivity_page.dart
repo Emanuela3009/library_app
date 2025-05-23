@@ -53,94 +53,140 @@ class _MyActivityPageState extends State<MyActivityPage> {
 }
 
   @override
-  Widget build(BuildContext context) {
-    final genreColorMap = {
-      'Fantasy': const Color.fromARGB(255, 174, 147, 221),
-      'Romance': const Color.fromARGB(255, 236, 106, 149),
-      'Adventure': Colors.orange,
-      'Sci-Fi': const Color.fromARGB(255, 132, 212, 248),
-      'Horror': const Color.fromARGB(255, 237, 104, 95),
-    };
+Widget build(BuildContext context) {
+  final genreColorMap = {
+    'Fantasy': const Color.fromARGB(255, 174, 147, 221),
+    'Romance': const Color.fromARGB(255, 236, 106, 149),
+    'Adventure': Colors.orange,
+    'Sci-Fi': const Color.fromARGB(255, 132, 212, 248),
+    'Horror': const Color.fromARGB(255, 237, 104, 95),
+  };
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Activity')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Reading Progress Summary", style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _infoCard("Completed", readCount),
-                _infoCard("Reading", readingCount),
-                _infoCard("To Read", toReadCount),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Text("Your reading taste", style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
-            genreCounts.isEmpty
-                ? const Text("No data available")
-                : Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Legenda a sinistra
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: genreCounts.entries.map((entry) {
-                          final genre = entry.key;
-                          final color = genreColorMap[genre] ?? Colors.grey;
+  return Scaffold(
+    appBar: AppBar(title: const Text('Activity')),
+    body: SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("Reading Progress Summary", style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: const Color.fromARGB(255, 111, 153, 241),
+            fontWeight: FontWeight.bold,
+          )),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _infoCard("Completed", readCount),
+              _infoCard("Reading", readingCount),
+              _infoCard("To Read", toReadCount),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Text("Your reading taste", style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          genreCounts.isEmpty
+              ? const Text("No data available")
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Legenda a sinistra
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: genreCounts.entries.map((entry) {
+                        final genre = entry.key;
+                        final color = genreColorMap[genre] ?? Colors.grey;
 
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                genre,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(width: 24),
+                    // Grafico a destra
+                    Expanded(
+                      child: SizedBox(
+                        height: 200,
+                        child: _GenrePieChart(data: genreCounts),
+                      ),
+                    ),
+                  ],
+                ),
+          const SizedBox(height: 24),
+          Text("Rating of completed books", style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+            Builder(
+              builder: (context) {
+                final completedBooks = allBooks
+                    .where((b) => b.userState == 'Completed' && b.rating != null)
+                    .toList()
+                  ..sort((a, b) => (b.rating ?? 0).compareTo(a.rating ?? 0));
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (completedBooks.isEmpty)
+                      const Text(
+                        "No completed books yet",
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      )
+                    else
+                      ...completedBooks.map((book) => Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
                             child: Row(
-                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: color,
-                                    shape: BoxShape.circle,
+                                Expanded(
+                                  child: Text(
+                                    book.title,
+                                    style: const TextStyle(fontSize: 14),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  genre,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
+                                  '${book.rating}/5',
+                                  style: const TextStyle(fontSize: 14),
                                 ),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.star, color: Colors.amber, size: 18),
                               ],
                             ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(width: 24),
-                      // Grafico a destra
-                      Expanded(
-                        child: SizedBox(
-                          height: 200,
-                          child: _GenrePieChart(data: genreCounts),
+                          )),
+                    const SizedBox(height: 12),
+                    Text("Average:", style: Theme.of(context).textTheme.bodyLarge),
+                    Row(
+                      children: List.generate(
+                        5,
+                        (index) => Icon(
+                          index < averageRating.round() ? Icons.star : Icons.star_border,
+                          color: Colors.amber,
                         ),
                       ),
-                    ],
-                  ),
-            const SizedBox(height: 24),
-            Text("Average rating of completed books", style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Row(
-              children: List.generate(
-                5,
-                (index) => Icon(
-                  index < averageRating.round() ? Icons.star : Icons.star_border,
-                  color: Colors.amber,
-                ),
-              ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
