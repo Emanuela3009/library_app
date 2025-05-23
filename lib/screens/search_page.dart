@@ -1,3 +1,4 @@
+// IMPORT
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
@@ -15,7 +16,10 @@ class _SearchPageState extends State<SearchPage> {
   List<Book> _allBooks = [];
   List<Book> _filteredBooks = [];
 
-  // String _selectedGenre = 'All'; // ← opzionale: filtro per genere
+  String? _searchType;
+  String? _selectedStatus;
+  String? _selectedGenre;
+  int _selectedRating = -1;
 
   @override
   void initState() {
@@ -27,27 +31,54 @@ class _SearchPageState extends State<SearchPage> {
     final books = await DatabaseHelper.instance.getAllBooks();
     setState(() {
       _allBooks = books;
-      _filteredBooks = []; // inizialmente vuoto
+      _filteredBooks = [];
     });
- }
-
+  }
 
   void _filterBooks(String query) {
     final lowerQuery = query.toLowerCase();
 
     setState(() {
-      if (query.isEmpty) {
-        _filteredBooks = []; // se non stai scrivendo niente, allora niente risultati
-      } else {
-        _filteredBooks = _allBooks.where((book) {
-          final titleMatch = book.title.toLowerCase().contains(lowerQuery);
-          final authorMatch = book.author.toLowerCase().contains(lowerQuery);
-          return titleMatch || authorMatch;
+      List<Book> filtered = _allBooks;
+
+      // Filtra per testo (titolo e/o autore)
+      if (lowerQuery.isNotEmpty) {
+        filtered = filtered.where((book) {
+          final titleWords = book.title.toLowerCase().split(' ');
+          final authorWords = book.author.toLowerCase().split(' ');
+
+          switch (_searchType) {
+            case 'Title':
+              return titleWords.any((w) => w.startsWith(lowerQuery));
+            case 'Author':
+              return authorWords.any((w) => w.startsWith(lowerQuery));
+            case 'All':
+              return titleWords.any((w) => w.startsWith(lowerQuery)) ||
+                     authorWords.any((w) => w.startsWith(lowerQuery));
+            default:
+              return true;
+          }
         }).toList();
       }
+
+      // Filtra per stato
+      if (_selectedStatus != 'All') {
+        filtered = filtered.where((b) => b.userState == _selectedStatus).toList();
+      }
+
+      // Filtra per genere
+      if (_selectedGenre != 'All') {
+        filtered = filtered.where((b) => b.genre == _selectedGenre).toList();
+      }
+
+      // Filtra per rating
+      if (_selectedRating != -1) {
+        filtered = filtered.where((b) => b.rating == _selectedRating).toList();
+      }
+
+      _filteredBooks = filtered;
     });
   }
-
 
   void _clearSearch() {
     _searchController.clear();
@@ -60,22 +91,19 @@ class _SearchPageState extends State<SearchPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Search Books",
-          style: theme.textTheme.headlineLarge,
-        ),
+        title: Text("Search Books", style: theme.textTheme.headlineLarge),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Campo ricerca con lente e clear icon
+            // Campo ricerca
             TextField(
               controller: _searchController,
               onChanged: _filterBooks,
               decoration: InputDecoration(
                 hintText: 'Search by title or author',
-                prefixIcon: const Icon(Icons.search, color: Color(0xFF1E2A78), size: 28),
+                prefixIcon: const Icon(Icons.search, color: Color(0xFF1E2A78)),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear, color: Colors.grey),
@@ -86,7 +114,7 @@ class _SearchPageState extends State<SearchPage> {
                   color: const Color.fromARGB(180, 1, 30, 100),
                 ),
                 filled: true,
-                fillColor: const Color.fromARGB(20, 1, 30, 100),
+                fillColor: const Color.fromARGB(25, 4, 36, 109),
                 contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -101,38 +129,218 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
 
-            // Filtra per genere (opzionale)
-            /*
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              value: _selectedGenre,
-              decoration: const InputDecoration(labelText: 'Filter by genre'),
-              items: ['All', 'Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror']
-                  .map((genre) => DropdownMenuItem(value: genre, child: Text(genre)))
-                  .toList(),
-              onChanged: (value) {
-                setState(() => _selectedGenre = value!);
-                _filterBooks(_searchController.text);
-              },
+            const SizedBox(height: 16),
+
+            // FILTRI
+            Column(
+              children: [
+                Row(
+                  children: [
+
+                    //ricerca per tipo
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _searchType,
+                        decoration: const InputDecoration(
+                          label: Text(
+                          "Ordered by",
+                          style: TextStyle(
+                            color: Color.fromARGB(180, 1, 30, 100),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(180, 1, 30, 100),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(180, 1, 30, 100),
+                            width: 2,
+                          ),
+                        ),
+                        ),
+                        iconEnabledColor: Theme.of(context).textTheme.bodyMedium?.color,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        onChanged: (val) {
+                          setState(() {
+                            _searchType = val!;
+                            _filterBooks(_searchController.text);
+                          });
+                        },
+                        items: ['Title & Author', 'Title', 'Author', 'A-Z', 'Z-A']
+                            .map((v) => DropdownMenuItem(value: v, child: Text(v)))
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    //ricerca per stato
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedStatus,
+                        decoration: const InputDecoration(
+                          label: Text(
+                          "State",
+                          style: TextStyle(
+                            color: Color.fromARGB(180, 1, 30, 100),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(180, 1, 30, 100),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(180, 1, 30, 100),
+                            width: 2,
+                          ),
+                        ),
+                        ),
+                        iconEnabledColor: Theme.of(context).textTheme.bodyMedium?.color,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedStatus = val!;
+                            _filterBooks(_searchController.text);
+                          });
+                        },
+                        items: ['All', 'To Read', 'Reading', 'Completed']
+                            .map((v) => DropdownMenuItem(value: v, child: Text(v)))
+                            .toList(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+
+                    //ricerca per genere
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedGenre,
+                        decoration: const InputDecoration(
+                          label: Text(
+                          "Genre",
+                          style: TextStyle(
+                            color: Color.fromARGB(180, 1, 30, 100),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(180, 1, 30, 100),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(180, 1, 30, 100),
+                            width: 2,
+                          ),
+                        ),
+                        ),
+                        iconEnabledColor: Theme.of(context).textTheme.bodyMedium?.color,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedGenre = val!;
+                            _filterBooks(_searchController.text);
+                          });
+                        },
+                        items: ['All', 'Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror']
+                            .map((v) => DropdownMenuItem(value: v, child: Text(v)))
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    //ricerca per voto
+                    Expanded(
+                      child: DropdownButtonFormField<int>(
+                        value: _selectedRating == -1 ? null : _selectedRating,
+                        decoration: const InputDecoration(
+                          label: Text(
+                          "Rate",
+                          style: TextStyle(
+                            color: Color.fromARGB(180, 1, 30, 100),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(180, 1, 30, 100),
+                            width: 1.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: const Color.fromARGB(180, 1, 30, 100),
+                            width: 2,
+                          ),
+                        ),
+                        ),
+                        iconEnabledColor: Theme.of(context).textTheme.bodyMedium?.color,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedRating = val ?? -1;
+                            _filterBooks(_searchController.text);
+                          });
+                        },
+                        items: [
+                          const DropdownMenuItem(
+                            value: -1,
+                            child: Text("All"),
+                          ),
+                          ...List.generate(5, (index) {
+                            final ratingValue = index + 1;
+                            return DropdownMenuItem(
+                              value: ratingValue,
+                              child: Row(
+                                children: List.generate(
+                                  ratingValue,
+                                  (_) => const Icon(Icons.star, color: Colors.amber, size: 18),
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            */
 
-            const SizedBox(height: 20),
 
+            const SizedBox(height: 16),
+
+            // LISTA RISULTATI
             Expanded(
               child: _filteredBooks.isEmpty
                   ? Center(
-                      child: Text(
-                        'No results found',
-                        style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                      ),
+                      child: Text('No results found', style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey)),
                     )
                   : ListView.separated(
                       itemCount: _filteredBooks.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final book = _filteredBooks[index];
-
                         return GestureDetector(
                           onTap: () async {
                             await Navigator.push(
@@ -141,7 +349,7 @@ class _SearchPageState extends State<SearchPage> {
                                 builder: (_) => BookDetailPage(book: book),
                               ),
                             );
-                            _loadBooks();
+                            _loadBooks(); // ricarica dopo ritorno
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -157,7 +365,7 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                             child: Row(
                               children: [
-                                // Immagine
+                                // Copertina
                                 ClipRRect(
                                   borderRadius: const BorderRadius.only(
                                     topLeft: Radius.circular(12),
@@ -177,21 +385,17 @@ class _SearchPageState extends State<SearchPage> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          book.title,
-                                          style: theme.textTheme.titleMedium?.copyWith(
-                                            color: const Color(0xFF164EC7),
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                        Text(book.title,
+                                            style: theme.textTheme.titleMedium?.copyWith(
+                                              color: const Color(0xFF164EC7),
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis),
                                         const SizedBox(height: 4),
-                                        Text(
-                                          book.author,
-                                          style: theme.textTheme.bodyMedium?.copyWith(
-                                            color: const Color(0xFF101F83),
-                                          ),
-                                        ),
+                                        Text(book.author,
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              color: const Color(0xFF101F83),
+                                            )),
                                         const SizedBox(height: 6),
                                         Row(
                                           children: List.generate(5, (i) {
@@ -201,7 +405,7 @@ class _SearchPageState extends State<SearchPage> {
                                               size: 20,
                                             );
                                           }),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ),
