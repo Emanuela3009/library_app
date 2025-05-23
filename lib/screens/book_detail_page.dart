@@ -194,6 +194,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
         book.comment = commentController.text;
         book.rating = rating;
         book.userState = selectedState;
+        await DatabaseHelper.instance.insertBook(book);
         return true;
       },
       child: Scaffold(
@@ -210,6 +211,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 book.comment = commentController.text;
                 book.rating = rating;
                 book.userState = selectedState;
+                DatabaseHelper.instance.insertBook(book);
                 Navigator.pop(context);
               },
             ),
@@ -266,14 +268,19 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       index < rating ? Icons.star : Icons.star_border,
                       color: Colors.amber,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       setState(() {
                         rating = index + 1;
+                        widget.book.rating = rating;
                       });
+                      await DatabaseHelper.instance.insertBook(
+                        widget.book,
+                      ); // ✅ SALVA SUBITO
                     },
                   );
                 }),
               ),
+
               SizedBox(height: screenHeight * 0.02),
               TextField(
                 controller: commentController,
