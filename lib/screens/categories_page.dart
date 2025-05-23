@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../../models/category.dart';
+import '../../models/book.dart';
 import '../../data/database_helper.dart';
 import 'category_detail_page.dart';
 
@@ -13,34 +14,37 @@ class CategoriesPage extends StatefulWidget {
 
 class _CategoriesPageState extends State<CategoriesPage> {
   List<Category> categories = [];
+  List<Book> allBooks = [];
 
   @override
   void initState() {
     super.initState();
-    _loadCategories();
+    _loadData();
   }
 
-  void _loadCategories() async {
-    final loaded = await DatabaseHelper.instance.getAllCategories();
+  Future<void> _loadData() async {
+    final loadedCategories = await DatabaseHelper.instance.getAllCategories();
+    final loadedBooks = await DatabaseHelper.instance.getAllBooks();
     setState(() {
-      categories = loaded;
+      categories = loadedCategories;
+      allBooks = loadedBooks;
     });
   }
 
+  int _countBooksForCategory(Category category) {
+    return allBooks.where((book) => book.categoryId == category.id).length;
+  }
+
   Future<void> _addCategory(String name, Color color) async {
-    final newCategory = Category(
-      name: name.trim(),
-      colorValue: color.value,
-    );
+    final newCategory = Category(name: name.trim(), colorValue: color.value);
     await DatabaseHelper.instance.insertCategory(newCategory);
-    _loadCategories(); // ricarica categorie dopo inserimento
+    _loadData(); // ricarica dopo inserimento
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Titolo gestito dal tema → headlineLarge
         title: Text(
           'Categories',
           style: Theme.of(context).textTheme.headlineLarge,
@@ -58,6 +62,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
           ),
           itemBuilder: (context, index) {
             final category = categories[index];
+            final bookCount = _countBooksForCategory(category);
+
             return GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -76,14 +82,13 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       color: Colors.black12,
                       blurRadius: 4,
                       offset: Offset(0, 2),
-                    )
+                    ),
                   ],
                 ),
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Riquadro colorato al posto dell'immagine
                     Expanded(
                       child: Container(
                         width: double.infinity,
@@ -94,19 +99,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    // Nome categoria → usa il titolo dal tema
                     Text(
-                    category.name,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: const Color.fromARGB(255, 22, 78, 199), // nuovo blu per il titolo categoria
+                      category.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: const Color.fromARGB(255, 22, 78, 199),
+                      ),
                     ),
-                    ),
-                    // Sottotitolo → usa testo corpo medio dal tema
                     Text(
-                    "Category",
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: const Color.fromARGB(255, 22, 78, 199), // blu scuro
-                    ),
+                      "$bookCount book${bookCount == 1 ? '' : 's'}",
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: const Color.fromARGB(255, 22, 78, 199),
+                      ),
                     ),
                   ],
                 ),
@@ -121,7 +124,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
           child: ElevatedButton(
             onPressed: () {
               String newName = '';
-              Color newColor = const Color.fromARGB(255, 106, 147, 221);  //colore del picker
+              Color newColor = const Color.fromARGB(255, 106, 147, 221);
 
               showDialog(
                 context: context,
@@ -136,70 +139,81 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                          TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Category name',
-                            labelStyle: const TextStyle(
-                              color: Color.fromARGB(255, 19, 39, 168),
-                              fontWeight: FontWeight.w500,
-                            ),
-                            enabledBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 19, 39, 168), // linea per immettere 
-                                width: 1.5,
+                            TextField(
+                              decoration: const InputDecoration(
+                                labelText: 'Category name',
+                                labelStyle: TextStyle(
+                                  color: Color.fromARGB(255, 19, 39, 168),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 19, 39, 168),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 22, 78, 199),
+                                    width: 2,
+                                  ),
+                                ),
                               ),
+                              onChanged: (value) => newName = value,
                             ),
-                            focusedBorder: const UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Color.fromARGB(255, 22, 78, 199), // la stessa linea ma più spessa quando ci clicchiamo sopra per immettere il testo
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          onChanged: (value) => newName = value,
-                        ),
-
                             const SizedBox(height: 16),
                             ListTile(
                               title: Text(
                                 'Pick a color',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontSize: 18, // più grande di bodyMedium
-                                fontWeight: FontWeight.bold,
-                                color: const Color.fromARGB(255, 22, 78, 199),
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.copyWith(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color.fromARGB(255, 22, 78, 199),
                                 ),
                               ),
-                              trailing: CircleAvatar(  //cerchio per selezionare il colore dalla palette
-                                backgroundColor: newColor,
-                              ),
+                              trailing: CircleAvatar(backgroundColor: newColor),
                               onTap: () {
                                 showDialog(
                                   context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: Text(
-                                      'Choose a color',
-                                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                        color: const Color.fromARGB(255, 30, 42, 120), // blu scuro
-                                      ),
-                                    ),
-                                    content: SingleChildScrollView(
-                                      child: ColorPicker(
-                                        pickerColor: newColor,
-                                        onColorChanged: (color) {
-                                          setState(() => newColor = color);
-                                        },
-                                      ),
-                                    ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.pop(context),
-                                          child: Text(
-                                            'OK',
-                                            style: Theme.of(context).textTheme.labelSmall,
+                                  builder:
+                                      (context) => AlertDialog(
+                                        title: Text(
+                                          'Choose a color',
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleMedium?.copyWith(
+                                            color: const Color.fromARGB(
+                                              255,
+                                              30,
+                                              42,
+                                              120,
+                                            ),
                                           ),
-                                        )
-                                      ],
-                                  ),
+                                        ),
+                                        content: SingleChildScrollView(
+                                          child: ColorPicker(
+                                            pickerColor: newColor,
+                                            onColorChanged: (color) {
+                                              setState(() => newColor = color);
+                                            },
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.pop(context),
+                                            child: Text(
+                                              'OK',
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.labelSmall,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                 );
                               },
                             ),
@@ -208,17 +222,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       },
                     ),
                     actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'Cancel',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: const Color.fromARGB(255, 22, 78, 199), 
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Cancel',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge?.copyWith(
+                            color: const Color.fromARGB(255, 22, 78, 199),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-
- 
                       ElevatedButton(
                         onPressed: () async {
                           if (newName.trim().isEmpty) return;
@@ -232,7 +246,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 },
               );
             },
-            // Il resto già prende stile dal tema globale per i pulsanti
             child: const Text(
               "Create Category",
               style: TextStyle(fontWeight: FontWeight.bold),
