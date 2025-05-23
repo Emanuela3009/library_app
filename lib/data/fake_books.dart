@@ -5,7 +5,7 @@ final List<Book> popularBooks = [
   Book(
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
-    genre: "Classic",
+    genre: "Horror",
     plot: "A mysterious millionaire throws lavish parties in the 1920s.",
     imagePath: "assets/books/ok.jpg",
     rating: 0,
@@ -25,7 +25,7 @@ final List<Book> popularBooks = [
   Book(
     title: "1984",
     author: "George Orwell",
-    genre: "Dystopian",
+    genre: "Adventure",
     plot: "A man lives under constant surveillance in a totalitarian regime.",
     imagePath: "assets/books/ok.jpg",
     rating: 0,
