@@ -10,6 +10,7 @@ final List<Book> popularBooks = [
     imagePath: "assets/books/ok.jpg",
     rating: 0,
     userState: "To Read",
+    isUserBook: false,
   ),
   Book(
     title: "Harry Potter and the Philosopher's Stone",
@@ -19,6 +20,7 @@ final List<Book> popularBooks = [
     imagePath: "assets/books/ok.jpg",
     rating: 0,
     userState: "To Read",
+    isUserBook: false,
   ),
   Book(
     title: "1984",
@@ -28,5 +30,6 @@ final List<Book> popularBooks = [
     imagePath: "assets/books/ok.jpg",
     rating: 0,
     userState: "To Read",
+    isUserBook: false,
   ),
 ];

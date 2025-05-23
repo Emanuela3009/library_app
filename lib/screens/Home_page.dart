@@ -46,7 +46,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Book Library"),
-        leading: InkWell(
+        leading: (_currentIndex == 2 || _currentIndex == 3)
+        ? InkWell(
           borderRadius: BorderRadius.circular(100),
           splashColor: const Color.fromARGB(255, 106, 147, 221),
           onTap: () {
@@ -64,7 +65,8 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.all(10),
             child: Icon(Icons.add),
           ),
-        ),
+        )
+        :null,
       ),
       body: _getScreen(_currentIndex),
       bottomNavigationBar: BottomNavBar(

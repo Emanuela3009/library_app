@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
     final popularBooks = allBooks.take(3).toList();
-    final userBooks = allBooks.where((b) => b.userState != null).toList();
+    final userBooks = allBooks.where((b) => b.isUserBook == true).toList();
 
     return SingleChildScrollView(
       child: Column(     //allina verticalmente 
