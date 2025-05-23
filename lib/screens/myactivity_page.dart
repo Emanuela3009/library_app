@@ -25,30 +25,43 @@ class _MyActivityPageState extends State<MyActivityPage> {
   }
 
   Future<void> _loadStats() async {
-    final books = await DatabaseHelper.instance.getAllBooks();
-    allBooks = books;
+  final books = await DatabaseHelper.instance.getAllBooks();
+  allBooks = books;
 
-    readCount = books.where((b) => b.userState == 'Read').length;
-    readingCount = books.where((b) => b.userState == 'Reading').length;
-    toReadCount = books.where((b) => b.userState == 'To Read').length;
+  //Conteggi per stato 
+  readCount = books.where((b) => b.userState == 'Completed').length;
+  readingCount = books.where((b) => b.userState == 'Reading').length;
+  toReadCount = books.where((b) => b.userState == 'To Read').length;
 
-    final readBooks = books.where((b) => b.userState == 'Read').toList();
-    if (readBooks.isNotEmpty) {
-      final ratings = readBooks.map((b) => b.rating ?? 0).toList();
-      averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
-    }
-
-    // Conteggio per genere solo dei libri letti
-    genreCounts.clear();
-    for (var book in readBooks) {
-      genreCounts[book.genre] = (genreCounts[book.genre] ?? 0) + 1;
-    }
-
-    setState(() {});
+  //Valutazione media solo dei libri completati
+  final completedBooks = books.where((b) => b.userState == 'Completed').toList();
+  if (completedBooks.isNotEmpty) {
+    final ratings = completedBooks.map((b) => b.rating ?? 0).toList();
+    averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
   }
+
+  //Distribuzione per genere: TUTTI i libri presenti
+  genreCounts.clear();
+  for (var book in books) {
+    final genre = book.genre?.trim();
+    if (genre != null && genre.isNotEmpty) {
+      genreCounts[genre] = (genreCounts[genre] ?? 0) + 1;
+    }
+  }
+
+  setState(() {});
+}
 
   @override
   Widget build(BuildContext context) {
+    final genreColorMap = {
+      'Fantasy': const Color.fromARGB(255, 174, 147, 221),
+      'Romance': const Color.fromARGB(255, 236, 106, 149),
+      'Adventure': Colors.orange,
+      'Sci-Fi': const Color.fromARGB(255, 132, 212, 248),
+      'Horror': const Color.fromARGB(255, 237, 104, 95),
+    };
+
     return Scaffold(
       appBar: AppBar(title: const Text('Activity')),
       body: SingleChildScrollView(
@@ -62,8 +75,8 @@ class _MyActivityPageState extends State<MyActivityPage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _infoCard("Completed", readCount),
-                _infoCard("Currently reading", readingCount),
-                _infoCard("To read", toReadCount),
+                _infoCard("Reading", readingCount),
+                _infoCard("To Read", toReadCount),
               ],
             ),
             const SizedBox(height: 24),
@@ -71,7 +84,52 @@ class _MyActivityPageState extends State<MyActivityPage> {
             const SizedBox(height: 12),
             genreCounts.isEmpty
                 ? const Text("No data available")
-                : SizedBox(height: 200, child: _GenrePieChart(data: genreCounts)),
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Legenda a sinistra
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: genreCounts.entries.map((entry) {
+                          final genre = entry.key;
+                          final color = genreColorMap[genre] ?? Colors.grey;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 10,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: color,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  genre,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(width: 24),
+                      // Grafico a destra
+                      Expanded(
+                        child: SizedBox(
+                          height: 200,
+                          child: _GenrePieChart(data: genreCounts),
+                        ),
+                      ),
+                    ],
+                  ),
             const SizedBox(height: 24),
             Text("Average rating of completed books", style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
@@ -113,7 +171,13 @@ class _GenrePieChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final total = data.values.fold(0, (a, b) => a + b).toDouble();
-    final colors = [Colors.blue, Colors.green, Colors.purple, Colors.orange, Colors.red];
+    final genreColorMap = {
+      'Fantasy': const Color.fromARGB(255, 174, 147, 221),
+      'Romance': const Color.fromARGB(255, 236, 106, 149),
+      'Adventure': Colors.orange,
+      'Sci-Fi': const Color.fromARGB(255, 132, 212, 248),
+      'Horror': const Color.fromARGB(255, 237, 104, 95),
+    };
 
     return PieChart(
       PieChartData(
@@ -124,10 +188,15 @@ class _GenrePieChart extends StatelessWidget {
           final percent = (value / total * 100).toStringAsFixed(1);
           return PieChartSectionData(
             value: value.toDouble(),
-            title: '$genre\n$percent%',
+            title: '$percent%',
             radius: 60,
-            color: colors[index % colors.length],
-            titleStyle: const TextStyle(fontSize: 12),
+            color: genreColorMap[genre] ?? Colors.grey,
+            titleStyle: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.underline, // Sottolineato
+              color: Colors.black, // Visibile su sfondi colorati
+),
           );
         }).toList(),
       ),
