@@ -81,13 +81,26 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.asset(
-                                  book.imagePath,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.asset(
+                                      book.imagePath,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 6,
+                                    right: 6,
+                                    child: Icon(
+                                      book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                                      color: book.isFavorite ? Colors.pink : Colors.grey,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(height: 8),
