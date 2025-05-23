@@ -9,7 +9,8 @@ class Book {
   int? rating;
   String? userState;
   int? categoryId;
-  bool isUserBook; // ✅ CAMPO AGGIUNTO
+  bool isUserBook; 
+  bool isFavorite;
 
   Book({
     this.id,
@@ -23,6 +24,7 @@ class Book {
     this.userState,
     this.categoryId,
     this.isUserBook = false,
+    this.isFavorite = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -37,6 +39,7 @@ class Book {
       'userState': userState,
       'categoryId': categoryId,
       'isUserBook': isUserBook ? 1 : 0,
+      'isFavorite': isFavorite ? 1 : 0,
     };
     if (id != null) map['id'] = id;
     return map;
@@ -55,6 +58,7 @@ class Book {
       userState: map['userState'],
       categoryId: map['categoryId'],
       isUserBook: (map['isUserBook'] ?? 0) == 1,
+      isFavorite: map['isFavorite'] == 1,
     );
   }
 }
