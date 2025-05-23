@@ -29,10 +29,25 @@ class BookCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: AspectRatio(
-                aspectRatio: 3 / 4.5, 
-                child: Image.asset(
-                  book.imagePath,
-                  fit: BoxFit.contain,
+                aspectRatio: 3 / 4.5,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      book.imagePath,
+                      fit: BoxFit.cover,
+                    ),
+                    Positioned(
+                      top: 6,
+                      right: 6,
+                      child: Icon(
+                        book.isFavorite == true ? Icons.favorite : Icons.favorite_border,
+                        color: book.isFavorite == true ? Colors.red : Colors.grey,
+                        
+                        size: 20,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
