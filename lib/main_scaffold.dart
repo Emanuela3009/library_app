@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../screens/categories_page.dart'; 
+import '../screens/myactivity_page.dart';
 
 
 class MainScaffold extends StatefulWidget {
@@ -17,6 +18,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     Center(child: Text('Home Screen')),
     const CategoriesPage(),
     Center(child: Text('Library Screen')),
+    const MyActivityPage(),
   ];
 
   void _onItemTapped(int index) {

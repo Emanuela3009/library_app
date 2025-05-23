@@ -5,6 +5,7 @@ import 'home_screen.dart';
 import 'categories_page.dart';
 import 'search_page.dart';
 import 'library_page.dart';
+import 'myactivity_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
       case 3:
         return const LibraryPage();
       case 4:
-        return const Center(child: Text('Activity'));
+        return const MyActivityPage();
       default:
         return const HomeScreen();
     }
