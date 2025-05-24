@@ -38,137 +38,197 @@ class _BookDetailPageState extends State<BookDetailPage> {
   }
 
   void _showCategoryDialog(BuildContext context) {
-    final theme = Theme.of(context);
     Category? selectedCategory;
     String newCategoryName = '';
-    Color selectedColor = Colors.grey.shade400;
+    Color selectedColor = Colors.blueGrey;
+    String? errorText;
 
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
+        return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
           ),
-          backgroundColor: Colors.white,
-          title: Text(
-            'Choose or Create Category',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1E2A78),
-            ),
-          ),
-          content: StatefulBuilder(
-            builder: (context, setState) {
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DropdownButtonFormField<Category>(
-                      value: selectedCategory,
-                      hint: Text(
-                        'Select existing category',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                      decoration: const InputDecoration(
-                        border: UnderlineInputBorder(),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF1E2A78),
-                            width: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          'Choose or Create Category',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1E2A78),
                           ),
                         ),
                       ),
-                      items:
-                          allCategories.map((cat) {
-                            return DropdownMenuItem<Category>(
-                              value: cat,
-                              child: Text(cat.name),
-                            );
-                          }).toList(),
-                      onChanged:
-                          (val) => setState(() => selectedCategory = val),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'New category name',
-                      ),
-                      onChanged: (value) => newCategoryName = value,
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Text("Color: "),
-                        CircleAvatar(backgroundColor: selectedColor),
-                        const SizedBox(width: 10),
-                        TextButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text("Pick a color"),
-                                  content: SingleChildScrollView(
-                                    child: BlockPicker(
-                                      pickerColor: selectedColor,
-                                      onColorChanged: (color) {
-                                        setState(() => selectedColor = color);
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: const Text("Choose"),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Select existing category',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (selectedCategory == null &&
-                    newCategoryName.trim().isNotEmpty) {
-                  final newCat = Category(
-                    name: newCategoryName.trim(),
-                    colorValue: selectedColor.value,
-                  );
-                  final id = await DatabaseHelper.instance.insertCategory(
-                    newCat,
-                  );
-                  widget.book.categoryId = id;
-                } else if (selectedCategory != null) {
-                  widget.book.categoryId = selectedCategory!.id;
-                }
+                      ),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<Category>(
+                        value: selectedCategory,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 14,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items:
+                            allCategories
+                                .map(
+                                  (cat) => DropdownMenuItem(
+                                    value: cat,
+                                    child: Text(cat.name),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged:
+                            (val) => setState(() => selectedCategory = val),
+                      ),
+                      const SizedBox(height: 20),
+                      Divider(thickness: 1, color: Colors.grey[300]),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Create new category',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Enter new category name',
+                          errorText: errorText,
+                          filled: true,
+                          fillColor: Colors.grey.shade100,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onChanged: (val) {
+                          newCategoryName = val;
+                          final exists = allCategories.any(
+                            (c) =>
+                                c.name.trim().toLowerCase() ==
+                                newCategoryName.trim().toLowerCase(),
+                          );
+                          setState(() {
+                            errorText =
+                                exists
+                                    ? 'A category with this name already exists'
+                                    : null;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const Text('Color:'),
+                          const SizedBox(width: 8),
+                          CircleAvatar(
+                            backgroundColor: selectedColor,
+                            radius: 12,
+                          ),
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder:
+                                    (_) => AlertDialog(
+                                      title: const Text('Pick a color'),
+                                      content: BlockPicker(
+                                        pickerColor: selectedColor,
+                                        onColorChanged: (color) {
+                                          setState(() => selectedColor = color);
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ),
+                              );
+                            },
+                            child: const Text('Choose'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          const SizedBox(width: 12),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (selectedCategory == null &&
+                                  newCategoryName.trim().isNotEmpty &&
+                                  errorText == null) {
+                                final newCat = Category(
+                                  name: newCategoryName.trim(),
+                                  colorValue: selectedColor.value,
+                                );
+                                final id = await DatabaseHelper.instance
+                                    .insertCategory(newCat);
+                                widget.book.categoryId = id;
+                              } else if (selectedCategory != null) {
+                                widget.book.categoryId = selectedCategory!.id;
+                              } else {
+                                return;
+                              }
 
-                await DatabaseHelper.instance.insertBook(widget.book);
-                Navigator.pop(context);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Book assigned to ${selectedCategory?.name ?? newCategoryName}',
-                    ),
+                              await DatabaseHelper.instance.insertBook(
+                                widget.book,
+                              );
+                              if (!context.mounted) return;
+                              Navigator.pop(context);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Book added to "${selectedCategory?.name ?? newCategoryName}"',
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF1E2A78),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                            ),
+                            child: const Text('Save'),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 );
               },
-              child: const Text("Save"),
             ),
-          ],
+          ),
         );
       },
     );
@@ -178,7 +238,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
+          (_) => AlertDialog(
             title: const Text("Delete Book"),
             content: const Text("Are you sure you want to delete this book?"),
             actions: [
@@ -187,15 +247,16 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 child: const Text("Cancel"),
               ),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 onPressed: () async {
                   await DatabaseHelper.instance.deleteBook(widget.book.id!);
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(
                     context,
                   ).showSnackBar(const SnackBar(content: Text("Book deleted")));
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: const Text("Delete"),
               ),
             ],
@@ -231,26 +292,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 icon: const Icon(Icons.delete),
                 onPressed: _confirmDelete,
               ),
-            
-            IconButton(
-              icon: Icon(
-                widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: Colors.pink,
-              ),
-              onPressed: () async {
-                setState(() {
-                  widget.book.isFavorite = !widget.book.isFavorite;
-                });
-                await DatabaseHelper.instance.insertBook(widget.book);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(widget.book.isFavorite
-                      ? 'Added to favorites'
-                      : 'Removed from favorites'),
-                  ),
-                );
-              },
-            ),
             IconButton(
               icon: const Icon(Icons.close),
               onPressed: () {
@@ -270,44 +311,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
           ),
           child: ListView(
             children: [
-              Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    book.imagePath,
-                    height: screenHeight * 0.4,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  book.imagePath,
+                  height: screenHeight * 0.4,
+                  fit: BoxFit.cover,
                 ),
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(100),
-                    onTap: () async {
-                      setState(() {
-                        widget.book.isFavorite = !widget.book.isFavorite;
-                      });
-                      await DatabaseHelper.instance.insertBook(widget.book);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(widget.book.isFavorite
-                              ? 'Added to favorites'
-                              : 'Removed from favorites'),
-                        ),
-                      );
-                    },
-                    child: Icon(
-                      widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: Colors.pink,
-                      size: 28,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
               const SizedBox(height: 16),
               Center(
                 child: Column(
@@ -315,7 +326,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     Text(
                       book.title,
                       style: Theme.of(context).textTheme.titleMedium,
-                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -337,7 +347,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: List.generate(5, (index) {
                   return IconButton(
                     icon: Icon(
@@ -376,11 +385,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           ),
                         )
                         .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedState = value!;
-                  });
-                },
+                onChanged: (val) => setState(() => selectedState = val!),
                 decoration: const InputDecoration(border: OutlineInputBorder()),
               ),
               const SizedBox(height: 20),

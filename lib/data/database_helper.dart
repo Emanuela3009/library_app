@@ -111,4 +111,9 @@ class DatabaseHelper {
     final db = await database;
     await db.delete('books', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<int> deleteCategory(int id) async {
+    final db = await database;
+    return await db.delete('categories', where: 'id = ?', whereArgs: [id]);
+  }
 }

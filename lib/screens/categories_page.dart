@@ -35,14 +35,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
     return allBooks.where((book) => book.categoryId == category.id).length;
   }
 
-  Future<void> _addCategory(String name, Color color) async {
-    final newCategory = Category(name: name.trim(), colorValue: color.value);
-    await DatabaseHelper.instance.insertCategory(newCategory);
-    _loadData(); // ricarica dopo inserimento
-  }
-
   @override
   Widget build(BuildContext context) {
+    String newName = '';
+    Color newColor = const Color.fromARGB(255, 106, 147, 221);
+    String? errorText;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -63,15 +61,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
           itemBuilder: (context, index) {
             final category = categories[index];
             final bookCount = _countBooksForCategory(category);
-
             return GestureDetector(
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final wasDeleted = await Navigator.push<bool>(
                   context,
                   MaterialPageRoute(
                     builder: (_) => CategoryDetailPage(category: category),
                   ),
                 );
+
+                if (wasDeleted == true) {
+                  await _loadData(); // 🔁 aggiorna la lista dopo eliminazione
+                }
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -123,125 +124,86 @@ class _CategoriesPageState extends State<CategoriesPage> {
           padding: const EdgeInsets.all(12),
           child: ElevatedButton(
             onPressed: () {
-              String newName = '';
-              Color newColor = const Color.fromARGB(255, 106, 147, 221);
-
+              errorText = null;
               showDialog(
                 context: context,
                 builder: (context) {
-                  return AlertDialog(
-                    title: Text(
-                      'New Category',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    content: StatefulBuilder(
-                      builder: (context, setState) {
-                        return Column(
+                  return StatefulBuilder(
+                    builder: (context, setState) {
+                      return AlertDialog(
+                        title: const Text('New Category'),
+                        content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TextField(
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Category name',
-                                labelStyle: TextStyle(
-                                  color: Color.fromARGB(255, 19, 39, 168),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 19, 39, 168),
-                                    width: 1.5,
-                                  ),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Color.fromARGB(255, 22, 78, 199),
-                                    width: 2,
-                                  ),
-                                ),
+                                errorText: errorText,
                               ),
-                              onChanged: (value) => newName = value,
+                              onChanged: (value) {
+                                newName = value;
+                                final exists = categories.any(
+                                  (c) =>
+                                      c.name.trim().toLowerCase() ==
+                                      value.trim().toLowerCase(),
+                                );
+                                setState(() {
+                                  errorText =
+                                      exists
+                                          ? 'A category with this name already exists'
+                                          : null;
+                                });
+                              },
                             ),
                             const SizedBox(height: 16),
                             ListTile(
-                              title: Text(
-                                'Pick a color',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium?.copyWith(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color.fromARGB(255, 22, 78, 199),
-                                ),
-                              ),
+                              title: const Text('Pick a color'),
                               trailing: CircleAvatar(backgroundColor: newColor),
                               onTap: () {
                                 showDialog(
                                   context: context,
                                   builder:
                                       (context) => AlertDialog(
-                                        title: Text(
-                                          'Choose a color',
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.titleMedium?.copyWith(
-                                            color: const Color.fromARGB(
-                                              255,
-                                              30,
-                                              42,
-                                              120,
-                                            ),
-                                          ),
-                                        ),
+                                        title: const Text('Choose a color'),
                                         content: SingleChildScrollView(
-                                          child: ColorPicker(
+                                          child: BlockPicker(
                                             pickerColor: newColor,
                                             onColorChanged: (color) {
                                               setState(() => newColor = color);
+                                              Navigator.pop(context);
                                             },
                                           ),
                                         ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed:
-                                                () => Navigator.pop(context),
-                                            child: Text(
-                                              'OK',
-                                              style:
-                                                  Theme.of(
-                                                    context,
-                                                  ).textTheme.labelSmall,
-                                            ),
-                                          ),
-                                        ],
                                       ),
                                 );
                               },
                             ),
                           ],
-                        );
-                      },
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(
-                          'Cancel',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyLarge?.copyWith(
-                            color: const Color.fromARGB(255, 22, 78, 199),
-                          ),
                         ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (newName.trim().isEmpty) return;
-                          await _addCategory(newName, newColor);
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Create'),
-                      ),
-                    ],
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (newName.trim().isEmpty || errorText != null)
+                                return;
+                              final newCategory = Category(
+                                name: newName.trim(),
+                                colorValue: newColor.value,
+                              );
+                              await DatabaseHelper.instance.insertCategory(
+                                newCategory,
+                              );
+                              await _loadData();
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Create'),
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               );
