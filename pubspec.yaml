@@ -119,5 +119,5 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/icon/Logo_def.png"  # ← percorso della tua icona
-  min_sdk_android: 21  # se usi Android minSdk 21+
+  image_path: "assets/icon/Logo_def.png"  
+  min_sdk_android: 21  
