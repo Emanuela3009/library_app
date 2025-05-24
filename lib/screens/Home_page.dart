@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_app/screens/favorites_page.dart';
 import '../widgets/bottom_nav_bar.dart';
 import 'addbook.dart';
 import 'home_screen.dart';
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
       case 2:
         return HomeScreen(key: ValueKey(_homeScreenKey));
       case 3:
-        return const LibraryPage();
+        return const FavoritesPage();
       case 4:
         return const MyActivityPage();
       default:
