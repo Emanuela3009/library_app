@@ -1,52 +1,53 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class BottomNavBar extends StatelessWidget {
-  // Indice della pagina selezionata
   final int currentIndex;
-
-  // Funzione da chiamare quando l'utente tocca un'icona
   final Function(int) onTap;
 
-  // Costruttore con parametri obbligatori
   const BottomNavBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed, // fissa tutte le icone
-      backgroundColor:const Color.fromARGB(255, 30, 42, 120), // colore della barra è blu scuro
-      selectedItemColor: Colors.white,    // l’elemento selezionato è bianco
-      unselectedItemColor: const Color.fromARGB(255, 143, 170, 220), // gli elementi non selezionati sono azzurri
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: Colors.white,
+      selectedItemColor: Colors.black,
+      unselectedItemColor: Colors.grey.shade500,
       selectedFontSize: 12,
       unselectedFontSize: 12,
       iconSize: 26,
       showUnselectedLabels: true,
-      currentIndex: currentIndex, // evidenzia la voce attuale
-      onTap: onTap, // esegue la funzione specifica passata quando clicchi su un'icona 
+      currentIndex: currentIndex,
+      onTap: onTap,
       items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
+          activeIcon: Icon(Icons.search),
           label: 'Search',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.folder_open),
+          icon: Icon(CupertinoIcons.collections),
+          activeIcon: Icon(CupertinoIcons.collections_solid),
           label: 'Categories',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
+          icon: Icon(CupertinoIcons.house_fill),
+          activeIcon: Icon(CupertinoIcons.house_fill),
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
+          icon: Icon(CupertinoIcons.heart),
+          activeIcon: Icon(CupertinoIcons.heart_fill),
           label: 'Favorites',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.bar_chart),
+          activeIcon: Icon(Icons.bar_chart),
           label: 'Activity',
         ),
       ],
