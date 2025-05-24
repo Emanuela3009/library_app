@@ -43,7 +43,7 @@ class BottomNavBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.favorite),
-          label: 'Favourites',
+          label: 'Favorites',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.bar_chart),
