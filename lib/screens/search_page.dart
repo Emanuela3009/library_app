@@ -48,20 +48,34 @@ class _SearchPageState extends State<SearchPage> {
     // Se c'è una query, filtra per titolo/autore
     if (lowerQuery.isNotEmpty) {
       filtered = filtered.where((book) {
-        final titleMatch = book.title.toLowerCase().contains(lowerQuery);
-        final authorMatch = book.author.toLowerCase().contains(lowerQuery);
+      final titleWords = book.title.toLowerCase().split(' ');
+      final authorWords = book.author.toLowerCase().split(' ');
+      final queryWords = lowerQuery.split(' ');
 
+      bool startsWithOrdered(List<String> sourceWords, List<String> queryWords) {
+        if (queryWords.length > sourceWords.length) return false;
 
-        switch (_searchType) {
-          case 'Title':
-            return titleMatch;
-          case 'Author':
-            return authorMatch;
-          case 'All':
-          default:
-            return titleMatch || authorMatch;
+        for (int i = 0; i < queryWords.length; i++) {
+          if (!sourceWords[i].startsWith(queryWords[i])) {
+            return false;
+          }
         }
-      }).toList();
+        return true;
+      }
+
+      final titleMatch = startsWithOrdered(titleWords, queryWords);
+      final authorMatch = startsWithOrdered(authorWords, queryWords);
+
+      switch (_searchType) {
+        case 'Title':
+          return titleMatch;
+        case 'Author':
+          return authorMatch;
+        case 'All':
+        default:
+          return titleMatch || authorMatch;
+      }
+    }).toList();
     }
 
     // Applica i filtri (se presenti)
