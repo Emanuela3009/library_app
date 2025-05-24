@@ -11,6 +11,7 @@ class Book {
   int? categoryId;
   bool isUserBook; 
   bool isFavorite;
+  DateTime? dateCompleted;
 
   Book({
     this.id,
@@ -25,6 +26,7 @@ class Book {
     this.categoryId,
     this.isUserBook = false,
     this.isFavorite = false,
+    this.dateCompleted,
   });
 
   Map<String, dynamic> toMap() {
@@ -40,6 +42,7 @@ class Book {
       'categoryId': categoryId,
       'isUserBook': isUserBook ? 1 : 0,
       'isFavorite': isFavorite ? 1 : 0,
+      'dateCompleted': dateCompleted?.toIso8601String(),
     };
     if (id != null) map['id'] = id;
     return map;
@@ -59,6 +62,7 @@ class Book {
       categoryId: map['categoryId'],
       isUserBook: (map['isUserBook'] ?? 0) == 1,
       isFavorite: map['isFavorite'] == 1,
+      dateCompleted: map['dateCompleted'] != null ? DateTime.parse(map['dateCompleted']) : null,
     );
   }
 }

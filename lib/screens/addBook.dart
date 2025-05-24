@@ -175,6 +175,8 @@ class _AddBookPageState extends State<AddBookPage> {
                           'assets/books/placeholder.jpg',
                       userState: selectedState,
                       isUserBook: true, // ✅ IMPORTANTE
+                      rating: 0,
+                      dateCompleted: selectedState == 'Completed' ? DateTime.now() : null,
                     );
                     await DatabaseHelper.instance.insertBook(newBook);
                     Navigator.pop(context);

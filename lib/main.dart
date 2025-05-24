@@ -7,6 +7,7 @@ import 'data/fake_books.dart';
 import 'data/fake_categories.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'models/book.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,19 @@ void main() async {
   }
 
   await DatabaseHelper.instance.database;
+  await DatabaseHelper.instance.insertBook(
+    Book(
+      title: 'Test Book Aprile',
+      author: 'Debug',
+      genre: 'Fantasy',
+      plot: 'Inserito manualmente per test',
+      imagePath: 'assets/books/placeholder.jpg',
+      userState: 'Completed',
+      rating: 5,
+      isUserBook: true,
+      dateCompleted: DateTime(2025, 4, 15), // ✅ aprile 2025!
+    ),
+  );
   await DatabaseHelper.instance.populateInitialBooks(popularBooks);
   await DatabaseHelper.instance.populateInitialCategories(fakeCategories);
 

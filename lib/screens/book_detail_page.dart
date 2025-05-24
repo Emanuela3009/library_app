@@ -216,6 +216,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
       onWillPop: () async {
         book.comment = commentController.text;
         book.rating = rating;
+        if (selectedState == 'Completed' && book.userState != 'Completed') {
+          book.dateCompleted = DateTime.now();
+        }
         book.userState = selectedState;
         await DatabaseHelper.instance.insertBook(book);
         return true;
@@ -230,6 +233,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
               onPressed: () {
                 book.comment = commentController.text;
                 book.rating = rating;
+                if (selectedState == 'Completed' && book.userState != 'Completed') {
+                  book.dateCompleted = DateTime.now();
+                }
                 book.userState = selectedState;
                 DatabaseHelper.instance.insertBook(book);
                 Navigator.pop(context);

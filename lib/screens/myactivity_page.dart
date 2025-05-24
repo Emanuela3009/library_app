@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
+import 'package:intl/intl.dart';
+
 
 class MyActivityPage extends StatefulWidget {
   const MyActivityPage({super.key});
@@ -17,6 +19,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
   int toReadCount = 0;
   double averageRating = 0.0;
   Map<String, int> genreCounts = {};
+  Map<String, int> booksPerMonth = {};
 
   @override
   void initState() {
@@ -49,7 +52,19 @@ class _MyActivityPageState extends State<MyActivityPage> {
     }
   }
 
+  // Conteggio libri letti per mese/anno
+  booksPerMonth.clear();
+  final completedBooksWithDate = books
+      .where((b) => b.userState == 'Completed' && b.dateCompleted != null)
+      .toList();
+
+  for (var book in completedBooksWithDate) {
+    final key = DateFormat('yyyy-MM').format(book.dateCompleted!);
+    booksPerMonth[key] = (booksPerMonth[key] ?? 0) + 1;
+  }
+
   setState(() {});
+
 }
 
   @override
@@ -183,6 +198,88 @@ Widget build(BuildContext context) {
                           color: Colors.amber,
                         ),
                       ),
+                    ),
+                    Text("Books read per month", style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 12),
+                    Builder(
+                      builder: (context) {
+                        // Mesi fissi (da gennaio a dicembre)
+                        final months = List.generate(12, (index) {
+                          final monthNumber = index + 1;
+                          return DateFormat('yyyy-MM').format(DateTime(DateTime.now().year, monthNumber));
+                        });
+
+                        // Popola i valori anche con 0 se un mese non c'è
+                        final completedMap = <String, int>{};
+                        for (var month in months) {
+                          completedMap[month] = booksPerMonth[month] ?? 0;
+                        }
+
+                        final spots = completedMap.entries.toList().asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final count = entry.value.value.toDouble();
+                          return FlSpot(index.toDouble(), count);
+                        }).toList();
+
+                        final maxY = completedMap.values.reduce((a, b) => a > b ? a : b);
+                        final upperBound = (maxY <= 5) ? 5 : ((maxY / 5).ceil() * 5);
+
+                        return SizedBox(
+                          height: 260,
+                          child: LineChart(
+                            LineChartData(
+                              minY: 0,
+                              maxY: upperBound.toDouble(),
+                              titlesData: FlTitlesData(
+                                leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    interval: 5,
+                                    reservedSize: 30,
+                                    getTitlesWidget: (value, meta) => Text(value.toInt().toString()),
+                                  ),
+                                ),
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    getTitlesWidget: (value, meta) {
+                                      final index = value.toInt();
+                                      if (index >= 0 && index < months.length) {
+                                        final date = DateFormat('yyyy-MM').parse(months[index]);
+                                        return Text(DateFormat('MMM', 'en_US').format(date), style: const TextStyle(fontSize: 10));
+                                      }
+                                      return const Text('');
+                                    },
+                                  ),
+                                ),
+                                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                              ),
+                              borderData: FlBorderData(
+                                show: true,
+                                border: const Border(
+                                  bottom: BorderSide(color: Colors.grey), // mostra solo sotto
+                                  top: BorderSide.none,
+                                  left: BorderSide.none,
+                                  right: BorderSide.none,
+                                ),
+                              ),
+                              gridData: FlGridData(show: true),
+                              lineBarsData: [
+                                LineChartBarData(
+                                  spots: spots,
+                                  isCurved: false,
+                                  color: const Color.fromARGB(255, 42, 43, 43),
+                                  barWidth: 3,
+                                  dotData: FlDotData(show: true),
+                                  belowBarData: BarAreaData(show: false),
+                                ),
+                              ],
+                              lineTouchData: LineTouchData(enabled: false),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 );
