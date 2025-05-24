@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
 import '../widgets/book_card.dart';
+import 'library_page.dart';
+import 'favorites_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-
-@override
+  @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
   List<Book> allBooks = [];
-  
+
   @override
   void initState() {
     super.initState();
@@ -30,72 +30,118 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
+    final readingBooks =
+        allBooks.where((b) => b.userState == 'Reading').toList();
     final popularBooks = allBooks.take(3).toList();
     final userBooks = allBooks.where((b) => b.isUserBook == true).toList();
+    final favoriteBooks = allBooks.where((b) => b.isFavorite).toList();
 
     return SingleChildScrollView(
-      child: Column(     //allina verticalmente 
-        crossAxisAlignment: CrossAxisAlignment.start,  //allinea a sinistra 
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          //Currently Reading
-          Padding(
-            padding: const EdgeInsets.all(16),   //inserisce padding all interno del widget 
-            child: Text("Currently reading", style: Theme.of(context).textTheme.titleMedium),
-          ),
-          
-          SizedBox(
-          height: 240,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: readingBooks.length, // o una lista "readingBooks"
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemBuilder: (context, index) => BookCard(
-              book: readingBooks[index],
-              onUpdate: _loadBooksFromDatabase, // callback passata
-            ),
-          ),
-        ),
-          
-         
-
-          //Popular Now
+          // Currently Reading
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text("Popular now", style: Theme.of(context).textTheme.titleMedium),
+            child: Text(
+              "Currently reading",
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ),
           SizedBox(
-          height: 240,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: popularBooks.length,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-           itemBuilder: (context, index) => BookCard(
-            book: popularBooks[index],
-            onUpdate: _loadBooksFromDatabase, // AGGIUNTO!
+            height: 240,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: readingBooks.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemBuilder:
+                  (context, index) => BookCard(
+                    book: readingBooks[index],
+                    onUpdate: _loadBooksFromDatabase,
+                  ),
+            ),
           ),
-          ),
-        ),
 
-
-          //Your Books
+          // Popular Now
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text("Your books", style: Theme.of(context).textTheme.titleMedium),
-          ),
-        SizedBox(
-          height: 240,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: userBooks.length,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-           itemBuilder: (context, index) => BookCard(
-            book: userBooks[index],
-            onUpdate: _loadBooksFromDatabase, // AGGIUNTO!
-          ),
+            child: Text(
+              "Popular now",
+              style: Theme.of(context).textTheme.titleMedium,
             ),
-        ),
+          ),
+          SizedBox(
+            height: 240,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: popularBooks.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemBuilder:
+                  (context, index) => BookCard(
+                    book: popularBooks[index],
+                    onUpdate: _loadBooksFromDatabase,
+                  ),
+            ),
+          ),
+
+          // Your Favorites
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              "Your favorites",
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          SizedBox(
+            height: 240,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: favoriteBooks.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemBuilder:
+                  (context, index) => BookCard(
+                    book: favoriteBooks[index],
+                    onUpdate: _loadBooksFromDatabase,
+                  ),
+            ),
+          ),
+
+          // Your Books + freccetta
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "Your books",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LibraryPage()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 240,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: userBooks.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemBuilder:
+                  (context, index) => BookCard(
+                    book: userBooks[index],
+                    onUpdate: _loadBooksFromDatabase,
+                  ),
+            ),
+          ),
         ],
       ),
     );
