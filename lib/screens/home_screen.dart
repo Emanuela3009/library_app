@@ -84,25 +84,27 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Your Favorites
+          // Your Favorites + freccetta
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              "Your favorites",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          SizedBox(
-            height: 240,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: favoriteBooks.length,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemBuilder:
-                  (context, index) => BookCard(
-                    book: favoriteBooks[index],
-                    onUpdate: _loadBooksFromDatabase,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "Your favorites",
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const FavoritesPage()),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
 
