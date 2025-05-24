@@ -64,25 +64,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Popular Now + freccetta
+          // Popular Now + freccetta ravvicinata alla scritta
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: Text(
-                    "Popular now",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                Text(
+                  "Popular now",
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios, size: 18),
-                  onPressed: () {
+                const SizedBox(width: 6), // distanza minima tra testo e freccia
+                GestureDetector(
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const PopularPage()),
                     );
                   },
+                  child: const Icon(Icons.arrow_forward_ios, size: 14),
                 ),
               ],
             ),
@@ -101,26 +101,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Your Favorites + freccetta
+          // Your Favorites + freccetta ravvicinata che cambia tab della nav bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: Text(
-                    "Your favorites",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                Text(
+                  "Your favorites",
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios, size: 18),
-                  onPressed: () {
+                const SizedBox(width: 6),
+                GestureDetector(
+                  onTap: () {
                     final homeState =
                         context.findAncestorStateOfType<HomePageState>();
                     if (homeState != null) {
-                      homeState.setIndex(3); // Vai a "Favorites"
+                      homeState.setIndex(3); // Vai alla scheda "Favorites"
                     }
                   },
+                  child: const Icon(Icons.arrow_forward_ios, size: 14),
                 ),
               ],
             ),
@@ -139,25 +139,25 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Your Books + freccetta
+          // Your Books + freccetta vicina
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: Text(
-                    "Your books",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
+                Text(
+                  "Your books",
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios, size: 18),
-                  onPressed: () {
+                const SizedBox(width: 6),
+                GestureDetector(
+                  onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const LibraryPage()),
                     );
                   },
+                  child: const Icon(Icons.arrow_forward_ios, size: 14),
                 ),
               ],
             ),
