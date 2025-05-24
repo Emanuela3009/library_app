@@ -35,7 +35,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.lightTheme.copyWith(
+        splashFactory: NoSplash.splashFactory,
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
+      ),
       home: const HomePage(),
     );
   }
