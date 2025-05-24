@@ -4,6 +4,7 @@ import '../data/database_helper.dart';
 import '../widgets/book_card.dart';
 import 'library_page.dart';
 import 'favorites_page.dart';
+import 'Home_page.dart'; // ← Importa per accedere a HomePageState
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -98,13 +99,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(
                   icon: const Icon(Icons.arrow_forward_ios, size: 18),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const FavoritesPage()),
-                    );
+                    final homeState =
+                        context.findAncestorStateOfType<HomePageState>();
+                    if (homeState != null) {
+                      homeState.setIndex(3); // Vai a "Favorites"
+                    }
                   },
                 ),
               ],
+            ),
+          ),
+          SizedBox(
+            height: 240,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: favoriteBooks.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemBuilder:
+                  (context, index) => BookCard(
+                    book: favoriteBooks[index],
+                    onUpdate: _loadBooksFromDatabase,
+                  ),
             ),
           ),
 
