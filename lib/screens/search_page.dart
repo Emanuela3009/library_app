@@ -127,7 +127,13 @@ class _SearchPageState extends State<SearchPage> {
               onChanged: _filterBooks,
               decoration: InputDecoration(
                 hintText: 'Search by title or author',
-                prefixIcon: const Icon(Icons.search, color: Color(0xFF1E2A78)),
+                prefixIcon: IconButton(
+                icon: const Icon(Icons.search, color: Color(0xFF1E2A78)),
+                onPressed: () {
+                  FocusScope.of(context).unfocus(); // Nasconde la tastiera
+                  _filterBooks(_searchController.text);
+                },
+              ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear, color: Colors.grey),
