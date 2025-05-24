@@ -12,11 +12,12 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int _currentIndex = 2; // Start da 'Home'
+// 👉 RIMOSSO il '_' qui sotto!
+class HomePageState extends State<HomePage> {
+  int _currentIndex = 2;
   int _homeScreenKey = 0;
 
   Widget _getScreen(int index) {
@@ -42,32 +43,42 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // 👉 Serve a home_screen.dart per navigare!
+  void setIndex(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Book Library"),
-        leading: (_currentIndex == 2 || _currentIndex == 3)
-        ? InkWell(
-          borderRadius: BorderRadius.circular(100),
-          splashColor: const Color.fromARGB(255, 106, 147, 221),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddBookPage()),
-            ).then((_) {
-              setState(() {
-                _homeScreenKey++; // forza rigenerazione HomeScreen
-                _currentIndex = 2;
-              });
-            });
-          },
-          child: const Padding(
-            padding: EdgeInsets.all(10),
-            child: Icon(Icons.add),
-          ),
-        )
-        :null,
+        leading:
+            (_currentIndex == 2 || _currentIndex == 3)
+                ? InkWell(
+                  borderRadius: BorderRadius.circular(100),
+                  splashColor: const Color.fromARGB(255, 106, 147, 221),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddBookPage(),
+                      ),
+                    ).then((_) {
+                      setState(() {
+                        _homeScreenKey++;
+                        _currentIndex = 2;
+                      });
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Icon(Icons.add),
+                  ),
+                )
+                : null,
       ),
       body: _getScreen(_currentIndex),
       bottomNavigationBar: BottomNavBar(
