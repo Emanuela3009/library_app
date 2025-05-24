@@ -47,9 +47,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
       context: context,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: StatefulBuilder(
@@ -59,22 +57,16 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(
-                        child: Text(
-                          'Choose or Create Category',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.titleLarge?.copyWith(
+                        child: Text('Choose or Create Category',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF1E2A78),
                           ),
                         ),
                       ),
                       const SizedBox(height: 20),
-                      Text(
-                        'Select existing category',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Text('Select existing category',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<Category>(
@@ -83,34 +75,17 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 14,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        items:
-                            allCategories
-                                .map(
-                                  (cat) => DropdownMenuItem(
-                                    value: cat,
-                                    child: Text(cat.name),
-                                  ),
-                                )
-                                .toList(),
-                        onChanged:
-                            (val) => setState(() => selectedCategory = val),
+                        items: allCategories.map((cat) => DropdownMenuItem(value: cat, child: Text(cat.name))).toList(),
+                        onChanged: (val) => setState(() => selectedCategory = val),
                       ),
                       const SizedBox(height: 20),
                       Divider(thickness: 1, color: Colors.grey[300]),
                       const SizedBox(height: 20),
-                      Text(
-                        'Create new category',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Text('Create new category',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 8),
                       TextField(
@@ -119,23 +94,13 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           errorText: errorText,
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onChanged: (val) {
                           newCategoryName = val;
-                          final exists = allCategories.any(
-                            (c) =>
-                                c.name.trim().toLowerCase() ==
-                                newCategoryName.trim().toLowerCase(),
-                          );
-                          setState(() {
-                            errorText =
-                                exists
-                                    ? 'A category with this name already exists'
-                                    : null;
-                          });
+                          final exists = allCategories.any((c) =>
+                            c.name.trim().toLowerCase() == newCategoryName.trim().toLowerCase());
+                          setState(() => errorText = exists ? 'A category with this name already exists' : null);
                         },
                       ),
                       const SizedBox(height: 12),
@@ -143,26 +108,22 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         children: [
                           const Text('Color:'),
                           const SizedBox(width: 8),
-                          CircleAvatar(
-                            backgroundColor: selectedColor,
-                            radius: 12,
-                          ),
+                          CircleAvatar(backgroundColor: selectedColor, radius: 12),
                           const SizedBox(width: 8),
                           TextButton(
                             onPressed: () {
                               showDialog(
                                 context: context,
-                                builder:
-                                    (_) => AlertDialog(
-                                      title: const Text('Pick a color'),
-                                      content: BlockPicker(
-                                        pickerColor: selectedColor,
-                                        onColorChanged: (color) {
-                                          setState(() => selectedColor = color);
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ),
+                                builder: (_) => AlertDialog(
+                                  title: const Text('Pick a color'),
+                                  content: BlockPicker(
+                                    pickerColor: selectedColor,
+                                    onColorChanged: (color) {
+                                      setState(() => selectedColor = color);
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
                               );
                             },
                             child: const Text('Choose'),
@@ -173,51 +134,32 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
-                          ),
+                          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
                           const SizedBox(width: 12),
                           ElevatedButton(
                             onPressed: () async {
                               if (selectedCategory == null &&
                                   newCategoryName.trim().isNotEmpty &&
                                   errorText == null) {
-                                final newCat = Category(
-                                  name: newCategoryName.trim(),
-                                  colorValue: selectedColor.value,
-                                );
-                                final id = await DatabaseHelper.instance
-                                    .insertCategory(newCat);
+                                final newCat = Category(name: newCategoryName.trim(), colorValue: selectedColor.value);
+                                final id = await DatabaseHelper.instance.insertCategory(newCat);
                                 widget.book.categoryId = id;
                               } else if (selectedCategory != null) {
                                 widget.book.categoryId = selectedCategory!.id;
                               } else {
                                 return;
                               }
-
-                              await DatabaseHelper.instance.insertBook(
-                                widget.book,
-                              );
+                              await DatabaseHelper.instance.insertBook(widget.book);
                               if (!context.mounted) return;
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Book added to "${selectedCategory?.name ?? newCategoryName}"',
-                                  ),
-                                ),
+                                SnackBar(content: Text('Book added to "${selectedCategory?.name ?? newCategoryName}"')),
                               );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1E2A78),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             ),
                             child: const Text('Save'),
                           ),
@@ -237,30 +179,24 @@ class _BookDetailPageState extends State<BookDetailPage> {
   void _confirmDelete() {
     showDialog(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            title: const Text("Delete Book"),
-            content: const Text("Are you sure you want to delete this book?"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () async {
-                  await DatabaseHelper.instance.deleteBook(widget.book.id!);
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(const SnackBar(content: Text("Book deleted")));
-                },
-                child: const Text("Delete"),
-              ),
-            ],
+      builder: (_) => AlertDialog(
+        title: const Text("Delete Book"),
+        content: const Text("Are you sure you want to delete this book?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              await DatabaseHelper.instance.deleteBook(widget.book.id!);
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book deleted")));
+            },
+            child: const Text("Delete"),
           ),
+        ],
+      ),
     );
   }
 
@@ -288,10 +224,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
         appBar: AppBar(
           actions: [
             if (book.id != null)
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: _confirmDelete,
-              ),
+              IconButton(icon: const Icon(Icons.delete), onPressed: _confirmDelete),
             IconButton(
               icon: const Icon(Icons.close),
               onPressed: () {
@@ -305,87 +238,78 @@ class _BookDetailPageState extends State<BookDetailPage> {
           ],
         ),
         body: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: horizontalPadding,
-            vertical: 16,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
           child: ListView(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  book.imagePath,
-                  height: screenHeight * 0.4,
-                  fit: BoxFit.cover,
-                ),
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      book.imagePath,
+                      height: screenHeight * 0.4,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(100),
+                      onTap: () async {
+                        setState(() => book.isFavorite = !book.isFavorite);
+                        await DatabaseHelper.instance.insertBook(book);
+                      },
+                      child: Icon(
+                        book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: Colors.pink,
+                        size: 28,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               Center(
                 child: Column(
                   children: [
-                    Text(
-                      book.title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                      textAlign: TextAlign.center,
-                    ),
+                    Text(book.title, style: Theme.of(context).textTheme.titleMedium, textAlign: TextAlign.center),
                     const SizedBox(height: 4),
-                    Text(
-                      book.author,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+                    Text(book.author, style: Theme.of(context).textTheme.bodyLarge),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                book.plot,
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.justify,
-              ),
+              Text(book.plot, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify),
               const SizedBox(height: 24),
-              Text(
-                "Your review",
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text("Your review", style: Theme.of(context).textTheme.titleMedium),
               Row(
-                children: List.generate(5, (index) {
-                  return IconButton(
-                    icon: Icon(
-                      index < rating ? Icons.star : Icons.star_border,
-                      color: Colors.amber,
-                    ),
-                    onPressed: () async {
-                      setState(() {
-                        rating = index + 1;
-                        widget.book.rating = rating;
-                      });
-                      await DatabaseHelper.instance.insertBook(widget.book);
-                    },
-                  );
-                }),
+                children: List.generate(5, (index) => IconButton(
+                  icon: Icon(index < rating ? Icons.star : Icons.star_border, color: Colors.amber),
+                  onPressed: () async {
+                    setState(() {
+                      rating = index + 1;
+                      book.rating = rating;
+                    });
+                    await DatabaseHelper.instance.insertBook(book);
+                  },
+                )),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: commentController,
                 decoration: InputDecoration(
                   hintText: 'Leave a comment',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField(
                 value: selectedState,
-                items:
-                    ['To Read', 'Reading', 'Completed']
-                        .map(
-                          (state) => DropdownMenuItem(
-                            value: state,
-                            child: Text(state),
-                          ),
-                        )
-                        .toList(),
+                items: ['To Read', 'Reading', 'Completed']
+                    .map((state) => DropdownMenuItem(value: state, child: Text(state)))
+                    .toList(),
                 onChanged: (val) => setState(() => selectedState = val!),
                 decoration: const InputDecoration(border: OutlineInputBorder()),
               ),
