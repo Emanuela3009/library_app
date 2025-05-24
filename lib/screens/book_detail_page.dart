@@ -3,6 +3,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../models/book.dart';
 import '../models/category.dart';
 import '../data/database_helper.dart';
+import 'package:intl/intl.dart';
 
 class BookDetailPage extends StatefulWidget {
   final Book book;
@@ -206,6 +207,55 @@ class _BookDetailPageState extends State<BookDetailPage> {
     super.dispose();
   }
 
+  Future<DateTime?> _showMonthYearPicker(BuildContext context) async {
+  final initialDate = widget.book.dateCompleted ?? DateTime.now();
+  int selectedMonth = initialDate.month;
+  int selectedYear = initialDate.year;
+
+  return showDialog<DateTime>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Select completion month"),
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButton<int>(
+                  value: selectedMonth,
+                  onChanged: (value) => setState(() => selectedMonth = value!),
+                  items: List.generate(12, (index) => DropdownMenuItem(
+                    value: index + 1,
+                    child: Text(DateFormat.MMMM().format(DateTime(0, index + 1))),
+                  )),
+                ),
+                DropdownButton<int>(
+                  value: selectedYear,
+                  onChanged: (value) => setState(() => selectedYear = value!),
+                  items: List.generate(5, (index) {
+                    final year = DateTime.now().year - index;
+                    return DropdownMenuItem(value: year, child: Text("$year"));
+                  }),
+                ),
+              ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, DateTime(selectedYear, selectedMonth)),
+            child: const Text("OK"),
+          ),
+        ],
+      );
+    },
+  );
+}
   @override
   Widget build(BuildContext context) {
     final book = widget.book;
@@ -311,12 +361,24 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              DropdownButtonFormField(
+              DropdownButtonFormField<String>(
                 value: selectedState,
                 items: ['To Read', 'Reading', 'Completed']
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
-                onChanged: (val) => setState(() => selectedState = val!),
+                onChanged: (val) async {
+                  if (val == 'Completed' && selectedState != 'Completed') {
+                    final selected = await _showMonthYearPicker(context);
+                    if (selected != null) {
+                      setState(() {
+                        widget.book.dateCompleted = DateTime(selected.year, selected.month);
+                        selectedState = val!;
+                      });
+                    }
+                  } else {
+                    setState(() => selectedState = val!);
+                  }
+                },
                 decoration: const InputDecoration(border: OutlineInputBorder()),
               ),
               const SizedBox(height: 20),
@@ -331,6 +393,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
       ),
     );
   }
+}
+
+
+class MonthYear {
+  final int month;
+  final int year;
+
+  MonthYear({required this.month, required this.year});
 }
 
 String? _normalizeState(String? input) {

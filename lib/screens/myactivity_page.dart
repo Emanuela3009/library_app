@@ -5,6 +5,7 @@ import '../data/database_helper.dart';
 import 'package:intl/intl.dart';
 
 
+
 class MyActivityPage extends StatefulWidget {
   const MyActivityPage({super.key});
 
@@ -20,6 +21,11 @@ class _MyActivityPageState extends State<MyActivityPage> {
   double averageRating = 0.0;
   Map<String, int> genreCounts = {};
   Map<String, int> booksPerMonth = {};
+  int selectedYear = DateTime.now().year;
+  List<int> get availableYears {
+  final currentYear = DateTime.now().year;
+  return List.generate(5, (i) => currentYear - i); // ultimi 5 anni
+}
 
   @override
   void initState() {
@@ -59,9 +65,11 @@ class _MyActivityPageState extends State<MyActivityPage> {
       .toList();
 
   for (var book in completedBooksWithDate) {
+  if (book.dateCompleted!.year == selectedYear) {
     final key = DateFormat('yyyy-MM').format(book.dateCompleted!);
     booksPerMonth[key] = (booksPerMonth[key] ?? 0) + 1;
   }
+}
 
   setState(() {});
 
@@ -199,88 +207,124 @@ Widget build(BuildContext context) {
                         ),
                       ),
                     ),
-                    Text("Books read per month", style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 12),
-                    Builder(
-                      builder: (context) {
-                        // Mesi fissi (da gennaio a dicembre)
-                        final months = List.generate(12, (index) {
-                          final monthNumber = index + 1;
-                          return DateFormat('yyyy-MM').format(DateTime(DateTime.now().year, monthNumber));
-                        });
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Books read per month",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: const Color.fromARGB(255, 111, 153, 241),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              DropdownButton<int>(
+                value: selectedYear,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 111, 153, 241),
+                ),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() {
+                      selectedYear = val;
+                    });
+                    _loadStats(); // Ricarica i dati con il nuovo anno
+                  }
+                },
+                items: availableYears.map((y) => DropdownMenuItem(value: y, child: Text('$y'))).toList(),
+              ),
+            ],
+          ),
+          Builder(
+            builder: (context) {
+              // Ordina i mesi cronologicamente
+              final filtered = Map.fromEntries(
+                booksPerMonth.entries.where((e) => e.key.startsWith('$selectedYear-')),
+              );
 
-                        // Popola i valori anche con 0 se un mese non c'è
-                        final completedMap = <String, int>{};
-                        for (var month in months) {
-                          completedMap[month] = booksPerMonth[month] ?? 0;
-                        }
+              final months = List.generate(
+                12,
+                (i) => DateFormat('yyyy-MM').format(DateTime(selectedYear, i + 1)),
+              );
 
-                        final spots = completedMap.entries.toList().asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final count = entry.value.value.toDouble();
-                          return FlSpot(index.toDouble(), count);
-                        }).toList();
+              final maxCount = filtered.isEmpty
+                  ? 0
+                  : filtered.values.reduce((a, b) => a > b ? a : b);
 
-                        final maxY = completedMap.values.reduce((a, b) => a > b ? a : b);
-                        final upperBound = (maxY <= 5) ? 5 : ((maxY / 5).ceil() * 5);
-
-                        return SizedBox(
-                          height: 260,
-                          child: LineChart(
-                            LineChartData(
-                              minY: 0,
-                              maxY: upperBound.toDouble(),
-                              titlesData: FlTitlesData(
-                                leftTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    interval: 5,
-                                    reservedSize: 30,
-                                    getTitlesWidget: (value, meta) => Text(value.toInt().toString()),
-                                  ),
-                                ),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(
-                                    showTitles: true,
-                                    getTitlesWidget: (value, meta) {
-                                      final index = value.toInt();
-                                      if (index >= 0 && index < months.length) {
-                                        final date = DateFormat('yyyy-MM').parse(months[index]);
-                                        return Text(DateFormat('MMM', 'en_US').format(date), style: const TextStyle(fontSize: 10));
-                                      }
-                                      return const Text('');
-                                    },
-                                  ),
-                                ),
-                                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                              ),
-                              borderData: FlBorderData(
-                                show: true,
-                                border: const Border(
-                                  bottom: BorderSide(color: Colors.grey), // mostra solo sotto
-                                  top: BorderSide.none,
-                                  left: BorderSide.none,
-                                  right: BorderSide.none,
-                                ),
-                              ),
-                              gridData: FlGridData(show: true),
-                              lineBarsData: [
-                                LineChartBarData(
-                                  spots: spots,
-                                  isCurved: false,
-                                  color: const Color.fromARGB(255, 42, 43, 43),
-                                  barWidth: 3,
-                                  dotData: FlDotData(show: true),
-                                  belowBarData: BarAreaData(show: false),
-                                ),
-                              ],
-                              lineTouchData: LineTouchData(enabled: false),
-                            ),
-                          ),
+              return SizedBox(
+                height: 260,
+                child: LineChart(
+                  LineChartData(
+                    minY: 0,
+                    maxY: ((maxCount + 9) ~/ 10) * 10.0,
+                    gridData: FlGridData(
+                      show: true,
+                      drawHorizontalLine: true,
+                      horizontalInterval: 5,
+                      getDrawingHorizontalLine: (value) {
+                        return FlLine(
+                          color: Colors.grey.shade300,
+                          strokeWidth: 1,
                         );
                       },
                     ),
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          reservedSize: 28,
+                          interval: 5,
+                          getTitlesWidget: (value, meta) =>
+                              Text(value.toInt().toString(), style: const TextStyle(fontSize: 10)),
+                        ),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: (value, meta) {
+                            final index = value.toInt();
+                            if (index >= 0 && index < 12) {
+                              final label = DateFormat('MMM', 'en_US').format(DateTime(0, index + 1));
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: Text(label, style: const TextStyle(fontSize: 10)),
+                              );
+                            }
+                            return const Text('');
+                          },
+                        ),
+                      ),
+                      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    ),
+                    borderData: FlBorderData(
+                      show: true,
+                      border: const Border(
+                        bottom: BorderSide(color: Colors.grey),
+                      ),
+                    ),
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: List.generate(12, (i) {
+                          final key = months[i];
+                          final value = filtered[key] ?? 0;
+                          return FlSpot(i.toDouble(), value.toDouble());
+                        }),
+                        isCurved: false,
+                        color: Colors.black,
+                        barWidth: 3,
+                        dotData: FlDotData(show: true),
+                        belowBarData: BarAreaData(show: false),
+                      ),
+                    ],
+                    lineTouchData: LineTouchData(enabled: false),
+                  ),
+                ),
+              );
+            },
+          ),
                   ],
                 );
               },
