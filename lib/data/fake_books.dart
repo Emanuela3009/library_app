@@ -85,6 +85,7 @@ final List<Book> popularBooks = [
     userState: "To Read",
     isUserBook: false,
   ),
+
   Book(
   title: "Alice in Wonderland",
   author: "Lewis Carroll",
@@ -93,6 +94,6 @@ final List<Book> popularBooks = [
   imagePath: "assets/books/alice.jpg", // sostituisci con il nome corretto se necessario
   rating: 0,
   userState: "To Read",
-  isUserBook: false,
+  isUserBook:false,
 ),
 ];
