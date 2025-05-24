@@ -39,6 +39,7 @@ dependencies:
   sqflite: ^2.3.0
   google_fonts: ^6.1.0
   fl_chart: ^0.66.1
+  flutter_launcher_icons: ^0.14.3
   
 
 
@@ -79,6 +80,7 @@ flutter:
   assets:
     - assets/category/
     - assets/books/
+    - assets/icon/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -113,3 +115,9 @@ flutter:
         - asset: assets/fonts/Times-New-Roman-Bold.ttf
         - asset: assets/fonts/Times-New-Roman-Italic.ttf
           weight: 700
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/Logo_def.png"  # ← percorso della tua icona
+  min_sdk_android: 21  # se usi Android minSdk 21+
