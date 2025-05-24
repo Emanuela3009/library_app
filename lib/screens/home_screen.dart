@@ -4,7 +4,8 @@ import '../data/database_helper.dart';
 import '../widgets/book_card.dart';
 import 'library_page.dart';
 import 'favorites_page.dart';
-import 'Home_page.dart'; // ← Importa per accedere a HomePageState
+import 'Home_page.dart';
+import 'popular_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -63,12 +64,27 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Popular Now
+          // Popular Now + freccetta
           Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              "Popular now",
-              style: Theme.of(context).textTheme.titleMedium,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    "Popular now",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward_ios, size: 18),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const PopularPage()),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           SizedBox(
