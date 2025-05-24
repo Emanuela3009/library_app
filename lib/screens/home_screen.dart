@@ -50,19 +50,30 @@ class _HomeScreenState extends State<HomeScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
-          SizedBox(
-            height: 240,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: readingBooks.length,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemBuilder:
-                  (context, index) => BookCard(
+          readingBooks.isEmpty
+            ? const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 6), // Spazio sotto il titolo
+                    const Text("No book available"),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+                )
+            : SizedBox(
+                height: 240,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: readingBooks.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemBuilder: (context, index) => BookCard(
                     book: readingBooks[index],
                     onUpdate: _loadBooksFromDatabase,
                   ),
-            ),
-          ),
+                ),
+              ),
 
           // Popular Now + freccetta ravvicinata alla scritta
           Padding(
@@ -125,19 +136,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          SizedBox(
-            height: 240,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: favoriteBooks.length,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemBuilder:
-                  (context, index) => BookCard(
+          favoriteBooks.isEmpty
+            ? const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 6), // Spazio sotto il titolo
+                    const Text("No book available"),
+                    const SizedBox(height: 16), // Spazio extra prima della sezione successiva
+                  ],
+                ),
+              )
+            : SizedBox(
+                height: 240,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: favoriteBooks.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemBuilder: (context, index) => BookCard(
                     book: favoriteBooks[index],
                     onUpdate: _loadBooksFromDatabase,
                   ),
-            ),
-          ),
+                ),
+              ),
 
           // Your Books + freccetta vicina
           Padding(
@@ -162,19 +184,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          SizedBox(
-            height: 240,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: userBooks.length,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemBuilder:
-                  (context, index) => BookCard(
+          userBooks.isEmpty
+            ? const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 6), // Spazio sotto il titolo
+                    const Text("No book available"),
+                    const SizedBox(height: 16), // Spazio extra prima della sezione successiva
+                  ],
+                ),
+              )
+            : SizedBox(
+                height: 240,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: userBooks.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemBuilder: (context, index) => BookCard(
                     book: userBooks[index],
                     onUpdate: _loadBooksFromDatabase,
                   ),
-            ),
-          ),
+                ),
+              ),
         ],
       ),
     );
