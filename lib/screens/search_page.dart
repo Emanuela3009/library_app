@@ -48,11 +48,9 @@ class _SearchPageState extends State<SearchPage> {
     // Se c'è una query, filtra per titolo/autore
     if (lowerQuery.isNotEmpty) {
       filtered = filtered.where((book) {
-        final titleWords = book.title.toLowerCase().split(' ');
-        final authorWords = book.author.toLowerCase().split(' ');
+        final titleMatch = book.title.toLowerCase().contains(lowerQuery);
+        final authorMatch = book.author.toLowerCase().contains(lowerQuery);
 
-        final titleMatch = titleWords.any((w) => w.startsWith(lowerQuery));
-        final authorMatch = authorWords.any((w) => w.startsWith(lowerQuery));
 
         switch (_searchType) {
           case 'Title':
