@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../screens/book_detail_page.dart';
+import '../data/database_helper.dart';
 
 class BookCard extends StatelessWidget {
   final Book book;
@@ -38,15 +39,23 @@ class BookCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                     Positioned(
-                      top: 6,
-                      right: 6,
-                      child: Icon(
-                        book.isFavorite == true ? Icons.favorite : Icons.favorite_border,
-                        color: book.isFavorite == true ? Colors.red : Colors.grey,
-                        
+                    top: 6,
+                    right: 6,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () async {
+                        book.isFavorite = !book.isFavorite;
+                        await DatabaseHelper.instance.insertBook(book);
+                        if (onUpdate != null) onUpdate!();
+                      },
+                      child: Icon(  //cuore cliccabile
+                        book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: book.isFavorite ? Colors.red : Colors.grey,
                         size: 20,
                       ),
                     ),
+                  ),
+
                   ],
                 ),
               ),

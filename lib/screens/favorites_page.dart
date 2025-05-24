@@ -73,23 +73,36 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           Expanded(
                             child: Stack(
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.asset(
-                                    book.imagePath,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
+                                Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: AspectRatio(
+                                    aspectRatio: 3 / 4.5,
+                                    child: Image.asset(
+                                      book.imagePath,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
+                              ),
                                 Positioned(
-                                  top: 6,
-                                  right: 6,
+                                top: 6,
+                                right: 6,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(20),
+                                  onTap: () async {
+                                    book.isFavorite = false;
+                                    await DatabaseHelper.instance.insertBook(book);
+                                    setState(() => favoriteBooks.remove(book));
+                                  },
                                   child: Icon(
                                     Icons.favorite,
                                     color: Colors.pink,
-                                    size: 20,
+                                    size: 22,
                                   ),
                                 ),
+                              ),
+
                               ],
                             ),
                           ),
