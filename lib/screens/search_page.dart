@@ -99,15 +99,34 @@ class _SearchPageState extends State<SearchPage> {
       filtered = _allBooks;
     }
 
+    // Ordinamento alfabetico se selezionato
+    if (_searchType == 'A-Z') {
+      filtered.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    } else if (_searchType == 'Z-A') {
+      filtered.sort((a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
+    }
+
     _filteredBooks = filtered;
-  });
+
+      });
 }
+
+
+  //mostra i preferiti
+  void _toggleFavorite(Book book) async {
+    setState(() {
+      book.isFavorite = !book.isFavorite;
+    });
+    await DatabaseHelper.instance.insertBook(book);
+  }
+
 
 
   void _clearSearch() {
     _searchController.clear();
     _filterBooks('');
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -415,33 +434,49 @@ class _SearchPageState extends State<SearchPage> {
                                     ],
                                   ),
                                   child: Row(
-                                    children: [
-                                      // Copertina
-                                      ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                          topLeft: Radius.circular(12),
-                                          bottomLeft: Radius.circular(12),
-                                        ),
+                                  children: [
+                                    // Copertina con cuore
+                                    Stack(
+                                      children: [
+                                        ClipRRect(
+                                        borderRadius: BorderRadius.circular(12), // curva tutti i bordi
                                         child: Image.asset(
                                           book.imagePath,
                                           width: 100,
-                                          height: 120,
-                                          fit: BoxFit.cover,
+                                          height: 140, // più alta la copertina
+                                          fit: BoxFit.cover, // immagine intera mantenendo proporzione
                                         ),
                                       ),
-                                      // Info
-                                      Expanded(
+                                        Positioned(
+                                          top: 6,
+                                          right: 6,
+                                          child: GestureDetector(
+                                            onTap: () => _toggleFavorite(book),
+                                            child: Icon(
+                                              book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                                              color: book.isFavorite ? Colors.pink : Colors.grey,
+                                              size: 20,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    // Info
+                                    Expanded(
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(book.title,
-                                                  style: theme.textTheme.titleMedium?.copyWith(
-                                                    color:  const Color.fromARGB(255, 106, 147, 221), 
-                                                  ),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis),
+                                              Text(
+                                              book.title,
+                                              style: theme.textTheme.titleMedium?.copyWith(
+                                                color: const Color.fromARGB(255, 106, 147, 221),
+                                              ),
+                                              maxLines: 2, // titolo massimo su 2 righe
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: true, // per andare a capo
+                                            ),
                                               const SizedBox(height: 4),
                                               Text(book.author,
                                                   style: theme.textTheme.bodyMedium?.copyWith(
