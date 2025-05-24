@@ -12,7 +12,7 @@ class AppTheme {
     // Definizione globale degli stili del testo
     textTheme: TextTheme(
       headlineLarge: GoogleFonts.fredoka( // Titolo principale dell’app (es. Categories)
-        fontSize: 26,
+        fontSize: 27,
         fontWeight: FontWeight.w600,
         color: const Color.fromARGB(255, 106, 147, 221), 
       ),

@@ -15,8 +15,9 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   List<Book> _allBooks = [];
   List<Book> _filteredBooks = [];
+  
 
-  String? _searchType;
+  String? _searchType = 'All';
   String? _selectedStatus;
   String? _selectedGenre;
   int _selectedRating = -1;
@@ -28,57 +29,68 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> _loadBooks() async {
-    final books = await DatabaseHelper.instance.getAllBooks();
-    setState(() {
-      _allBooks = books;
-      _filteredBooks = [];
-    });
-  }
+  final books = await DatabaseHelper.instance.getAllBooks();
+  setState(() {
+    _allBooks = books;
+  });
+
+  // Applica subito i filtri per popolare _filteredBooks correttamente
+  _filterBooks(_searchController.text);
+}
+
 
   void _filterBooks(String query) {
-    final lowerQuery = query.toLowerCase();
+  final lowerQuery = query.toLowerCase();
 
-    setState(() {
-      List<Book> filtered = _allBooks;
+  setState(() {
+    List<Book> filtered = _allBooks;
 
-      // Filtra per testo (titolo e/o autore)
-      if (lowerQuery.isNotEmpty) {
-        filtered = filtered.where((book) {
-          final titleWords = book.title.toLowerCase().split(' ');
-          final authorWords = book.author.toLowerCase().split(' ');
+    // Se c'è una query, filtra per titolo/autore
+    if (lowerQuery.isNotEmpty) {
+      filtered = filtered.where((book) {
+        final titleWords = book.title.toLowerCase().split(' ');
+        final authorWords = book.author.toLowerCase().split(' ');
 
-          switch (_searchType) {
-            case 'Title':
-              return titleWords.any((w) => w.startsWith(lowerQuery));
-            case 'Author':
-              return authorWords.any((w) => w.startsWith(lowerQuery));
-            case 'All':
-              return titleWords.any((w) => w.startsWith(lowerQuery)) ||
-                     authorWords.any((w) => w.startsWith(lowerQuery));
-            default:
-              return true;
-          }
-        }).toList();
-      }
+        final titleMatch = titleWords.any((w) => w.startsWith(lowerQuery));
+        final authorMatch = authorWords.any((w) => w.startsWith(lowerQuery));
 
-      // Filtra per stato
-      if (_selectedStatus != 'All') {
-        filtered = filtered.where((b) => b.userState == _selectedStatus).toList();
-      }
+        switch (_searchType) {
+          case 'Title':
+            return titleMatch;
+          case 'Author':
+            return authorMatch;
+          case 'All':
+          default:
+            return titleMatch || authorMatch;
+        }
+      }).toList();
+    }
 
-      // Filtra per genere
-      if (_selectedGenre != 'All') {
-        filtered = filtered.where((b) => b.genre == _selectedGenre).toList();
-      }
+    // Applica i filtri (se presenti)
+    if (_selectedStatus != null && _selectedStatus != 'All') {
+      filtered = filtered.where((b) => b.userState == _selectedStatus).toList();
+    }
 
-      // Filtra per rating
-      if (_selectedRating != -1) {
-        filtered = filtered.where((b) => b.rating == _selectedRating).toList();
-      }
+    if (_selectedGenre != null && _selectedGenre != 'All') {
+      filtered = filtered.where((b) => b.genre == _selectedGenre).toList();
+    }
 
-      _filteredBooks = filtered;
-    });
-  }
+    if (_selectedRating != -1) {
+      filtered = filtered.where((b) => b.rating == _selectedRating).toList();
+    }
+
+    // Se non c'è query e nessun filtro → mostra tutti i libri (oredered by è impostato di default su 'all')
+    if (lowerQuery.isEmpty &&
+        (_selectedStatus == null || _selectedStatus == 'All') &&
+        (_selectedGenre == null || _selectedGenre == 'All') &&
+        _selectedRating == -1) {
+      filtered = _allBooks;
+    }
+
+    _filteredBooks = filtered;
+  });
+}
+
 
   void _clearSearch() {
     _searchController.clear();
@@ -172,7 +184,7 @@ class _SearchPageState extends State<SearchPage> {
                             _filterBooks(_searchController.text);
                           });
                         },
-                        items: ['Title & Author', 'Title', 'Author', 'A-Z', 'Z-A']
+                        items: ['All', 'Title', 'Author', 'A-Z', 'Z-A']
                             .map((v) => DropdownMenuItem(value: v, child: Text(v)))
                             .toList(),
                       ),
@@ -332,90 +344,114 @@ class _SearchPageState extends State<SearchPage> {
 
             // LISTA RISULTATI
             Expanded(
-              child: _filteredBooks.isEmpty
-                  ? Center(
-                      child: Text('No results found', style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey)),
-                    )
-                  : ListView.separated(
-                      itemCount: _filteredBooks.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final book = _filteredBooks[index];
-                        return GestureDetector(
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => BookDetailPage(book: book),
-                              ),
-                            );
-                            _loadBooks(); // ricarica dopo ritorno
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                // Copertina
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(12),
-                                    bottomLeft: Radius.circular(12),
-                                  ),
-                                  child: Image.asset(
-                                    book.imagePath,
-                                    width: 100,
-                                    height: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                // Info
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(book.title,
-                                            style: theme.textTheme.titleMedium?.copyWith(
-                                              color: const Color(0xFF164EC7),
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis),
-                                        const SizedBox(height: 4),
-                                        Text(book.author,
-                                            style: theme.textTheme.bodyMedium?.copyWith(
-                                              color: const Color(0xFF101F83),
-                                            )),
-                                        const SizedBox(height: 6),
-                                        Row(
-                                          children: List.generate(5, (i) {
-                                            return Icon(
-                                              i < (book.rating ?? 0) ? Icons.star : Icons.star_border,
-                                              color: Colors.amber,
-                                              size: 20,
-                                            );
-                                          }),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        'Results',
+                        style: theme.textTheme.headlineLarge?.copyWith(
+                          fontSize: 25,
+                          color: const Color.fromARGB(221, 1, 31, 100),
+                        ),
+                      ),
+                    ),
+                  ),
+                  _filteredBooks.isEmpty
+                      ? Expanded(
+                          child: Center(
+                            child: Text(
+                              'No results found',
+                              style: theme.textTheme.bodyMedium?.copyWith(color: const Color.fromARGB(180, 1, 30, 100)),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        )
+                      : Expanded(
+                          child: ListView.separated(
+                            itemCount: _filteredBooks.length,
+                            separatorBuilder: (_, __) => const SizedBox(height: 12),
+                            itemBuilder: (context, index) {
+                              final book = _filteredBooks[index];
+                              return GestureDetector(
+                                onTap: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => BookDetailPage(book: book),
+                                    ),
+                                  );
+                                  _loadBooks(); // ricarica dopo ritorno
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(12),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.05),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      // Copertina
+                                      ClipRRect(
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(12),
+                                          bottomLeft: Radius.circular(12),
+                                        ),
+                                        child: Image.asset(
+                                          book.imagePath,
+                                          width: 100,
+                                          height: 120,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      // Info
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(book.title,
+                                                  style: theme.textTheme.titleMedium?.copyWith(
+                                                    color:  const Color.fromARGB(255, 106, 147, 221), 
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis),
+                                              const SizedBox(height: 4),
+                                              Text(book.author,
+                                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                                    color:  const Color.fromARGB(255, 91, 142, 237), 
+                                                  )),
+                                              const SizedBox(height: 6),
+                                              Row(
+                                                children: List.generate(5, (i) {
+                                                  return Icon(
+                                                    i < (book.rating ?? 0) ? Icons.star : Icons.star_border,
+                                                    color: Colors.amber,
+                                                    size: 20,
+                                                  );
+                                                }),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                ],
+              ),
             ),
           ],
         ),
