@@ -262,8 +262,19 @@ class _BookDetailPageState extends State<BookDetailPage> {
 }
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final horizontalPadding = MediaQuery.of(context).size.width * 0.05;
+    final isLandscape = screenWidth > screenHeight;
+    final horizontalPadding = screenWidth * 0.05;
+    final imageHeight = screenHeight * 0.5;
+    final fontSizeTitle = screenWidth * 0.05;
+    final fontSizeBody = screenWidth * 0.04;  
+    final double spacing = screen.height * 0.02;
+    final double iconSize = screen.width * 0.07;
+  
+
+  
 
     return WillPopScope(
       onWillPop: () async {
@@ -282,7 +293,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
 
 
         IconButton(
-        icon: const Icon(Icons.edit),
+        icon: Icon(Icons.edit, size: iconSize ),
         onPressed: () async {
           final updatedBook = await Navigator.push(
             context,
@@ -315,7 +326,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
 
 
             if (book.id != null)
-              IconButton(icon: const Icon(Icons.delete), onPressed: _confirmDelete),
+              IconButton(icon:  Icon(Icons.delete, size: iconSize ), onPressed: _confirmDelete),
             IconButton(
               icon: const Icon(Icons.close),
               onPressed: () {
@@ -332,7 +343,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
           ],
         ),
         body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: spacing),
           child: ListView(
             children: [
               Stack(
@@ -341,7 +352,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     borderRadius: BorderRadius.circular(8),
                     child: Image.asset(
                       book.imagePath,
-                      height: screenHeight * 0.6,
+                      height: imageHeight,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -358,7 +369,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       child: Icon(
                         book.isFavorite ? Icons.favorite : Icons.favorite_border,
                         color: Colors.pink,
-                        size: 28,
+                        size: iconSize,
                       ),
                     ),
                   ),
@@ -374,13 +385,13 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: spacing),
               Text(book.plot, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify),
-              const SizedBox(height: 24),
+               SizedBox(height: spacing),
               Text("Your review", style: Theme.of(context).textTheme.titleMedium),
               Row(
                 children: List.generate(5, (index) => IconButton(
-                  icon: Icon(index < rating ? Icons.star : Icons.star_border, color: Colors.amber),
+                  icon: Icon(index < rating ? Icons.star : Icons.star_border, color: Colors.amber, size: iconSize,),
                   onPressed: () async {
                     setState(() {
                       rating = index + 1;
@@ -390,7 +401,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   },
                 )),
               ),
-              const SizedBox(height: 16),
+               SizedBox(height: spacing),
               TextField(
                 controller: commentController,
                 decoration: InputDecoration(
@@ -398,7 +409,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
               ),
-              const SizedBox(height: 12),
+               SizedBox(height: spacing),
               DropdownButtonFormField<String>(
                 value: selectedState,
                 items: ['To Read', 'Reading', 'Completed']
@@ -419,7 +430,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 },
                 decoration: const InputDecoration(border: OutlineInputBorder()),
               ),
-              const SizedBox(height: 20),
+               SizedBox(height: spacing),
               ElevatedButton.icon(
                 onPressed: () => _showCategoryDialog(context),
                 icon: const Icon(Icons.category),
