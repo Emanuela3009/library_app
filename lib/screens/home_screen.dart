@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final readingBooks =
         allBooks.where((b) => b.userState == 'Reading').toList();
-    final popularBooks = allBooks.take(3).toList();
+    final popularBooks = allBooks.take(9).toList();
     final userBooks = allBooks.where((b) => b.isUserBook == true).toList();
     final favoriteBooks = allBooks.where((b) => b.isFavorite).toList();
 
