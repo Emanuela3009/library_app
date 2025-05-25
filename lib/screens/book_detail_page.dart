@@ -4,7 +4,7 @@ import '../models/book.dart';
 import '../models/category.dart';
 import '../data/database_helper.dart';
 import 'package:intl/intl.dart';
-import 'addbook.dart';
+import 'addBook.dart';
 
 class BookDetailPage extends StatefulWidget {
   final Book book;
