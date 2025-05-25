@@ -65,4 +65,38 @@ class Book {
       dateCompleted: map['dateCompleted'] != null ? DateTime.parse(map['dateCompleted']) : null,
     );
   }
+
+
+
+   Book copyWith({
+    int? id,
+    String? title,
+    String? author,
+    String? genre,
+    String? plot,
+    String? imagePath,
+    String? comment,
+    int? rating,
+    String? userState,
+    int? categoryId,
+    bool? isUserBook,
+    bool? isFavorite,
+    DateTime? dateCompleted,
+  }) {
+    return Book(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      author: author ?? this.author,
+      genre: genre ?? this.genre,
+      plot: plot ?? this.plot,
+      imagePath: imagePath ?? this.imagePath,
+      comment: comment ?? this.comment,
+      rating: rating ?? this.rating,
+      userState: userState ?? this.userState,
+      categoryId: categoryId ?? this.categoryId,
+      isUserBook: isUserBook ?? this.isUserBook,
+      isFavorite: isFavorite ?? this.isFavorite,
+      dateCompleted: dateCompleted ?? this.dateCompleted,
+    );
+  }
 }

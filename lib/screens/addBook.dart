@@ -5,7 +5,8 @@ import '../models/book.dart';
 import '../data/database_helper.dart';
 
 class AddBookPage extends StatefulWidget {
-  const AddBookPage({super.key});
+  final Book? book;
+  const AddBookPage({super.key, this.book});
 
   @override
   State<AddBookPage> createState() => _AddBookPageState();
@@ -13,56 +14,63 @@ class AddBookPage extends StatefulWidget {
 
 class _AddBookPageState extends State<AddBookPage> {
   final _formKey = GlobalKey<FormState>();
-
   final titleController = TextEditingController();
   final authorController = TextEditingController();
   final plotController = TextEditingController();
 
   String selectedGenre = 'Fantasy';
   String selectedState = 'To Read';
-
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.book != null) {
+      final book = widget.book!;
+      titleController.text = book.title;
+      authorController.text = book.author;
+      plotController.text = book.plot;
+      selectedGenre = book.genre;
+      selectedState = book.userState ?? 'To Read';
+      if (!book.imagePath.startsWith('assets')) {
+        _selectedImage = File(book.imagePath);
+      }
+    }
+  }
 
   void _showImageSourceOptions() {
     showModalBottomSheet(
       context: context,
-      builder: (_) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('Choose from Gallery'),
-                onTap: () {
-                  _pickImage(ImageSource.gallery);
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Take a Photo'),
-                onTap: () {
-                  _pickImage(ImageSource.camera);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from Gallery'),
+              onTap: () {
+                _pickImage(ImageSource.gallery);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take a Photo'),
+              onTap: () {
+                _pickImage(ImageSource.camera);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(
-      source: source,
-      imageQuality: 80,
-    );
+    final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+      setState(() => _selectedImage = File(pickedFile.path));
     }
   }
 
@@ -70,9 +78,10 @@ class _AddBookPageState extends State<AddBookPage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final isEditing = widget.book != null;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Book")),
+      appBar: AppBar(title: Text(isEditing ? 'Edit Book' : 'Add Book')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -99,36 +108,18 @@ class _AddBookPageState extends State<AddBookPage> {
               DropdownButtonFormField(
                 value: selectedGenre,
                 decoration: const InputDecoration(labelText: 'Genre'),
-                items:
-                    ['Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror']
-                        .map(
-                          (genre) => DropdownMenuItem(
-                            value: genre,
-                            child: Text(
-                              genre,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ),
-                        )
-                        .toList(),
+                items: ['Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror']
+                    .map((genre) => DropdownMenuItem(value: genre, child: Text(genre)))
+                    .toList(),
                 onChanged: (value) => setState(() => selectedGenre = value!),
               ),
               SizedBox(height: screenHeight * 0.02),
               DropdownButtonFormField(
                 value: selectedState,
                 decoration: const InputDecoration(labelText: 'State'),
-                items:
-                    ['To Read', 'Reading', 'Completed']
-                        .map(
-                          (state) => DropdownMenuItem(
-                            value: state,
-                            child: Text(
-                              state,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ),
-                        )
-                        .toList(),
+                items: ['To Read', 'Reading', 'Completed']
+                    .map((state) => DropdownMenuItem(value: state, child: Text(state)))
+                    .toList(),
                 onChanged: (value) => setState(() => selectedState = value!),
               ),
               SizedBox(height: screenHeight * 0.02),
@@ -136,54 +127,55 @@ class _AddBookPageState extends State<AddBookPage> {
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
                   onTap: _showImageSourceOptions,
-                  child:
-                      _selectedImage != null
-                          ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(
-                              _selectedImage!,
-                              height: 180,
-                              width: screenWidth * 0.5,
-                              fit: BoxFit.contain,
-                            ),
-                          )
-                          : Container(
-                            height: screenHeight * 0.15,
-                            width: screenWidth * 0.4,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: Colors.grey),
-                            ),
-                            child: const Center(
-                              child: Text("Tap to add cover image"),
-                            ),
+                  child: _selectedImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            _selectedImage!,
+                            height: 180,
+                            width: screenWidth * 0.5,
+                            fit: BoxFit.contain,
                           ),
+                        )
+                      : Container(
+                          height: screenHeight * 0.15,
+                          width: screenWidth * 0.4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: const Center(child: Text("Tap to add cover image")),
+                        ),
                 ),
               ),
               SizedBox(height: screenHeight * 0.02),
               ElevatedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final newBook = Book(
+                    final updatedBook = Book(
+                      id: widget.book?.id,
                       title: titleController.text,
                       author: authorController.text,
                       genre: selectedGenre,
                       plot: plotController.text,
-                      imagePath:
-                          _selectedImage?.path ??
-                          'assets/books/placeholder.jpg',
+                      imagePath: _selectedImage?.path ?? widget.book?.imagePath ?? 'assets/books/placeholder.jpg',
                       userState: selectedState,
-                      isUserBook: true, // ✅ IMPORTANTE
-                      rating: 0,
-                      dateCompleted: selectedState == 'Completed' ? DateTime.now() : null,
+                      isUserBook: true,
+                      isFavorite: widget.book?.isFavorite ?? false,
+                      categoryId: widget.book?.categoryId,
+                      rating: widget.book?.rating ?? 0,
+                      comment: widget.book?.comment,
+                      dateCompleted: selectedState == 'Completed'
+                          ? (widget.book?.dateCompleted ?? DateTime.now())
+                          : null,
                     );
-                    await DatabaseHelper.instance.insertBook(newBook);
-                    Navigator.pop(context);
+                    await DatabaseHelper.instance.insertBook(updatedBook);
+                    Navigator.pop(context, updatedBook);
                   }
                 },
-                icon: const Icon(Icons.add),
-                label: const Text("Add book"),
+                icon: Icon(isEditing ? Icons.save : Icons.add),
+                label: Text(isEditing ? "Save changes" : "Add book"),
               ),
             ],
           ),

@@ -4,6 +4,7 @@ import '../models/book.dart';
 import '../models/category.dart';
 import '../data/database_helper.dart';
 import 'package:intl/intl.dart';
+import 'addbook.dart';
 
 class BookDetailPage extends StatefulWidget {
   final Book book;
@@ -15,6 +16,9 @@ class BookDetailPage extends StatefulWidget {
 }
 
 class _BookDetailPageState extends State<BookDetailPage> {
+
+   late Book book;
+
   List<Category> allCategories = [];
   int rating = 0;
   String comment = '';
@@ -24,7 +28,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
   @override
   void initState() {
     super.initState();
-    final book = widget.book;
+    book = widget.book;
     selectedState = _normalizeState(book.userState) ?? 'To Read';
     rating = book.rating ?? 0;
     commentController.text = book.comment ?? '';
@@ -258,7 +262,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
 }
   @override
   Widget build(BuildContext context) {
-    final book = widget.book;
     final screenHeight = MediaQuery.of(context).size.height;
     final horizontalPadding = MediaQuery.of(context).size.width * 0.05;
 
@@ -276,6 +279,41 @@ class _BookDetailPageState extends State<BookDetailPage> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
+
+
+        IconButton(
+        icon: const Icon(Icons.edit),
+        onPressed: () async {
+          final updatedBook = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AddBookPage(book: widget.book),
+            ),
+          );
+
+          if (updatedBook != null && updatedBook is Book) {
+            setState(() {
+                book = book.copyWith(
+                title: updatedBook.title,
+                author: updatedBook.author,
+                genre: updatedBook.genre,
+                plot: updatedBook.plot,
+                imagePath: updatedBook.imagePath,
+                userState: updatedBook.userState,
+                comment: updatedBook.comment,
+                rating: updatedBook.rating,
+                categoryId: updatedBook.categoryId,
+                isFavorite: updatedBook.isFavorite,
+                dateCompleted: updatedBook.dateCompleted,
+              );
+            });
+
+            await DatabaseHelper.instance.insertBook(widget.book);
+          }
+        },
+      ),
+
+
             if (book.id != null)
               IconButton(icon: const Icon(Icons.delete), onPressed: _confirmDelete),
             IconButton(
