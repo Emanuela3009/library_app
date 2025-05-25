@@ -32,182 +32,90 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final readingBooks =
-        allBooks.where((b) => b.userState == 'Reading').toList();
+
+    final screen = MediaQuery.of(context).size;
+    final sectionHeight = screen.height * 0.27;
+    final horizontalPadding = screen.width * 0.03;
+    final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
     final popularBooks = allBooks.take(9).toList();
     final userBooks = allBooks.where((b) => b.isUserBook == true).toList();
     final favoriteBooks = allBooks.where((b) => b.isFavorite).toList();
+
+    Widget buildSectionTitle(String title, VoidCallback? onTap) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: screen.height * 0.015),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            SizedBox(width: screen.width * 0.01),
+            if (onTap != null)
+              GestureDetector(
+                onTap: onTap,
+                child: Icon(Icons.arrow_forward_ios, size: screen.width * 0.035),
+              ),
+          ],
+        ),
+      );
+    }
+
+    Widget buildBookList(List<Book> books, double height) {
+      return SizedBox(
+        height: height,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: books.length,
+          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          itemBuilder: (context, index) => BookCard(
+            book: books[index],
+            onUpdate: _loadBooksFromDatabase,
+          ),
+        ),
+      );
+    }
+
+    Widget buildEmptyText(String text) {
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: screen.height * 0.008),
+            Text(text),
+            SizedBox(height: screen.height * 0.02),
+          ],
+        ),
+      );
+    }
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Currently Reading
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              "Currently reading",
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
+          buildSectionTitle("Currently reading", null),
           readingBooks.isEmpty
-            ? const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 6), // Spazio sotto il titolo
-                    const Text("No books available"),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-                )
-            : SizedBox(
-                height: 240,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: readingBooks.length,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemBuilder: (context, index) => BookCard(
-                    book: readingBooks[index],
-                    onUpdate: _loadBooksFromDatabase,
-                  ),
-                ),
-              ),
+              ? buildEmptyText("No books available")
+              : buildBookList(readingBooks, sectionHeight),
 
-          // Popular Now + freccetta ravvicinata alla scritta
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Popular now",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(width: 6), // distanza minima tra testo e freccia
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const PopularPage()),
-                    );
-                  },
-                  child: const Icon(Icons.arrow_forward_ios, size: 14),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: 240,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: popularBooks.length,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemBuilder:
-                  (context, index) => BookCard(
-                    book: popularBooks[index],
-                    onUpdate: _loadBooksFromDatabase,
-                  ),
-            ),
-          ),
+          buildSectionTitle("Popular now", () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const PopularPage()));
+          }),
+          buildBookList(popularBooks, sectionHeight),
 
-          // Your Favorites + freccetta ravvicinata che cambia tab della nav bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Your favorites",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(width: 6),
-                GestureDetector(
-                  onTap: () {
-                    final homeState =
-                        context.findAncestorStateOfType<HomePageState>();
-                    if (homeState != null) {
-                      homeState.setIndex(3); // Vai alla scheda "Favorites"
-                    }
-                  },
-                  child: const Icon(Icons.arrow_forward_ios, size: 14),
-                ),
-              ],
-            ),
-          ),
+          buildSectionTitle("Your favorites", () {
+            final homeState = context.findAncestorStateOfType<HomePageState>();
+            homeState?.setIndex(3); // Cambia tab
+          }),
           favoriteBooks.isEmpty
-            ? const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 6), // Spazio sotto il titolo
-                    const Text("No favorites yet"),
-                    const SizedBox(height: 16), // Spazio extra prima della sezione successiva
-                  ],
-                ),
-              )
-            : SizedBox(
-                height: 240,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: favoriteBooks.length,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemBuilder: (context, index) => BookCard(
-                    book: favoriteBooks[index],
-                    onUpdate: _loadBooksFromDatabase,
-                  ),
-                ),
-              ),
+              ? buildEmptyText("No favorites yet")
+              : buildBookList(favoriteBooks, sectionHeight),
 
-          // Your Books + freccetta vicina
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Your books",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(width: 6),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LibraryPage()),
-                    );
-                  },
-                  child: const Icon(Icons.arrow_forward_ios, size: 14),
-                ),
-              ],
-            ),
-          ),
+          buildSectionTitle("Your books", () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const LibraryPage()));
+          }),
           userBooks.isEmpty
-            ? const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 6), // Spazio sotto il titolo
-                    const Text("No books added yet"),
-                    const SizedBox(height: 16), // Spazio extra prima della sezione successiva
-                  ],
-                ),
-              )
-            : SizedBox(
-                height: 240,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: userBooks.length,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemBuilder: (context, index) => BookCard(
-                    book: userBooks[index],
-                    onUpdate: _loadBooksFromDatabase,
-                  ),
-                ),
-              ),
+              ? buildEmptyText("No books added yet")
+              : buildBookList(userBooks, sectionHeight),
         ],
       ),
     );
