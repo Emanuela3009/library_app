@@ -7,6 +7,7 @@ import 'data/fake_books.dart';
 import 'data/fake_categories.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'screens/splahscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
         highlightColor: Colors.transparent,
         splashColor: Colors.transparent,
       ),
-      home: const HomePage(),
+      home:  SplashPage(),
     );
   }
 }
