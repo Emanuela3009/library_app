@@ -47,36 +47,40 @@ class _SearchPageState extends State<SearchPage> {
 
     // Se c'è una query, filtra per titolo/autore
     if (lowerQuery.isNotEmpty) {
-      filtered = filtered.where((book) {
-      final titleWords = book.title.toLowerCase().split(' ');
-      final authorWords = book.author.toLowerCase().split(' ');
-      final queryWords = lowerQuery.split(' ');
+  List<MapEntry<Book, int>> rankedBooks = [];
 
-      bool startsWithOrdered(List<String> sourceWords, List<String> queryWords) {
-        if (queryWords.length > sourceWords.length) return false;
+  for (var book in _allBooks) {
+    final titleWords = book.title.toLowerCase().split(' ');
+    final authorWords = book.author.toLowerCase().split(' ');
 
-        for (int i = 0; i < queryWords.length; i++) {
-          if (!sourceWords[i].startsWith(queryWords[i])) {
-            return false;
-          }
-        }
-        return true;
+    int? bestMatch;
+
+    for (int i = 0; i < titleWords.length; i++) {
+      if (titleWords[i].startsWith(lowerQuery)) {
+        bestMatch = i;
+        break;
       }
-
-      final titleMatch = startsWithOrdered(titleWords, queryWords);
-      final authorMatch = startsWithOrdered(authorWords, queryWords);
-
-      switch (_searchType) {
-        case 'Title':
-          return titleMatch;
-        case 'Author':
-          return authorMatch;
-        case 'All':
-        default:
-          return titleMatch || authorMatch;
-      }
-    }).toList();
     }
+
+    if (bestMatch == null) {
+      for (int i = 0; i < authorWords.length; i++) {
+        if (authorWords[i].startsWith(lowerQuery)) {
+          bestMatch = titleWords.length + i;
+          break;
+        }
+      }
+    }
+
+    if (bestMatch != null) {
+      rankedBooks.add(MapEntry(book, bestMatch));
+    }
+  }
+
+  rankedBooks.sort((a, b) => a.value.compareTo(b.value));
+  filtered = rankedBooks.map((e) => e.key).toList();
+}
+
+
 
     // Applica i filtri (se presenti)
     if (_selectedStatus != null && _selectedStatus != 'All') {
@@ -155,7 +159,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, color: Colors.grey),
+                        icon: const Icon(Icons.clear, color: Color(0xFF1E2A78)),
                         onPressed: _clearSearch,
                       )
                     : null,
