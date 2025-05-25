@@ -89,7 +89,7 @@ class _AddBookPageState extends State<AddBookPage> {
     return Scaffold(
       appBar: AppBar(title: Text(isEditing ? 'Edit Book' : 'Add Book')),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: padding,
         child: Form(
           key: _formKey,
           child: ListView(
@@ -151,7 +151,7 @@ class _AddBookPageState extends State<AddBookPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.grey),
                           ),
-                          child: const Center(child: Text("Tap to add cover image")),
+                          child: const Center(child: Text("Tap to add cover image", maxLines: 2,)),
                         ),
                 ),
               ),
