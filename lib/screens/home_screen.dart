@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 6), // Spazio sotto il titolo
-                    const Text("No book available"),
+                    const Text("No books available"),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 6), // Spazio sotto il titolo
-                    const Text("No book available"),
+                    const Text("No favorites yet"),
                     const SizedBox(height: 16), // Spazio extra prima della sezione successiva
                   ],
                 ),
@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 6), // Spazio sotto il titolo
-                    const Text("No book available"),
+                    const Text("No books added yet"),
                     const SizedBox(height: 16), // Spazio extra prima della sezione successiva
                   ],
                 ),
