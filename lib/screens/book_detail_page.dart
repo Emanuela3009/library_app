@@ -48,7 +48,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
       context: context,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: StatefulBuilder(
@@ -303,7 +303,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     borderRadius: BorderRadius.circular(8),
                     child: Image.asset(
                       book.imagePath,
-                      height: screenHeight * 0.4,
+                      height: screenHeight * 0.6,
                       width: double.infinity,
                       fit: BoxFit.cover,
                     ),
@@ -312,7 +312,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     top: 12,
                     right: 12,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(100),
+                      borderRadius: BorderRadius.circular(80),
                       onTap: () async {
                         setState(() => book.isFavorite = !book.isFavorite);
                         await DatabaseHelper.instance.insertBook(book);
