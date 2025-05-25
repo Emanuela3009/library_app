@@ -28,19 +28,34 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Numero colonne dinamico in base alla larghezza, minimo 2 colonne
+    int crossAxisCount = 2;
+    if (screenWidth >= 1200) {
+      crossAxisCount = 5;
+    } else if (screenWidth >= 900) {
+      crossAxisCount = 4;
+    } else if (screenWidth >= 600) {
+      crossAxisCount = 3;
+    }
+
+    final padding = screenWidth * 0.04;
+
     return Scaffold(
       appBar: AppBar(title: const Text("Your Favorites")),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding:  EdgeInsets.all(padding),
         child: favoriteBooks.isEmpty
             ? const Center(child: Text("No favorites yet"))
             : GridView.builder(
                 itemCount: favoriteBooks.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.68,
+                gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  mainAxisSpacing: padding,
+                  crossAxisSpacing: padding,
+                  childAspectRatio: 3 / 4.5,
                 ),
                 itemBuilder: (context, index) {
                   final book = favoriteBooks[index];
@@ -98,7 +113,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                   child: Icon(
                                     Icons.favorite,
                                     color: Colors.pink,
-                                    size: 22,
+                                    size: screenWidth * 0.05,
                                   ),
                                 ),
                               ),
@@ -106,7 +121,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 8),
+                           SizedBox(height: screenWidth * 0.02),
                           Text(
                             book.title,
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -121,15 +136,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           ),
                           Text(
                             '⭐ ${book.rating ?? 0}/5',
-                            style: const TextStyle(
+                            style:  TextStyle(
                               color: Colors.purple,
-                              fontSize: 13,
+                              fontSize: screenWidth * 0.035,
                             ),
                           ),
                           Text(
                             book.userState ?? '',
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style:  TextStyle(
+                              fontSize: screenWidth * 0.035,
                               color: Colors.black54,
                             ),
                           ),
