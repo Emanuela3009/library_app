@@ -37,6 +37,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWideScreen = screenWidth > 600;
     String newName = '';
     Color newColor = const Color.fromARGB(255, 106, 147, 221);
     String? errorText;
@@ -49,14 +51,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.05,
+          vertical: 16,
+        ),
         child: GridView.builder(
           itemCount: categories.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: isWideScreen ? 300 : 250,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
-            childAspectRatio: 0.9,
+            childAspectRatio: isWideScreen ? 0.85 : 0.75,
           ),
           itemBuilder: (context, index) {
             final category = categories[index];
@@ -69,9 +74,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     builder: (_) => CategoryDetailPage(category: category),
                   ),
                 );
-
                 if (wasDeleted == true) {
-                  await _loadData(); // 🔁 aggiorna la lista dopo eliminazione
+                  await _loadData();
                 }
               },
               child: Container(
@@ -103,14 +107,14 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     Text(
                       category.name,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: const Color.fromARGB(255, 22, 78, 199),
-                      ),
+                            color: const Color.fromARGB(255, 22, 78, 199),
+                          ),
                     ),
                     Text(
                       "$bookCount book${bookCount == 1 ? '' : 's'}",
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: const Color.fromARGB(255, 22, 78, 199),
-                      ),
+                            color: const Color.fromARGB(255, 22, 78, 199),
+                          ),
                     ),
                   ],
                 ),
@@ -143,15 +147,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
                               onChanged: (value) {
                                 newName = value;
                                 final exists = categories.any(
-                                  (c) =>
-                                      c.name.trim().toLowerCase() ==
-                                      value.trim().toLowerCase(),
+                                  (c) => c.name.trim().toLowerCase() == value.trim().toLowerCase(),
                                 );
                                 setState(() {
-                                  errorText =
-                                      exists
-                                          ? 'A category with this name already exists'
-                                          : null;
+                                  errorText = exists ? 'A category with this name already exists' : null;
                                 });
                               },
                             ),
@@ -162,19 +161,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
                               onTap: () {
                                 showDialog(
                                   context: context,
-                                  builder:
-                                      (context) => AlertDialog(
-                                        title: const Text('Choose a color'),
-                                        content: SingleChildScrollView(
-                                          child: BlockPicker(
-                                            pickerColor: newColor,
-                                            onColorChanged: (color) {
-                                              setState(() => newColor = color);
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ),
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Choose a color'),
+                                    content: SingleChildScrollView(
+                                      child: BlockPicker(
+                                        pickerColor: newColor,
+                                        onColorChanged: (color) {
+                                          setState(() => newColor = color);
+                                          Navigator.pop(context);
+                                        },
                                       ),
+                                    ),
+                                  ),
                                 );
                               },
                             ),
@@ -187,15 +185,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
                           ),
                           ElevatedButton(
                             onPressed: () async {
-                              if (newName.trim().isEmpty || errorText != null)
-                                return;
+                              if (newName.trim().isEmpty || errorText != null) return;
                               final newCategory = Category(
                                 name: newName.trim(),
                                 colorValue: newColor.value,
                               );
-                              await DatabaseHelper.instance.insertCategory(
-                                newCategory,
-                              );
+                              await DatabaseHelper.instance.insertCategory(newCategory);
                               await _loadData();
                               Navigator.pop(context);
                             },
