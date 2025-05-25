@@ -291,36 +291,25 @@ class _BookDetailPageState extends State<BookDetailPage> {
 
 
         IconButton(
-        icon: Icon(Icons.edit, size: iconSize ),
-        onPressed: () async {
-          final updatedBook = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AddBookPage(book: widget.book),
-            ),
-          );
+          icon: Icon(Icons.edit, size: iconSize),
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddBookPage(book: book),
+              ),
+            );
 
-          if (updatedBook != null && updatedBook is Book) {
-            setState(() {
-                book = book.copyWith(
-                title: updatedBook.title,
-                author: updatedBook.author,
-                genre: updatedBook.genre,
-                plot: updatedBook.plot,
-                imagePath: updatedBook.imagePath,
-                userState: updatedBook.userState,
-                comment: updatedBook.comment,
-                rating: updatedBook.rating,
-                categoryId: updatedBook.categoryId,
-                isFavorite: updatedBook.isFavorite,
-                dateCompleted: updatedBook.dateCompleted,
-              );
-            });
-
-            await DatabaseHelper.instance.insertBook(widget.book);
-          }
-        },
-      ),
+            if (result is Book) {
+              setState(() {
+                book = result;
+                selectedState = _normalizeState(result.userState) ?? 'To Read';
+                rating = result.rating ?? 0;
+                commentController.text = result.comment ?? '';
+              });
+            }
+          },
+        ),
 
 
             if (book.id != null)
@@ -409,22 +398,27 @@ class _BookDetailPageState extends State<BookDetailPage> {
               ),
                SizedBox(height: spacing),
               DropdownButtonFormField<String>(
-                value: selectedState,
+                value: selectedState, // usa selectedState per coerenza
                 items: ['To Read', 'Reading', 'Completed']
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
-                onChanged: (val) async {
-                  if (val == 'Completed' && selectedState != 'Completed') {
-                    final selected = await _showMonthYearPicker(context);
-                    if (selected != null) {
+                onChanged: (newValue) async {
+                  if (newValue == 'Completed' && selectedState != 'Completed') {
+                    final selectedDate = await _showMonthYearPicker(context);
+                    if (selectedDate != null) {
                       setState(() {
-                        widget.book.dateCompleted = DateTime(selected.year, selected.month);
-                        selectedState = val!;
+                        selectedState = 'Completed';
+                        book.dateCompleted = DateTime(selectedDate.year, selectedDate.month);
                       });
                     }
                   } else {
-                    setState(() => selectedState = val!);
+                    setState(() => selectedState = newValue!);
                   }
+                },
+                selectedItemBuilder: (context) {
+                  return ['To Read', 'Reading', 'Completed']
+                      .map((state) => Text(selectedState)) // forza il valore visivo coerente
+                      .toList();
                 },
                 decoration: const InputDecoration(border: OutlineInputBorder()),
               ),

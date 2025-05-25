@@ -17,9 +17,9 @@ class _AddBookPageState extends State<AddBookPage> {
   final titleController = TextEditingController();
   final authorController = TextEditingController();
   final plotController = TextEditingController();
-
+  String selectedState = 'To Read'; 
   String selectedGenre = 'Fantasy';
-  String selectedState = 'To Read';
+  
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
@@ -32,7 +32,7 @@ class _AddBookPageState extends State<AddBookPage> {
       authorController.text = book.author;
       plotController.text = book.plot;
       selectedGenre = book.genre;
-      selectedState = book.userState ?? 'To Read';
+      selectedState = widget.book?.userState ?? 'To Read';
       if (!book.imagePath.startsWith('assets')) {
         _selectedImage = File(book.imagePath);
       }
@@ -120,13 +120,17 @@ class _AddBookPageState extends State<AddBookPage> {
                 onChanged: (value) => setState(() => selectedGenre = value!),
               ),
               SizedBox(height: verticalSpace),
-              DropdownButtonFormField(
+              DropdownButtonFormField<String>(
                 value: selectedState,
-                decoration: const InputDecoration(labelText: 'State'),
                 items: ['To Read', 'Reading', 'Completed']
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
-                onChanged: (value) => setState(() => selectedState = value!),
+                onChanged: (value) {
+                  setState(() {
+                    selectedState = value!;
+                  });
+                },
+                decoration: const InputDecoration(labelText: 'State'),
               ),
               SizedBox(height: verticalSpace),
               Align(
