@@ -3,7 +3,6 @@ import '../models/book.dart';
 import '../data/database_helper.dart';
 import '../widgets/book_card.dart';
 import 'library_page.dart';
-import 'favorites_page.dart';
 import 'Home_page.dart';
 import 'popular_page.dart';
 
