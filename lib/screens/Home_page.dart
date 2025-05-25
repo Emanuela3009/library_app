@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => HomePageState();
 }
 
-// 👉 RIMOSSO il '_' qui sotto!
+
 class HomePageState extends State<HomePage> {
   int _currentIndex = 2;
   int _homeScreenKey = 0;
@@ -51,6 +51,10 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final isLandscape = mq.orientation == Orientation.landscape;
+    final horizontalPadding = mq.size.width * 0.03;
+    final verticalPadding = mq.size.height * 0.01;
     return Scaffold(
       appBar: AppBar(
         title: const Text("Book Library"),
@@ -72,9 +76,11 @@ class HomePageState extends State<HomePage> {
                       });
                     });
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Icon(Icons.add),
+                  child:  Padding(
+                    padding: EdgeInsets.all(isLandscape ? 6 : 10),
+                    child: Icon(Icons.add,
+                            size: isLandscape ? 28 : 24,),
+                    
                   ),
                 )
                 : null,
