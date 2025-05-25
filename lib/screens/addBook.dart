@@ -76,9 +76,15 @@ class _AddBookPageState extends State<AddBookPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     final isEditing = widget.book != null;
+    final screenSize = MediaQuery.of(context).size;
+    final isLandscape = screenSize.width > screenSize.height;
+
+    final verticalSpace = screenSize.height * 0.02;
+    final imageHeight = isLandscape ? screenSize.height * 0.3 : screenSize.height * 0.25;
+    final imageWidth = screenSize.width * (isLandscape ? 0.4 : 0.5);
+    final padding = EdgeInsets.symmetric(horizontal: screenSize.width * 0.05);
+
 
     return Scaffold(
       appBar: AppBar(title: Text(isEditing ? 'Edit Book' : 'Add Book')),
@@ -93,18 +99,18 @@ class _AddBookPageState extends State<AddBookPage> {
                 decoration: const InputDecoration(labelText: 'Title'),
                 validator: (value) => value!.isEmpty ? 'Enter a title' : null,
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: verticalSpace),
               TextFormField(
                 controller: authorController,
                 decoration: const InputDecoration(labelText: 'Author'),
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: verticalSpace),
               TextFormField(
                 controller: plotController,
                 decoration: const InputDecoration(labelText: 'Plot'),
                 maxLines: 3,
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: verticalSpace),
               DropdownButtonFormField(
                 value: selectedGenre,
                 decoration: const InputDecoration(labelText: 'Genre'),
@@ -113,7 +119,7 @@ class _AddBookPageState extends State<AddBookPage> {
                     .toList(),
                 onChanged: (value) => setState(() => selectedGenre = value!),
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: verticalSpace),
               DropdownButtonFormField(
                 value: selectedState,
                 decoration: const InputDecoration(labelText: 'State'),
@@ -122,7 +128,7 @@ class _AddBookPageState extends State<AddBookPage> {
                     .toList(),
                 onChanged: (value) => setState(() => selectedState = value!),
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: verticalSpace),
               Align(
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
@@ -132,14 +138,14 @@ class _AddBookPageState extends State<AddBookPage> {
                           borderRadius: BorderRadius.circular(8),
                           child: Image.file(
                             _selectedImage!,
-                            height: 180,
-                            width: screenWidth * 0.5,
+                            height: imageHeight,
+                            width: imageWidth,
                             fit: BoxFit.contain,
                           ),
                         )
                       : Container(
-                          height: screenHeight * 0.15,
-                          width: screenWidth * 0.4,
+                          height: imageHeight,
+                          width: imageWidth,
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                             borderRadius: BorderRadius.circular(8),
@@ -149,7 +155,7 @@ class _AddBookPageState extends State<AddBookPage> {
                         ),
                 ),
               ),
-              SizedBox(height: screenHeight * 0.02),
+              SizedBox(height: verticalSpace),
               ElevatedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
