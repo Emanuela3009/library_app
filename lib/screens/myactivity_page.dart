@@ -49,13 +49,16 @@ class _MyActivityPageState extends State<MyActivityPage> {
     averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
   }
 
-  //Distribuzione per genere: TUTTI i libri presenti
+  // Distribuzione per genere: solo libri utente (non popular) con stato Reading o Completed
   genreCounts.clear();
-  for (var book in books) {
-    final genre = book.genre?.trim();
-    if (genre != null && genre.isNotEmpty) {
-      genreCounts[genre] = (genreCounts[genre] ?? 0) + 1;
-    }
+  final filteredBooks = books.where((b) =>
+    b.isUserBook &&
+    (b.userState == 'Reading' || b.userState == 'Completed') &&
+    b.genre.trim().isNotEmpty).toList();
+
+  for (var book in filteredBooks) {
+    final genre = book.genre.trim();
+    genreCounts[genre] = (genreCounts[genre] ?? 0) + 1;
   }
 
   // Conteggio libri letti per mese/anno
