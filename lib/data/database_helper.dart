@@ -117,4 +117,13 @@ class DatabaseHelper {
     final db = await database;
     return await db.delete('categories', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<Book?> getBookById(int id) async {
+  final db = await database;
+  final result = await db.query('books', where: 'id = ?', whereArgs: [id]);
+  if (result.isNotEmpty) {
+    return Book.fromMap(result.first);
+  }
+  return null;
+}
 }

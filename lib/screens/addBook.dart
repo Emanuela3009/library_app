@@ -135,7 +135,7 @@ class _AddBookPageState extends State<AddBookPage> {
               DropdownButtonFormField(
                 value: selectedGenre,
                 decoration: const InputDecoration(labelText: 'Genre'),
-                items: ['Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror']
+                items: ['Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror', 'Gothic', 'Fable']
                     .map((genre) => DropdownMenuItem(value: genre, child: Text(genre)))
                     .toList(),
                 onChanged: (value) => setState(() => selectedGenre = value!),
@@ -191,7 +191,7 @@ class _AddBookPageState extends State<AddBookPage> {
                       genre: selectedGenre,
                       plot: plotController.text,
                       imagePath: _imageFileName ?? widget.book?.imagePath ?? 'assets/books/placeholder.jpg',
-                      userState: selectedState,
+                      userState: selectedState.isNotEmpty ? selectedState : widget.book?.userState ?? 'To Read',
                       isUserBook: true,
                       isFavorite: widget.book?.isFavorite ?? false,
                       categoryId: widget.book?.categoryId,

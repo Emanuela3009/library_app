@@ -312,26 +312,44 @@ class _BookDetailPageState extends State<BookDetailPage> {
         appBar: AppBar(
           actions: [
             IconButton(
-              icon: Icon(Icons.edit, size: iconSize),
-              onPressed: () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => AddBookPage(book: book),
-                  ),
-                );
+                icon: Icon(Icons.edit, size: iconSize),
+                onPressed: () async {
+                  //Prima salva le modifiche locali
+                  book.comment = commentController.text;
+                  book.rating = rating;
+                  if (selectedState == 'Completed' && book.userState != 'Completed') {
+                    book.dateCompleted = DateTime.now();
+                  }
+                  book.userState = selectedState;
+                  await DatabaseHelper.instance.insertBook(book);
 
-                if (result is Book) {
-                  setState(() {
-                    book = result;
-                    selectedState = _normalizeState(result.userState) ?? 'To Read';
-                    rating = result.rating ?? 0;
-                    commentController.text = result.comment ?? '';
-                    _checkImageFileExists();
-                  });
-                }
-              },
-            ),
+                  //Poi ricarica il libro aggiornato dal DB
+                  final refreshedBook = await DatabaseHelper.instance.getBookById(book.id!);
+                  if (refreshedBook == null) return;
+
+                  // ✏️ Vai alla schermata di modifica con il libro aggiornato
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AddBookPage(book: refreshedBook),
+                    ),
+                  );
+
+                  // Quando torni, aggiorna la UI
+                  if (result is Book) {
+                    final updated = await DatabaseHelper.instance.getBookById(result.id!);
+                    if (updated != null) {
+                      setState(() {
+                        book = updated;
+                        selectedState = _normalizeState(updated.userState) ?? 'To Read';
+                        rating = updated.rating ?? 0;
+                        commentController.text = updated.comment ?? '';
+                        _checkImageFileExists();
+                      });
+                    }
+                  }
+                },
+              ),
             if (book.id != null)
               IconButton(icon: Icon(Icons.delete, size: iconSize), onPressed: _confirmDelete),
             IconButton(
