@@ -7,7 +7,8 @@ import 'Home_page.dart';
 import 'popular_page.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(int) onTabChanged;
+  const HomeScreen({super.key, required this.onTabChanged});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -60,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Widget buildBookList(List<Book> books, double height) {
       return SizedBox(
-        height: height,
+        height: height + 30,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: books.length,
@@ -109,8 +110,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     buildBookList(popularBooks, sectionHeight),
 
                     buildSectionTitle("Your favorites", () {
-                      final homeState = context.findAncestorStateOfType<HomePageState>();
-                      homeState?.setIndex(3);
+                     // final homeState = context.findAncestorStateOfType<HomePageState>();
+                      //homeState?.setIndex(3);
+                      widget.onTabChanged(3);
+
                     }),
                     favoriteBooks.isEmpty
                         ? buildEmptyText("No favorites yet")

@@ -34,13 +34,13 @@ class HomePageState extends State<HomePage> {
       case 1:
         return const CategoriesPage();
       case 2:
-        return HomeScreen(key: ValueKey(_homeScreenKey));
+        return HomeScreen(key: ValueKey(_homeScreenKey), onTabChanged: setIndex);
       case 3:
         return const FavoritesPage();
       case 4:
         return const MyActivityPage();
       default:
-        return const HomeScreen();
+        return HomeScreen(onTabChanged: setIndex);
     }
   }
 
@@ -50,7 +50,7 @@ class HomePageState extends State<HomePage> {
     });
   }
 
-  // 👉 Serve a home_screen.dart per navigare!
+  // Serve a home_screen.dart per navigare!
   void setIndex(int index) {
     setState(() {
       _currentIndex = index;
@@ -72,7 +72,7 @@ class HomePageState extends State<HomePage> {
         leading: (_currentIndex == 2)
             ? InkWell(
                   borderRadius: BorderRadius.circular(100),
-                  splashColor: const Color.fromARGB(255, 106, 147, 221),
+                  splashColor: const Color.fromARGB(255, 0, 0, 0),
                   onTap: () {
                     Navigator.push(
                       context,
