@@ -107,14 +107,15 @@ class _MyActivityPageState extends State<MyActivityPage> {
               color: const Color.fromARGB(255, 111, 153, 241),
               fontWeight: FontWeight.bold,
             )),
-            SizedBox(height: spacing),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _infoCard("Completed", readCount, size),
-                _infoCard("Reading", readingCount, size),
-                _infoCard("To Read", toReadCount, size),
-              ],
+            SizedBox(
+              height: size.height * 0.14,
+              child: Row(
+                children: [
+                  _infoCard("Completed", readCount, size),
+                  _infoCard("Reading", readingCount, size),
+                  _infoCard("To Read", toReadCount, size),
+                ],
+              ),
             ),
             SizedBox(height: spacing * 2),
             Text("Your reading taste", style: Theme.of(context).textTheme.titleMedium),
@@ -295,31 +296,56 @@ class _MyActivityPageState extends State<MyActivityPage> {
   }
 
   Widget _infoCard(String label, int count, Size size) {
-    return SizedBox(
-      width: size.width * 0.28,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 6),
-              Text('$count', style: const TextStyle(fontSize: 20)),
-            ],
-          ),
+  return Expanded(
+    child: Card(
+      color: const Color.fromARGB(255, 249, 246, 252),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          vertical: size.height * 0.02,
+          horizontal: size.width * 0.01,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: size.width * 0.035,
+                color: Colors.black54,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: size.height * 0.008),
+            FittedBox(
+              child: Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: size.width * 0.06,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _GenrePieChart extends StatelessWidget {
   final Map<String, int> data;
-  const _GenrePieChart({required this.data});
+
+  const _GenrePieChart({Key? key, required this.data}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final total = data.values.fold(0, (a, b) => a + b).toDouble();
+    final total = data.values.fold<int>(0, (a, b) => a + b).toDouble();
+
     final genreColorMap = {
       'Fantasy': const Color.fromARGB(255, 174, 147, 221),
       'Romance': const Color.fromARGB(255, 236, 106, 149),
@@ -330,10 +356,11 @@ class _GenrePieChart extends StatelessWidget {
 
     return PieChart(
       PieChartData(
-        sections: data.entries.toList().asMap().entries.map((entry) {
-          final genre = entry.value.key;
-          final value = entry.value.value;
+        sections: data.entries.map((entry) {
+          final genre = entry.key;
+          final value = entry.value;
           final percent = (value / total * 100).toStringAsFixed(1);
+
           return PieChartSectionData(
             value: value.toDouble(),
             title: '$percent%',
