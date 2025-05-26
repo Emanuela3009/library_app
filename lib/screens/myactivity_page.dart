@@ -94,6 +94,8 @@ class _MyActivityPageState extends State<MyActivityPage> {
       'Adventure': Colors.orange,
       'Sci-Fi': const Color.fromARGB(255, 132, 212, 248),
       'Horror': const Color.fromARGB(255, 237, 104, 95),
+      'Gothic': const Color.fromARGB(255, 58, 88, 132),
+      'Fable': const Color.fromARGB(255, 102, 187, 106),
     };
 
     return Scaffold(
@@ -351,6 +353,8 @@ class _GenrePieChart extends StatelessWidget {
       'Adventure': Colors.orange,
       'Sci-Fi': const Color.fromARGB(255, 132, 212, 248),
       'Horror': const Color.fromARGB(255, 237, 104, 95),
+      'Gothic': const Color.fromARGB(255, 58, 88, 132),
+      'Fable': const Color.fromARGB(255, 102, 187, 106),
     };
 
     return PieChart(
