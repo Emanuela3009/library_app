@@ -47,7 +47,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     final padding = screenWidth * 0.04;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Your Favorites")),
+      
       body: Padding(
         padding: EdgeInsets.all(padding),
         child: favoriteBooks.isEmpty
