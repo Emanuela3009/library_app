@@ -28,7 +28,6 @@ class _BookCardState extends State<BookCard> {
     final path = await widget.book.getImageFullPath();
 
     if (path == null) {
-      // immagine da asset
       setState(() {
         _fileExists = null;
         _fullImagePath = null;
@@ -50,12 +49,10 @@ class _BookCardState extends State<BookCard> {
     Widget imageWidget;
 
     if (_fileExists == null) {
-      // immagine asset
       imageWidget = Image.asset(widget.book.imagePath, fit: BoxFit.cover);
     } else if (_fileExists == true && _fullImagePath != null) {
       imageWidget = Image.file(File(_fullImagePath!), fit: BoxFit.cover);
     } else {
-      // file non trovato, mostra placeholder
       imageWidget = Image.asset('assets/books/placeholder.jpg', fit: BoxFit.cover);
     }
 
@@ -72,6 +69,7 @@ class _BookCardState extends State<BookCard> {
         margin: const EdgeInsets.only(right: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min, // previene overflow
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
@@ -103,15 +101,18 @@ class _BookCardState extends State<BookCard> {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
-              widget.book.title,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            SizedBox(
+              height: 36, // assicura spazio sufficiente per 2 righe
+              child: Text(
+                widget.book.title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
