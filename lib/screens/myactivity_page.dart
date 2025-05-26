@@ -97,14 +97,13 @@ class _MyActivityPageState extends State<MyActivityPage> {
     };
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Activity')),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.05, vertical: spacing),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Reading Progress Summary", style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: const Color.fromARGB(255, 111, 153, 241),
+              color: const Color.fromARGB(255, 0, 0, 0),
               fontWeight: FontWeight.bold,
             )),
             SizedBox(
@@ -196,7 +195,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text("Books read per month", style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: const Color.fromARGB(255, 111, 153, 241),
+                          color: const Color.fromARGB(255, 0, 0, 0),
                           fontWeight: FontWeight.bold,
                         )),
                         DropdownButton<int>(

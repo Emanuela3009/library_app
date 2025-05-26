@@ -1,10 +1,9 @@
-// import invariati
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../../models/category.dart';
 import '../../models/book.dart';
 import '../../data/database_helper.dart';
 import 'category_detail_page.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
@@ -41,22 +40,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth > 600;
     String newName = '';
-    Color newColor = Colors.black;
+    Color newColor = const Color.fromARGB(255, 0, 0, 0);
     String? errorText;
 
     return Scaffold(
-
       body: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.05,
-          vertical: 16,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: GridView.builder(
           itemCount: categories.length,
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: isWideScreen ? 300 : 250,
-            mainAxisSpacing: 20,
-            crossAxisSpacing: 20,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
             childAspectRatio: isWideScreen ? 0.85 : 0.75,
           ),
           itemBuilder: (context, index) {
@@ -78,11 +73,11 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
-                      color: Color(0x1A000000),
+                      color: Colors.black12,
                       blurRadius: 8,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
@@ -99,21 +94,20 @@ class _CategoriesPageState extends State<CategoriesPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     Text(
                       category.name,
                       style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
                         color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Text(
                       "$bookCount book${bookCount == 1 ? '' : 's'}",
                       style: const TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF7C7C7C),
+                        color: Colors.grey,
                       ),
                     ),
                   ],
@@ -127,6 +121,15 @@ class _CategoriesPageState extends State<CategoriesPage> {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             onPressed: () {
               errorText = null;
               showDialog(
@@ -147,13 +150,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
                               onChanged: (value) {
                                 newName = value;
                                 final exists = categories.any(
-                                  (c) => c.name.trim().toLowerCase() ==
-                                      value.trim().toLowerCase(),
+                                  (c) => c.name.trim().toLowerCase() == value.trim().toLowerCase(),
                                 );
                                 setState(() {
-                                  errorText = exists
-                                      ? 'A category with this name already exists'
-                                      : null;
+                                  errorText = exists ? 'A category with this name already exists' : null;
                                 });
                               },
                             ),
@@ -206,17 +206,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 },
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-            child: const Text(
-              "Create Category",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+            child: const Text('Create Category'),
           ),
         ),
       ),
