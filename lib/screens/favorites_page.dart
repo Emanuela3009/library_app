@@ -1,8 +1,11 @@
-import 'dart:io';
+import 'book_detail_page.dart';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
-import 'book_detail_page.dart';
+import '../widgets/book_grid_card.dart';
+
+
+
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -29,7 +32,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   @override
   Widget build(BuildContext context) {
-
     final screenWidth = MediaQuery.of(context).size.width;
 
     // Numero colonne dinamico in base alla larghezza, minimo 2 colonne
@@ -47,12 +49,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
     return Scaffold(
       appBar: AppBar(title: const Text("Your Favorites")),
       body: Padding(
-        padding:  EdgeInsets.all(padding),
+        padding: EdgeInsets.all(padding),
         child: favoriteBooks.isEmpty
             ? const Center(child: Text("No favorites yet"))
             : GridView.builder(
                 itemCount: favoriteBooks.length,
-                gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   mainAxisSpacing: padding,
                   crossAxisSpacing: padding,
@@ -68,88 +70,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           builder: (_) => BookDetailPage(book: book),
                         ),
                       );
-                      _loadFavorites(); // aggiorna al ritorno
+                      _loadFavorites(); // aggiorna lista al ritorno
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Stack(
-                              children: [
-                                Center(
-                               child: book.imagePath.startsWith('assets/')
-                                  ? Image.asset(
-                                      book.imagePath,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.file(
-                                      File(book.imagePath),
-                                      fit: BoxFit.cover,
-                                    ),
-                              ),
-                                Positioned(
-                                top: 6,
-                                right: 6,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(20),
-                                  onTap: () async {
-                                    book.isFavorite = false;
-                                    await DatabaseHelper.instance.insertBook(book);
-                                    setState(() => favoriteBooks.remove(book));
-                                  },
-                                  child: Icon(
-                                    Icons.favorite,
-                                    color: Colors.pink,
-                                    size: screenWidth * 0.05,
-                                  ),
-                                ),
-                              ),
-
-                              ],
-                            ),
-                          ),
-                           SizedBox(height: screenWidth * 0.02),
-                          Text(
-                            book.title,
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            book.author,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            '⭐ ${book.rating ?? 0}/5',
-                            style:  TextStyle(
-                              color: Colors.purple,
-                              fontSize: screenWidth * 0.035,
-                            ),
-                          ),
-                          Text(
-                            book.userState ?? '',
-                            style:  TextStyle(
-                              fontSize: screenWidth * 0.035,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: BookGridCard(
+                      book: book,
+                      onFavoriteToggle: _loadFavorites,
                     ),
                   );
                 },
