@@ -19,6 +19,14 @@ class HomePageState extends State<HomePage> {
   int _currentIndex = 2;
   int _homeScreenKey = 0;
 
+  final List<String> _titles = [
+  'Search',
+  'Categories',
+  'Book Library',
+  'Your Favorites',
+  'Activity',
+];
+
   Widget _getScreen(int index) {
     switch (index) {
       case 0:
@@ -57,10 +65,12 @@ class HomePageState extends State<HomePage> {
     final verticalPadding = mq.size.height * 0.01;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Book Library"),
-        leading:
-            (_currentIndex == 2 || _currentIndex == 3)
-                ? InkWell(
+        title: Text(
+          _titles[_currentIndex],
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        leading: (_currentIndex == 2)
+            ? InkWell(
                   borderRadius: BorderRadius.circular(100),
                   splashColor: const Color.fromARGB(255, 106, 147, 221),
                   onTap: () {
