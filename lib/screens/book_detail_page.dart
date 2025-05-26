@@ -268,7 +268,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     final screenHeight = MediaQuery.of(context).size.height;
     final isLandscape = screenWidth > screenHeight;
     final horizontalPadding = screenWidth * 0.05;
-    final imageHeight = screenHeight * 0.5; 
+    final imageHeight = screenHeight * 0.6; 
     final double spacing = screen.height * 0.02;
     final double iconSize = screen.width * 0.07;
   
