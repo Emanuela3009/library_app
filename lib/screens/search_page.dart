@@ -414,30 +414,32 @@ class _SearchPageState extends State<SearchPage> {
                                 children: [
                                   // Copertina con cuore
                                   Stack(
-                                    children: [
-                                      ClipRRect(
+                                  children: [
+                                    Container(
+                                      width: 90,
+                                      height: 130,
+                                      decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(12),
-                                        child: Image.asset(
-                                          book.imagePath,
-                                          width: screenWidth * 0.25,
-                                          height: screenHeight * 0.2,
+                                        image: DecorationImage(
+                                          image: AssetImage(book.imagePath),
                                           fit: BoxFit.cover,
                                         ),
                                       ),
-                                      Positioned(
-                                        top: 6,
-                                        right: 6,
-                                        child: GestureDetector(
-                                          onTap: () => _toggleFavorite(book),
-                                          child: Icon(
-                                            book.isFavorite ? Icons.favorite : Icons.favorite_border,
-                                            color: book.isFavorite ? Colors.pink : Colors.grey,
-                                            size: 20,
-                                          ),
+                                    ),
+                                    Positioned(
+                                      top: 6,
+                                      right: 6,
+                                      child: GestureDetector(
+                                        onTap: () => _toggleFavorite(book),
+                                        child: Icon(
+                                          book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                                          color: book.isFavorite ? Colors.pink : Colors.grey,
+                                          size: 20,
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
+                                ),
                                   // Info
                                   Expanded(
                                     child: Padding(
