@@ -15,7 +15,6 @@ class AppBarIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(100), 
-      splashColor: const Color.fromARGB(255, 106, 147, 221), // quando premo sull'icona, diventa azzurro attorno
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(10),
