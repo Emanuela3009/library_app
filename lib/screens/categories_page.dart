@@ -37,19 +37,38 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isWideScreen = screenWidth > 600;
+    final screen = MediaQuery.of(context).size;
+    final isWideScreen = screen.width > 600;
+    final isTablet = screen.width > 600;
+    final double padding = screen.width * 0.04;
+    final double fontSizeTitle = isTablet ? 20 : 16;
+    final double fontSizeSubtitle = isTablet ? 16 : 14;
+
     String newName = '';
     Color newColor = const Color.fromARGB(255, 0, 0, 0);
     String? errorText;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Categories',
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        centerTitle: true,
+      ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: EdgeInsets.symmetric(horizontal: padding, vertical: padding),
         child: GridView.builder(
           itemCount: categories.length,
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: isWideScreen ? 300 : 250,
+            maxCrossAxisExtent: screen.width < 400
+                ? 180
+                : screen.width < 600
+                    ? 220
+                    : 280,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
             childAspectRatio: isWideScreen ? 0.85 : 0.75,
@@ -97,16 +116,16 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     const SizedBox(height: 10),
                     Text(
                       category.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        fontSize: 16,
+                        fontSize: fontSizeTitle,
                         color: Colors.black,
                       ),
                     ),
                     Text(
                       "$bookCount book${bookCount == 1 ? '' : 's'}",
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: fontSizeSubtitle,
                         color: Colors.grey,
                       ),
                     ),
@@ -119,7 +138,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       ),
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(padding),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black,
@@ -128,7 +147,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
-              textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSizeTitle),
             ),
             onPressed: () {
               errorText = null;
