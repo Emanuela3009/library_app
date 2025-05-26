@@ -99,7 +99,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Activity')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(horizontal: size.width * 0.05, vertical: spacing),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

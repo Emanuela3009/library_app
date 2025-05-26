@@ -28,20 +28,30 @@ class _PopularPageState extends State<PopularPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+    final double spacing = screen.width * 0.04;
+    final double padding = screen.width * 0.05;
+    final double fontScale = screen.width / 400;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Popular Books")),
+      appBar: AppBar(
+        title: Text(
+          "Popular Books",
+          style: TextStyle(fontSize: 18 * fontScale),
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(padding),
         child:
             popularBooks.isEmpty
                 ? const Center(child: Text("No popular books available"))
                 : GridView.builder(
                   itemCount: popularBooks.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 0.68,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: (screen.width ~/ 200).clamp(2, 4),
+                    mainAxisSpacing: spacing,
+                    crossAxisSpacing: spacing,
+                    childAspectRatio: screen.width > 600 ? 0.6 : 0.68,
                   ),
                   itemBuilder: (context, index) {
                     final book = popularBooks[index];
@@ -56,7 +66,7 @@ class _PopularPageState extends State<PopularPage> {
                         _loadPopularBooks(); // aggiorna al ritorno
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(spacing * 0.5),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(12),
@@ -93,37 +103,41 @@ class _PopularPageState extends State<PopularPage> {
                                           book.isFavorite
                                               ? Colors.pink
                                               : Colors.grey,
-                                      size: 20,
+                                      size: screen.width * 0.05,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: spacing * 0.5),
                             Text(
                               book.title,
-                              style: Theme.of(context).textTheme.bodyLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold),
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14 * fontScale,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               book.author,
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontSize: 13 * fontScale,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               '⭐ ${book.rating?.toStringAsFixed(1) ?? '0.0'}/5',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.purple,
-                                fontSize: 13,
+                                fontSize: 13 * fontScale,
                               ),
                             ),
                             Text(
                               book.userState ?? '',
-                              style: const TextStyle(
-                                fontSize: 12,
+                              style: TextStyle(
+                                fontSize: 12 * fontScale,
                                 color: Colors.black54,
                               ),
                             ),

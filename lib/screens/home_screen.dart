@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 
     final screen = MediaQuery.of(context).size;
-    final sectionHeight = screen.height * 0.27;
+    final sectionHeight = screen.height * 0.23;
     final horizontalPadding = screen.width * 0.03;
     final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
     final popularBooks = allBooks.take(9).toList();
@@ -81,41 +81,56 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             SizedBox(height: screen.height * 0.008),
             Text(text),
-            SizedBox(height: screen.height * 0.02),
+            SizedBox(height: screen.height * 0.05),
           ],
         ),
       );
     }
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          buildSectionTitle("Currently reading", null),
-          readingBooks.isEmpty
-              ? buildEmptyText("No books available")
-              : buildBookList(readingBooks, sectionHeight),
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Padding(
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 60),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildSectionTitle("Currently reading", null),
+                    readingBooks.isEmpty
+                        ? buildEmptyText("No books available")
+                        : buildBookList(readingBooks, sectionHeight),
 
-          buildSectionTitle("Popular now", () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const PopularPage()));
-          }),
-          buildBookList(popularBooks, sectionHeight),
+                    buildSectionTitle("Popular now", () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const PopularPage()));
+                    }),
+                    buildBookList(popularBooks, sectionHeight),
 
-          buildSectionTitle("Your favorites", () {
-            final homeState = context.findAncestorStateOfType<HomePageState>();
-            homeState?.setIndex(3); // Cambia tab
-          }),
-          favoriteBooks.isEmpty
-              ? buildEmptyText("No favorites yet")
-              : buildBookList(favoriteBooks, sectionHeight),
+                    buildSectionTitle("Your favorites", () {
+                      final homeState = context.findAncestorStateOfType<HomePageState>();
+                      homeState?.setIndex(3);
+                    }),
+                    favoriteBooks.isEmpty
+                        ? buildEmptyText("No favorites yet")
+                        : buildBookList(favoriteBooks, sectionHeight),
 
-          buildSectionTitle("Your books", () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const LibraryPage()));
-          }),
-          userBooks.isEmpty
-              ? buildEmptyText("No books added yet")
-              : buildBookList(userBooks, sectionHeight),
-        ],
+                    buildSectionTitle("Your books", () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const LibraryPage()));
+                    }),
+                    userBooks.isEmpty
+                        ? buildEmptyText("No books added yet")
+                        : buildBookList(userBooks, sectionHeight),
+
+                    // aggiungi uno spazio finale
+                    SizedBox(height: screen.height * 0.05),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
