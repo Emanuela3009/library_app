@@ -37,7 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final sectionHeight = screen.height * 0.23;
     final horizontalPadding = screen.width * 0.03;
     final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
-    final popularBooks = allBooks.take(9).toList();
+   final popularBooks = allBooks.where((b) => !b.isUserBook).take(9).toList();
     final userBooks = allBooks.where((b) => b.isUserBook == true).toList();
     final favoriteBooks = allBooks.where((b) => b.isFavorite).toList();
 

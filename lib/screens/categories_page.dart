@@ -45,16 +45,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
     String? errorText;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Categories',
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      backgroundColor: Colors.white,
+
       body: Padding(
         padding: EdgeInsets.symmetric(
           horizontal: screenWidth * 0.05,

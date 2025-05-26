@@ -1,4 +1,3 @@
-// IMPORT
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
@@ -104,147 +103,68 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Search Books", style: theme.textTheme.headlineLarge),
-      ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.05,
-          vertical: screenHeight * 0.015,
-        ),
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: screenHeight * 0.015),
         child: Column(
           children: [
-            // Campo ricerca
             TextField(
               controller: _searchController,
               onChanged: _filterBooks,
               decoration: InputDecoration(
                 hintText: 'Search by title or author',
-                prefixIcon: IconButton(
-                  icon: const Icon(Icons.search, color: Color(0xFF1E2A78)),
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                    _filterBooks(_searchController.text);
-                  },
-                ),
+                hintStyle: TextStyle(color: Color(0xFF7C7C7C)),
+                prefixIcon: const Icon(Icons.search, color: Color(0xFF000000)),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, color: Color(0xFF1E2A78)),
+                        icon: const Icon(Icons.clear, color: Color(0xFF000000)),
                         onPressed: _clearSearch,
                       )
                     : null,
-                hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                  color: const Color.fromARGB(180, 1, 30, 100),
-                ),
                 filled: true,
-                fillColor: const Color.fromARGB(25, 4, 36, 109),
+                fillColor: const Color.fromARGB(20, 0, 0, 0),
                 contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF6A93DD)),
+                  borderSide: const BorderSide(color: Color(0xFF000000)),
                 ),
                 enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF6A93DD), width: 1.5),
+                  borderSide: BorderSide(color: Color(0xFF000000), width: 1.5),
                 ),
                 focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF164EC7), width: 2),
+                  borderSide: BorderSide(color: Color(0xFF000000), width: 2),
                 ),
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // FILTRI
             Column(
               children: [
                 Row(
                   children: [
-
-                    //ricerca per tipo
                     Expanded(
-                      child: DropdownButtonFormField<String>(
+                      child: _buildDropdown(
+                        label: "Ordered by",
                         value: _searchType,
-                        decoration: const InputDecoration(
-                          label: Text(
-                          "Ordered by",
-                          style: TextStyle(
-                            color: Color.fromARGB(180, 1, 30, 100),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(180, 1, 30, 100),
-                            width: 1.5,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(180, 1, 30, 100),
-                            width: 2,
-                          ),
-                        ),
-                        ),
-                        iconEnabledColor: Theme.of(context).textTheme.bodyMedium?.color,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        items: ['All', 'Title', 'Author', 'A-Z', 'Z-A'],
                         onChanged: (val) {
-                          setState(() {
-                            _searchType = val!;
-                            _filterBooks(_searchController.text);
-                          });
+                          _searchType = val!;
+                          _filterBooks(_searchController.text);
                         },
-                        items: ['All', 'Title', 'Author', 'A-Z', 'Z-A']
-                            .map((v) => DropdownMenuItem(value: v, child: Text(v)))
-                            .toList(),
                       ),
                     ),
                     const SizedBox(width: 12),
-
-                    //ricerca per stato
                     Expanded(
-                      child: DropdownButtonFormField<String>(
+                      child: _buildDropdown(
+                        label: "State",
                         value: _selectedStatus,
-                        decoration: const InputDecoration(
-                          label: Text(
-                          "State",
-                          style: TextStyle(
-                            color: Color.fromARGB(180, 1, 30, 100),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(180, 1, 30, 100),
-                            width: 1.5,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(180, 1, 30, 100),
-                            width: 2,
-                          ),
-                        ),
-                        ),
-                        iconEnabledColor: Theme.of(context).textTheme.bodyMedium?.color,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        items: ['All', 'To Read', 'Reading', 'Completed'],
                         onChanged: (val) {
-                          setState(() {
-                            _selectedStatus = val!;
-                            _filterBooks(_searchController.text);
-                          });
+                          _selectedStatus = val!;
+                          _filterBooks(_searchController.text);
                         },
-                        items: ['All', 'To Read', 'Reading', 'Completed']
-                            .map((v) => DropdownMenuItem(value: v, child: Text(v)))
-                            .toList(),
                       ),
                     ),
                   ],
@@ -252,98 +172,36 @@ class _SearchPageState extends State<SearchPage> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-
-                    //ricerca per genere
                     Expanded(
-                      child: DropdownButtonFormField<String>(
+                      child: _buildDropdown(
+                        label: "Genre",
                         value: _selectedGenre,
-                        decoration: const InputDecoration(
-                          label: Text(
-                          "Genre",
-                          style: TextStyle(
-                            color: Color.fromARGB(180, 1, 30, 100),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(180, 1, 30, 100),
-                            width: 1.5,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(180, 1, 30, 100),
-                            width: 2,
-                          ),
-                        ),
-                        ),
-                        iconEnabledColor: Theme.of(context).textTheme.bodyMedium?.color,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        items: ['All', 'Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror'],
                         onChanged: (val) {
-                          setState(() {
-                            _selectedGenre = val!;
-                            _filterBooks(_searchController.text);
-                          });
+                          _selectedGenre = val!;
+                          _filterBooks(_searchController.text);
                         },
-                        items: ['All', 'Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror']
-                            .map((v) => DropdownMenuItem(value: v, child: Text(v)))
-                            .toList(),
                       ),
                     ),
                     const SizedBox(width: 12),
-
-                    //ricerca per voto
                     Expanded(
                       child: DropdownButtonFormField<int>(
                         value: _selectedRating == -1 ? null : _selectedRating,
-                        decoration: const InputDecoration(
-                          label: Text(
-                          "Rate",
-                          style: TextStyle(
-                            color: Color.fromARGB(180, 1, 30, 100),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(180, 1, 30, 100),
-                            width: 1.5,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: const Color.fromARGB(180, 1, 30, 100),
-                            width: 2,
-                          ),
-                        ),
-                        ),
-                        iconEnabledColor: Theme.of(context).textTheme.bodyMedium?.color,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        decoration: _inputDecoration("Rate"),
+                        iconEnabledColor: const Color(0xFF000000),
+                        style: const TextStyle(color: Color(0xFF000000)),
                         onChanged: (val) {
-                          setState(() {
-                            _selectedRating = val ?? -1;
-                            _filterBooks(_searchController.text);
-                          });
+                          _selectedRating = val ?? -1;
+                          _filterBooks(_searchController.text);
                         },
                         items: [
-                          const DropdownMenuItem(
-                            value: -1,
-                            child: Text("All"),
-                          ),
-                          ...List.generate(5, (index) {
-                            final ratingValue = index + 1;
+                          const DropdownMenuItem(value: -1, child: Text("All")),
+                          ...List.generate(5, (i) {
+                            final rating = i + 1;
                             return DropdownMenuItem(
-                              value: ratingValue,
+                              value: rating,
                               child: Row(
-                                children: List.generate(
-                                  ratingValue,
-                                  (_) => const Icon(Icons.star, color: Colors.amber, size: 18),
-                                ),
+                                children: List.generate(rating, (_) => const Icon(Icons.star, color: Colors.amber, size: 18)),
                               ),
                             );
                           }),
@@ -354,137 +212,146 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ],
             ),
-
-
             const SizedBox(height: 16),
-
-            // LISTA RISULTATI
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      _searchController.text.isEmpty ? 'Recommended' : 'Results',
-                      style: theme.textTheme.headlineLarge?.copyWith(
-                        fontSize: 25,
-                        color: const Color.fromARGB(221, 1, 31, 100),
-                      ),
-                    ),
-                  ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  _searchController.text.isEmpty ? 'Recommended' : 'Results',
+                  style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Color(0xFF000000)),
                 ),
-                _filteredBooks.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No results found',
-                          style: theme.textTheme.bodyMedium?.copyWith(color: const Color.fromARGB(180, 1, 30, 100)),
-                        ),
-                      )
-                    : ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: _filteredBooks.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
-                        itemBuilder: (context, index) {
-                          final book = _filteredBooks[index];
-                          return GestureDetector(
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => BookDetailPage(book: book),
-                                ),
-                              );
-                              _loadBooks();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
+              ),
+            ),
+            _filteredBooks.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No results found',
+                      style: TextStyle(color: Color(0xFF7C7C7C)),
+                    ),
+                  )
+                : ListView.separated(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: _filteredBooks.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final book = _filteredBooks[index];
+                      return GestureDetector(
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => BookDetailPage(book: book)),
+                          );
+                          _loadBooks();
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+                          ),
+                          child: Row(
+                            children: [
+                              Stack(
                                 children: [
-                                  // Copertina con cuore
-                                  Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: Image.asset(
-                                          book.imagePath,
-                                          width: screenWidth * 0.25,
-                                          height: screenHeight * 0.2,
-                                          fit: BoxFit.cover,
-                                        ),
+                                  Container(
+                                    width: 90,
+                                    height: 130,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      image: DecorationImage(
+                                        image: AssetImage(book.imagePath),
+                                        fit: BoxFit.cover,
                                       ),
-                                      Positioned(
-                                        top: 6,
-                                        right: 6,
-                                        child: GestureDetector(
-                                          onTap: () => _toggleFavorite(book),
-                                          child: Icon(
-                                            book.isFavorite ? Icons.favorite : Icons.favorite_border,
-                                            color: book.isFavorite ? Colors.pink : Colors.grey,
-                                            size: 20,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                  // Info
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            book.title,
-                                            style: theme.textTheme.titleMedium?.copyWith(
-                                              color: const Color.fromARGB(255, 106, 147, 221),
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: true,
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            book.author,
-                                            style: theme.textTheme.bodyMedium?.copyWith(
-                                              color: const Color.fromARGB(255, 91, 142, 237),
-                                            ),
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Row(
-                                            children: List.generate(5, (i) {
-                                              return Icon(
-                                                i < (book.rating ?? 0) ? Icons.star : Icons.star_border,
-                                                color: Colors.amber,
-                                                size: 20,
-                                              );
-                                            }),
-                                          ),
-                                        ],
+                                  Positioned(
+                                    top: 6,
+                                    right: 6,
+                                    child: GestureDetector(
+                                      onTap: () => _toggleFavorite(book),
+                                      child: Icon(
+                                        book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                                        color: book.isFavorite ? Colors.pink : Colors.grey,
+                                        size: 20,
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          );
-                        },
-                      ),
-              ],
-            ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        book.title,
+                                        style: const TextStyle(
+                                          color: Color(0xFF000000),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        book.author,
+                                        style: const TextStyle(color: Color(0xFF7C7C7C)),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Row(
+                                        children: List.generate(5, (i) {
+                                          return Icon(
+                                            i < (book.rating ?? 0) ? Icons.star : Icons.star_border,
+                                            color: Colors.amber,
+                                            size: 20,
+                                          );
+                                        }),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ],
         ),
+      ),
+    );
+  }
+
+  DropdownButtonFormField<String> _buildDropdown({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required void Function(String?) onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      decoration: _inputDecoration(label),
+      iconEnabledColor: const Color(0xFF000000),
+      style: const TextStyle(color: Color(0xFF000000)),
+      onChanged: onChanged,
+      items: items.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(),
+    );
+  }
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      label: Text(label, style: const TextStyle(color: Color(0xFF7C7C7C), fontWeight: FontWeight.w500)),
+      border: const OutlineInputBorder(),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFF000000), width: 1.5),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFF000000), width: 2),
       ),
     );
   }
