@@ -17,14 +17,15 @@ class BookDetailPage extends StatefulWidget {
 }
 
 class _BookDetailPageState extends State<BookDetailPage> {
-
-   late Book book;
+  late Book book;
 
   List<Category> allCategories = [];
   int rating = 0;
   String comment = '';
   String selectedState = 'To Read';
   final commentController = TextEditingController();
+
+  bool? _fileExists;
 
   @override
   void initState() {
@@ -34,6 +35,21 @@ class _BookDetailPageState extends State<BookDetailPage> {
     rating = book.rating ?? 0;
     commentController.text = book.comment ?? '';
     _loadCategories();
+    _checkImageFileExists();
+  }
+
+  Future<void> _checkImageFileExists() async {
+    if (!book.imagePath.startsWith('assets/')) {
+      final file = File(book.imagePath);
+      final exists = await file.exists();
+      setState(() {
+        _fileExists = exists;
+      });
+    } else {
+      setState(() {
+        _fileExists = null; // immagine asset
+      });
+    }
   }
 
   Future<void> _loadCategories() async {
@@ -63,15 +79,17 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(
-                        child: Text('Choose or Create Category',
+                        child: Text(
+                          'Choose or Create Category',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1E2A78),
-                          ),
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF1E2A78),
+                              ),
                         ),
                       ),
                       const SizedBox(height: 20),
-                      Text('Select existing category',
+                      Text(
+                        'Select existing category',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 8),
@@ -84,13 +102,16 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        items: allCategories.map((cat) => DropdownMenuItem(value: cat, child: Text(cat.name))).toList(),
+                        items: allCategories
+                            .map((cat) => DropdownMenuItem(value: cat, child: Text(cat.name)))
+                            .toList(),
                         onChanged: (val) => setState(() => selectedCategory = val),
                       ),
                       const SizedBox(height: 20),
                       Divider(thickness: 1, color: Colors.grey[300]),
                       const SizedBox(height: 20),
-                      Text('Create new category',
+                      Text(
+                        'Create new category',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 8),
@@ -105,7 +126,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         onChanged: (val) {
                           newCategoryName = val;
                           final exists = allCategories.any((c) =>
-                            c.name.trim().toLowerCase() == newCategoryName.trim().toLowerCase());
+                              c.name.trim().toLowerCase() == newCategoryName.trim().toLowerCase());
                           setState(() => errorText = exists ? 'A category with this name already exists' : null);
                         },
                       ),
@@ -213,67 +234,68 @@ class _BookDetailPageState extends State<BookDetailPage> {
   }
 
   Future<DateTime?> _showMonthYearPicker(BuildContext context) async {
-  final initialDate = widget.book.dateCompleted ?? DateTime.now();
-  int selectedMonth = initialDate.month;
-  int selectedYear = initialDate.year;
+    final initialDate = widget.book.dateCompleted ?? DateTime.now();
+    int selectedMonth = initialDate.month;
+    int selectedYear = initialDate.year;
 
-  return showDialog<DateTime>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("Select completion month"),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButton<int>(
-                  value: selectedMonth,
-                  onChanged: (value) => setState(() => selectedMonth = value!),
-                  items: List.generate(12, (index) => DropdownMenuItem(
-                    value: index + 1,
-                    child: Text(DateFormat.MMMM().format(DateTime(0, index + 1))),
-                  )),
-                ),
-                DropdownButton<int>(
-                  value: selectedYear,
-                  onChanged: (value) => setState(() => selectedYear = value!),
-                  items: List.generate(5, (index) {
-                    final year = DateTime.now().year - index;
-                    return DropdownMenuItem(value: year, child: Text("$year"));
-                  }),
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+    return showDialog<DateTime>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Select completion month"),
+          content: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<int>(
+                    value: selectedMonth,
+                    onChanged: (value) => setState(() => selectedMonth = value!),
+                    items: List.generate(
+                      12,
+                      (index) => DropdownMenuItem(
+                        value: index + 1,
+                        child: Text(DateFormat.MMMM().format(DateTime(0, index + 1))),
+                      ),
+                    ),
+                  ),
+                  DropdownButton<int>(
+                    value: selectedYear,
+                    onChanged: (value) => setState(() => selectedYear = value!),
+                    items: List.generate(5, (index) {
+                      final year = DateTime.now().year - index;
+                      return DropdownMenuItem(value: year, child: Text("$year"));
+                    }),
+                  ),
+                ],
+              );
+            },
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, DateTime(selectedYear, selectedMonth)),
-            child: const Text("OK"),
-          ),
-        ],
-      );
-    },
-  );
-}
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, DateTime(selectedYear, selectedMonth)),
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = screen.width;
+    final screenHeight = screen.height;
     final isLandscape = screenWidth > screenHeight;
     final horizontalPadding = screenWidth * 0.05;
-    final imageHeight = screenHeight * 0.6; 
+    final imageHeight = screenHeight * 0.6;
     final double spacing = screen.height * 0.02;
     final double iconSize = screen.width * 0.07;
-  
-
-  
 
     return WillPopScope(
       onWillPop: () async {
@@ -289,32 +311,29 @@ class _BookDetailPageState extends State<BookDetailPage> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
+            IconButton(
+              icon: Icon(Icons.edit, size: iconSize),
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AddBookPage(book: book),
+                  ),
+                );
 
-
-        IconButton(
-          icon: Icon(Icons.edit, size: iconSize),
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => AddBookPage(book: book),
-              ),
-            );
-
-            if (result is Book) {
-              setState(() {
-                book = result;
-                selectedState = _normalizeState(result.userState) ?? 'To Read';
-                rating = result.rating ?? 0;
-                commentController.text = result.comment ?? '';
-              });
-            }
-          },
-        ),
-
-
+                if (result is Book) {
+                  setState(() {
+                    book = result;
+                    selectedState = _normalizeState(result.userState) ?? 'To Read';
+                    rating = result.rating ?? 0;
+                    commentController.text = result.comment ?? '';
+                    _checkImageFileExists();
+                  });
+                }
+              },
+            ),
             if (book.id != null)
-              IconButton(icon:  Icon(Icons.delete, size: iconSize ), onPressed: _confirmDelete),
+              IconButton(icon: Icon(Icons.delete, size: iconSize), onPressed: _confirmDelete),
             IconButton(
               icon: const Icon(Icons.close),
               onPressed: () {
@@ -338,19 +357,26 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: book.imagePath.startsWith('assets/')
+                    child: _fileExists == null
                         ? Image.asset(
                             book.imagePath,
                             height: imageHeight,
                             width: double.infinity,
                             fit: BoxFit.cover,
                           )
-                        : Image.file(
-                            File(book.imagePath),
-                            height: imageHeight,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                          ),
+                        : (_fileExists == true
+                            ? Image.file(
+                                File(book.imagePath),
+                                height: imageHeight,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                'assets/books/placeholder.jpg',
+                                height: imageHeight,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              )),
                   ),
                   Positioned(
                     top: 12,
@@ -380,23 +406,30 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   ],
                 ),
               ),
-               SizedBox(height: spacing),
+              SizedBox(height: spacing),
               Text(book.plot, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify),
-               SizedBox(height: spacing),
+              SizedBox(height: spacing),
               Text("Your review", style: Theme.of(context).textTheme.titleMedium),
               Row(
-                children: List.generate(5, (index) => IconButton(
-                  icon: Icon(index < rating ? Icons.star : Icons.star_border, color: Colors.amber, size: iconSize,),
-                  onPressed: () async {
-                    setState(() {
-                      rating = index + 1;
-                      book.rating = rating;
-                    });
-                    await DatabaseHelper.instance.insertBook(book);
-                  },
-                )),
+                children: List.generate(
+                  5,
+                  (index) => IconButton(
+                    icon: Icon(
+                      index < rating ? Icons.star : Icons.star_border,
+                      color: Colors.amber,
+                      size: iconSize,
+                    ),
+                    onPressed: () async {
+                      setState(() {
+                        rating = index + 1;
+                        book.rating = rating;
+                      });
+                      await DatabaseHelper.instance.insertBook(book);
+                    },
+                  ),
+                ),
               ),
-               SizedBox(height: spacing),
+              SizedBox(height: spacing),
               TextField(
                 controller: commentController,
                 decoration: InputDecoration(
@@ -404,9 +437,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
               ),
-               SizedBox(height: spacing),
+              SizedBox(height: spacing),
               DropdownButtonFormField<String>(
-                value: selectedState, // usa selectedState per coerenza
+                value: selectedState,
                 items: ['To Read', 'Reading', 'Completed']
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
@@ -425,12 +458,12 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 },
                 selectedItemBuilder: (context) {
                   return ['To Read', 'Reading', 'Completed']
-                      .map((state) => Text(selectedState)) // forza il valore visivo coerente
+                      .map((state) => Text(selectedState))
                       .toList();
                 },
                 decoration: const InputDecoration(border: OutlineInputBorder()),
               ),
-               SizedBox(height: spacing),
+              SizedBox(height: spacing),
               ElevatedButton.icon(
                 onPressed: () => _showCategoryDialog(context),
                 icon: const Icon(Icons.category),
@@ -443,7 +476,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
     );
   }
 }
-
 
 class MonthYear {
   final int month;
