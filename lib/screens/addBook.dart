@@ -23,6 +23,7 @@ class _AddBookPageState extends State<AddBookPage> {
   String selectedGenre = 'Fantasy';
   
   File? _selectedImage;
+  String? _imageFileName; // SALVA solo nome file
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -35,8 +36,9 @@ class _AddBookPageState extends State<AddBookPage> {
       plotController.text = book.plot;
       selectedGenre = book.genre;
       selectedState = widget.book?.userState ?? 'To Read';
+
       if (!book.imagePath.startsWith('assets')) {
-        _selectedImage = File(book.imagePath);
+        _imageFileName = book.imagePath; // qui ci deve essere solo il nome file
       }
     }
   }
@@ -70,16 +72,29 @@ class _AddBookPageState extends State<AddBookPage> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-  final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
-  if (pickedFile != null) {
-    final appDir = await getApplicationDocumentsDirectory();
-    final fileName = path.basename(pickedFile.path);
-    final savedImage = await File(pickedFile.path).copy('${appDir.path}/$fileName');
-     
+    print('Picking image from $source');
+    final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
+    if (pickedFile != null) {
+      final appDir = await getApplicationDocumentsDirectory();
 
-    setState(() => _selectedImage = savedImage);
+      // Genera un nome unico per il file
+      final fileName = 'book_cover_${DateTime.now().millisecondsSinceEpoch}${path.extension(pickedFile.path)}';
+
+      // Percorso completo nel Documents
+      final savedImagePath = path.join(appDir.path, fileName);
+
+      // Copia il file temporaneo nella directory persistente
+      final savedImage = await File(pickedFile.path).copy(savedImagePath);
+
+      print('Saved image path: ${savedImage.path}');
+      print('File exists: ${await savedImage.exists()}');
+
+      setState(() {
+        _selectedImage = savedImage;
+        _imageFileName = fileName; // SALVO SOLO nome file, NON il path completo
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +106,6 @@ class _AddBookPageState extends State<AddBookPage> {
     final imageHeight = isLandscape ? screenSize.height * 0.3 : screenSize.height * 0.25;
     final imageWidth = screenSize.width * (isLandscape ? 0.4 : 0.5);
     final padding = EdgeInsets.symmetric(horizontal: screenSize.width * 0.05);
-
 
     return Scaffold(
       appBar: AppBar(title: Text(isEditing ? 'Edit Book' : 'Add Book')),
@@ -162,7 +176,7 @@ class _AddBookPageState extends State<AddBookPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.grey),
                           ),
-                          child: const Center(child: Text("Tap to add cover image", maxLines: 2,)),
+                          child: const Center(child: Text("Tap to add cover image", maxLines: 2)),
                         ),
                 ),
               ),
@@ -176,7 +190,7 @@ class _AddBookPageState extends State<AddBookPage> {
                       author: authorController.text,
                       genre: selectedGenre,
                       plot: plotController.text,
-                      imagePath: _selectedImage?.path ?? widget.book?.imagePath ?? 'assets/books/placeholder.jpg',
+                      imagePath: _imageFileName ?? widget.book?.imagePath ?? 'assets/books/placeholder.jpg',
                       userState: selectedState,
                       isUserBook: true,
                       isFavorite: widget.book?.isFavorite ?? false,
@@ -187,6 +201,7 @@ class _AddBookPageState extends State<AddBookPage> {
                           ? (widget.book?.dateCompleted ?? DateTime.now())
                           : null,
                     );
+                    print('Saving book with imagePath: ${updatedBook.imagePath}');
                     await DatabaseHelper.instance.insertBook(updatedBook);
                     Navigator.pop(context, updatedBook);
                   }

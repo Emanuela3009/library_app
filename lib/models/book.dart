@@ -1,3 +1,4 @@
+import 'package:path_provider/path_provider.dart';
 class Book {
   int? id;
   final String title;
@@ -29,6 +30,16 @@ class Book {
     this.dateCompleted,
   });
 
+
+
+
+ Future<String?> getImageFullPath() async {
+    if (imagePath.startsWith('assets/')) {
+      return null; // immagine asset, non path file
+    }
+    final dir = await getApplicationDocumentsDirectory();
+    return '${dir.path}/$imagePath';
+  }
   Map<String, dynamic> toMap() {
     final map = {
       'title': title,
