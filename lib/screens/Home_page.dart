@@ -57,9 +57,9 @@ class HomePageState extends State<HomePage> {
     final verticalPadding = mq.size.height * 0.01;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Book Library"),
+        
         leading:
-            (_currentIndex == 2 || _currentIndex == 3)
+            (_currentIndex == 2 )
                 ? InkWell(
                   borderRadius: BorderRadius.circular(100),
                   splashColor: const Color.fromARGB(255, 106, 147, 221),
