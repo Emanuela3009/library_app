@@ -24,7 +24,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
   String comment = '';
   String selectedState = 'To Read';
   final commentController = TextEditingController();
-
+  DateTime? completedDate;
   bool? _fileExists;
 
   @override
@@ -36,6 +36,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     commentController.text = book.comment ?? '';
     _loadCategories();
     _checkImageFileExists();
+    completedDate = book.dateCompleted;
   }
 
   Future<void> _checkImageFileExists() async {
@@ -302,7 +303,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
         book.comment = commentController.text;
         book.rating = rating;
         if (selectedState == 'Completed' && book.userState != 'Completed') {
-          book.dateCompleted = DateTime.now();
+          book.dateCompleted = completedDate;
         }
         book.userState = selectedState;
         await DatabaseHelper.instance.insertBook(book);
@@ -318,7 +319,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   book.comment = commentController.text;
                   book.rating = rating;
                   if (selectedState == 'Completed' && book.userState != 'Completed') {
-                    book.dateCompleted = DateTime.now();
+                    book.dateCompleted = completedDate;
                   }
                   book.userState = selectedState;
                   await DatabaseHelper.instance.insertBook(book);
@@ -358,7 +359,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 book.comment = commentController.text;
                 book.rating = rating;
                 if (selectedState == 'Completed' && book.userState != 'Completed') {
-                  book.dateCompleted = DateTime.now();
+                  book.dateCompleted = completedDate;
                 }
                 book.userState = selectedState;
                 DatabaseHelper.instance.insertBook(book);
@@ -461,8 +462,27 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 items: ['To Read', 'Reading', 'Completed']
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
-                onChanged: (value) {
-                  setState(() => selectedState = value!);
+                onChanged: (newValue) async {
+                  if (newValue == 'Completed') {
+                    final selectedDate = await _showMonthYearPicker(context);
+                    if (selectedDate != null) {
+                      setState(() {
+                        selectedState = 'Completed';
+                        completedDate = selectedDate;
+                      });
+                    }
+                    // Se viene premuto cancel, non faccio nulla
+                  } else {
+                    setState(() {
+                      selectedState = newValue!;
+                      completedDate = null;
+                    });
+                  }
+                },
+                selectedItemBuilder: (context) {
+                  return ['To Read', 'Reading', 'Completed']
+                      .map((state) => Text(selectedState))
+                      .toList(); // forza la visualizzazione coerente
                 },
                 decoration: const InputDecoration(
                   labelText: 'State',
@@ -472,8 +492,8 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
                 style: const TextStyle(
                   fontSize: 16,
-                  height: 1.4, // aumenta lo spazio interno per evitare tagli
-                  color: Colors.black, // assicura che il testo sia visibile
+                  height: 1.4,
+                  color: Colors.black,
                 ),
               ),
               SizedBox(height: spacing),

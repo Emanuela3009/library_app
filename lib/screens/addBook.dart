@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,7 +22,7 @@ class _AddBookPageState extends State<AddBookPage> {
   final plotController = TextEditingController();
   String selectedState = 'To Read'; 
   String selectedGenre = 'Fantasy';
-  
+  DateTime? completedDate;
   File? _selectedImage;
   String? _imageFileName; // SALVA solo nome file
   final ImagePicker _picker = ImagePicker();
@@ -158,8 +159,27 @@ class _AddBookPageState extends State<AddBookPage> {
                 items: ['To Read', 'Reading', 'Completed']
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
-                onChanged: (value) {
-                  setState(() => selectedState = value!);
+                onChanged: (newValue) async {
+                  if (newValue == 'Completed') {
+                    final selectedDate = await _showMonthYearPicker(context);
+                    if (selectedDate != null) {
+                      setState(() {
+                        selectedState = 'Completed';
+                        completedDate = selectedDate;
+                      });
+                    }
+                    // Se viene premuto cancel o toccato fuori, NON cambiare nulla
+                  } else {
+                    setState(() {
+                      selectedState = newValue!;
+                      completedDate = null;
+                    });
+                  }
+                },
+                selectedItemBuilder: (context) {
+                  return ['To Read', 'Reading', 'Completed']
+                      .map((state) => Text(selectedState))
+                      .toList(); // forza la visualizzazione coerente
                 },
                 decoration: const InputDecoration(
                   labelText: 'State',
@@ -169,8 +189,8 @@ class _AddBookPageState extends State<AddBookPage> {
                 ),
                 style: const TextStyle(
                   fontSize: 16,
-                  height: 1.4, // aumenta lo spazio interno per evitare tagli
-                  color: Colors.black, // assicura che il testo sia visibile
+                  height: 1.4,
+                  color: Colors.black,
                 ),
               ),
               SizedBox(height: verticalSpace),
@@ -217,9 +237,7 @@ class _AddBookPageState extends State<AddBookPage> {
                       categoryId: widget.book?.categoryId,
                       rating: widget.book?.rating ?? 0,
                       comment: widget.book?.comment,
-                      dateCompleted: selectedState == 'Completed'
-                          ? (widget.book?.dateCompleted ?? DateTime.now())
-                          : null,
+                      dateCompleted: selectedState == 'Completed' ? completedDate : null,
                     );
                     print('Saving book with imagePath: ${updatedBook.imagePath}');
                     await DatabaseHelper.instance.insertBook(updatedBook);
@@ -235,4 +253,57 @@ class _AddBookPageState extends State<AddBookPage> {
       ),
     );
   }
+}
+
+Future<DateTime?> _showMonthYearPicker(BuildContext context) async {
+  final now = DateTime.now();
+  int selectedMonth = now.month;
+  int selectedYear = now.year;
+
+  return showDialog<DateTime>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Select completion month"),
+        content: StatefulBuilder(
+          builder: (context, setState) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButton<int>(
+                  value: selectedMonth,
+                  onChanged: (value) => setState(() => selectedMonth = value!),
+                  items: List.generate(
+                    12,
+                    (index) => DropdownMenuItem(
+                      value: index + 1,
+                      child: Text(DateFormat.MMMM().format(DateTime(0, index + 1))),
+                    ),
+                  ),
+                ),
+                DropdownButton<int>(
+                  value: selectedYear,
+                  onChanged: (value) => setState(() => selectedYear = value!),
+                  items: List.generate(5, (index) {
+                    final year = DateTime.now().year - index;
+                    return DropdownMenuItem(value: year, child: Text("$year"));
+                  }),
+                ),
+              ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text("Cancel")
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, DateTime(selectedYear, selectedMonth)),
+            child: const Text("OK"),
+          ),
+        ],
+      );
+    },
+  );
 }
