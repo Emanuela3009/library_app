@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../models/book.dart';
@@ -337,12 +338,19 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      book.imagePath,
-                      height: imageHeight,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    child: book.imagePath.startsWith('assets/')
+                        ? Image.asset(
+                            book.imagePath,
+                            height: imageHeight,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(book.imagePath),
+                            height: imageHeight,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                   Positioned(
                     top: 12,

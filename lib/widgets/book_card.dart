@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../screens/book_detail_page.dart';
@@ -11,8 +12,9 @@ class BookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final file = File(book.imagePath);
     return GestureDetector(
-      onTap: () async {
+      onTap: () async { 
         await Navigator.push(
           context,
           MaterialPageRoute(
@@ -34,10 +36,14 @@ class BookCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      book.imagePath,
-                      fit: BoxFit.cover,
-                    ),
+                    book.imagePath.startsWith('assets/')
+                        ? Image.asset(
+                            book.imagePath,
+                            fit: BoxFit.cover,
+                          )
+                        : (file.existsSync() 
+                             ? Image.file(file, fit: BoxFit.cover) 
+                              : Image.asset('assets/books/placeholder.jpg', fit: BoxFit.cover)),
                     Positioned(
                     top: 6,
                     right: 6,

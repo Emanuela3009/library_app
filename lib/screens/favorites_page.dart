@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
@@ -89,16 +90,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             child: Stack(
                               children: [
                                 Center(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: AspectRatio(
-                                    aspectRatio: 3 / 4.5,
-                                    child: Image.asset(
+                               child: book.imagePath.startsWith('assets/')
+                                  ? Image.asset(
                                       book.imagePath,
                                       fit: BoxFit.cover,
+                                    )
+                                  : Image.file(
+                                      File(book.imagePath),
+                                      fit: BoxFit.cover,
                                     ),
-                                  ),
-                                ),
                               ),
                                 Positioned(
                                 top: 6,

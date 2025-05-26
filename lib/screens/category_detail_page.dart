@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../models/category.dart';
 import '../../models/book.dart';
@@ -131,10 +132,15 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                                       borderRadius: BorderRadius.circular(12),
                                       child: AspectRatio(
                                         aspectRatio: 3 / 4.5,
-                                        child: Image.asset(
-                                          book.imagePath,
-                                          fit: BoxFit.cover,
-                                        ),
+                                        child: book.imagePath.startsWith('assets/')
+                                        ? Image.asset(
+                                            book.imagePath,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.file(
+                                            File(book.imagePath),
+                                            fit: BoxFit.cover,
+                                          ),
                                       ),
                                     ),
                                   ),

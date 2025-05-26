@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class AddBookPage extends StatefulWidget {
   final Book? book;
@@ -68,11 +70,16 @@ class _AddBookPageState extends State<AddBookPage> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
-    if (pickedFile != null) {
-      setState(() => _selectedImage = File(pickedFile.path));
-    }
+  final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
+  if (pickedFile != null) {
+    final appDir = await getApplicationDocumentsDirectory();
+    final fileName = path.basename(pickedFile.path);
+    final savedImage = await File(pickedFile.path).copy('${appDir.path}/$fileName');
+     
+
+    setState(() => _selectedImage = savedImage);
   }
+}
 
   @override
   Widget build(BuildContext context) {
