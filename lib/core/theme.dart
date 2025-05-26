@@ -1,91 +1,80 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // aggiunto per font personalizzati - Fredoka, Quicksand e Nunito
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
-    brightness: Brightness.light, // tema chiaro
-    scaffoldBackgroundColor: CupertinoColors.systemGroupedBackground, // sfondo soft iOS
-    primaryColor: CupertinoColors.activeBlue, // colore tipico link iOS
-    useMaterial3: true, // attiva lo stile più moderno (Material Design 3)
+    brightness: Brightness.light,
+    useMaterial3: true,
 
-    // Definizione globale degli stili del testo
-    textTheme: TextTheme(
-      headlineLarge: GoogleFonts.fredoka( // Titolo principale dell’app (es. Categories)
-        fontSize: 27,
-        fontWeight: FontWeight.w600,
-        color: const Color.fromARGB(255, 106, 147, 221), 
-      ),
+    scaffoldBackgroundColor: Colors.white, // Bianco puro
+    primaryColor: Colors.black, // Nero per testi importanti
 
-      titleMedium: GoogleFonts.nunito( // Titoli di sezione come "Popular now"
-        fontSize: 22,
-        fontWeight: FontWeight.bold,  //grassetto
-        color: const Color.fromARGB(255, 106, 147, 221), 
-      ),
-
-      bodyMedium: GoogleFonts.quicksand( // Testo per paragrafi, descrizioni
-        fontSize: 17,
-        color: const Color.fromARGB(221, 1, 30, 100),
-      ),
-
-      bodyLarge: GoogleFonts.quicksand( // Variante corpo più grande
-        fontSize: 15,
-        color: const Color.fromARGB(255, 39, 37, 176),
+    textTheme: const TextTheme(
+      headlineLarge: TextStyle(
+        fontSize: 28,
         fontWeight: FontWeight.bold,
+        color: Colors.black, // Titolo principale (es. "Home")
       ),
-
-      labelSmall: GoogleFonts.quicksand( // Variante testo in grassetto - utile per pulsanti
+      titleMedium: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: Colors.black, // Titoli sezioni tipo "Libri gratuiti"
+      ),
+      bodyMedium: TextStyle(
+        fontSize: 16,
+        color: Color(0xFF7C7C7C), // Sottotitoli grigi chiari
+      ),
+      bodyLarge: TextStyle(
         fontSize: 15,
-        fontWeight: FontWeight.bold,  
-        color: const Color.fromARGB(221, 1, 30, 100),
+        fontWeight: FontWeight.w500,
+        color: Colors.black87,
+      ),
+      labelSmall: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: Colors.black,
       ),
     ),
 
-    // Stile della AppBar (barra in alto)
-    appBarTheme: AppBarTheme(
-      color: CupertinoColors.systemGrey6,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
-      titleTextStyle: GoogleFonts.fredoka( // Titolo al centro in stile moderno
-        fontWeight: FontWeight.w600,
-        fontSize: 30, //titolo dell'app che compare in alto al centro in tutte le schermate 
-        color: const Color.fromARGB(255, 30, 42, 120), 
+      titleTextStyle: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 24,
+        color: Colors.black,
       ),
-      iconTheme: const IconThemeData(
-        color:  const Color.fromARGB(255, 39, 37, 176), // colore delle icone in alto vicino al titolo
-        size: 28 //icona più grande (di default tutto è a 24)
-        ), 
+      iconTheme: IconThemeData(
+        color: Colors.black,
+        size: 26,
+      ),
     ),
 
-    // Stile della BottomNavigationBar (barra di navigazione in basso)
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: const Color.fromARGB(255, 30, 42, 120), // colore della barra è blu scuro
-      selectedItemColor: CupertinoColors.white, // l’elemento selezionato è bianco
-      unselectedItemColor: const Color.fromARGB(255, 143, 170, 220), // gli elementi non selezionati sono azzurri
-
-      selectedLabelStyle: GoogleFonts.fredoka( // etichetta selezionata
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Color.fromARGB(255, 194, 194, 194),
+      selectedItemColor: Colors.black, // Attivo: nero
+      unselectedItemColor: Color(0xFFBDBDBD), // Non attivo: grigio chiaro
+      selectedLabelStyle: TextStyle(
         fontWeight: FontWeight.w600,
-        color: CupertinoColors.white,
       ),
-      unselectedLabelStyle: GoogleFonts.quicksand( // etichetta non selezionata
+      unselectedLabelStyle: TextStyle(
         fontWeight: FontWeight.w400,
-        color: Color(0xFF8FAADC),
       ),
-      elevation: 8,  //piccolo rialzo (effetto visivo, per dare profondità)
-      type: BottomNavigationBarType.fixed, // voci fisse
+      elevation: 1,
+      type: BottomNavigationBarType.fixed,
     ),
 
-    // Stile dei pulsanti elevati
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color.fromARGB(255, 106, 147, 221), // sfondo pulsante
-        foregroundColor: Colors.white, // testo/icona del pulsante
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+        backgroundColor: Colors.black, // Pulsante nero
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        textStyle: GoogleFonts.fredoka( // stile testo pulsante
-          fontWeight: FontWeight.bold,
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
           fontSize: 16,
         ),
       ),
