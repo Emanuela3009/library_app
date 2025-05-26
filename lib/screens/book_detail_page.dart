@@ -461,25 +461,20 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 items: ['To Read', 'Reading', 'Completed']
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
-                onChanged: (newValue) async {
-                  if (newValue == 'Completed' && selectedState != 'Completed') {
-                    final selectedDate = await _showMonthYearPicker(context);
-                    if (selectedDate != null) {
-                      setState(() {
-                        selectedState = 'Completed';
-                        book.dateCompleted = DateTime(selectedDate.year, selectedDate.month);
-                      });
-                    }
-                  } else {
-                    setState(() => selectedState = newValue!);
-                  }
+                onChanged: (value) {
+                  setState(() => selectedState = value!);
                 },
-                selectedItemBuilder: (context) {
-                  return ['To Read', 'Reading', 'Completed']
-                      .map((state) => Text(selectedState))
-                      .toList();
-                },
-                decoration: const InputDecoration(border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'State',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  isDense: true,
+                ),
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.4, // aumenta lo spazio interno per evitare tagli
+                  color: Colors.black, // assicura che il testo sia visibile
+                ),
               ),
               SizedBox(height: spacing),
               ElevatedButton.icon(

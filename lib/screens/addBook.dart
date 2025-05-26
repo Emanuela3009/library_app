@@ -132,13 +132,25 @@ class _AddBookPageState extends State<AddBookPage> {
                 maxLines: 3,
               ),
               SizedBox(height: verticalSpace),
-              DropdownButtonFormField(
+              DropdownButtonFormField<String>(
                 value: selectedGenre,
-                decoration: const InputDecoration(labelText: 'Genre'),
                 items: ['Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror', 'Gothic', 'Fable']
                     .map((genre) => DropdownMenuItem(value: genre, child: Text(genre)))
                     .toList(),
-                onChanged: (value) => setState(() => selectedGenre = value!),
+                onChanged: (value) {
+                  setState(() => selectedGenre = value!);
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Genre',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  isDense: true,
+                ),
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.4, // migliora leggibilità di lettere con discendenti
+                  color: Colors.black,
+                ),
               ),
               SizedBox(height: verticalSpace),
               DropdownButtonFormField<String>(
@@ -147,11 +159,19 @@ class _AddBookPageState extends State<AddBookPage> {
                     .map((state) => DropdownMenuItem(value: state, child: Text(state)))
                     .toList(),
                 onChanged: (value) {
-                  setState(() {
-                    selectedState = value!;
-                  });
+                  setState(() => selectedState = value!);
                 },
-                decoration: const InputDecoration(labelText: 'State'),
+                decoration: const InputDecoration(
+                  labelText: 'State',
+                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  isDense: true,
+                ),
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.4, // aumenta lo spazio interno per evitare tagli
+                  color: Colors.black, // assicura che il testo sia visibile
+                ),
               ),
               SizedBox(height: verticalSpace),
               Align(
