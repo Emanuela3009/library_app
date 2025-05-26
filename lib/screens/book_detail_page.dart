@@ -18,6 +18,7 @@ class BookDetailPage extends StatefulWidget {
 
 class _BookDetailPageState extends State<BookDetailPage> {
   late Book book;
+  String? _fullImagePath;
 
   List<Category> allCategories = [];
   int rating = 0;
@@ -39,19 +40,24 @@ class _BookDetailPageState extends State<BookDetailPage> {
     completedDate = book.dateCompleted;
   }
 
-  Future<void> _checkImageFileExists() async {
-    if (!book.imagePath.startsWith('assets/')) {
-      final file = File(book.imagePath);
-      final exists = await file.exists();
+ Future<void> _checkImageFileExists() async {
+  final path = await book.getImageFullPath();
+  if (path == null) {
       setState(() {
-        _fileExists = exists;
-      });
-    } else {
-      setState(() {
-        _fileExists = null; // immagine asset
-      });
-    }
+      _fileExists = null;
+      _fullImagePath = null;
+    });
+     return;
+  } 
+    final file = File(path);
+    final exists = await file.exists();
+
+     setState(() {
+      _fileExists = exists;
+      _fullImagePath = exists ? path : null;
+    });
   }
+
 
   Future<void> _loadCategories() async {
     final categories = await DatabaseHelper.instance.getAllCategories();
@@ -385,7 +391,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           )
                         : (_fileExists == true
                             ? Image.file(
-                                File(book.imagePath),
+                                File(_fullImagePath!), // ✅ QUI
                                 height: imageHeight,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
