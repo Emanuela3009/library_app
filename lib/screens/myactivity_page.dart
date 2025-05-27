@@ -108,8 +108,8 @@ class _MyActivityPageState extends State<MyActivityPage> {
               fontWeight: FontWeight.bold,
             )),
             SizedBox(
-            height: size.width > size.height ? null : size.height * 0.14,
-            child: size.width > size.height
+            height: (MediaQuery.of(context).orientation == Orientation.landscape || size.shortestSide < 600) ? null : size.height * 0.14,
+            child: (MediaQuery.of(context).orientation == Orientation.landscape || size.shortestSide < 600)
                 ? Row(
                     children: [
                       Expanded(child: _infoCard("Completed", readCount, size)),
