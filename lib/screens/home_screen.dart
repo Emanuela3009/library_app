@@ -34,10 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 
     final screen = MediaQuery.of(context).size;
-    final sectionHeight = screen.height * 0.23;
-    final horizontalPadding = screen.width * 0.03;
+    final isLandscape = screen.width > screen.height;
+    final sectionHeight = isLandscape ? screen.height * 0.4 : screen.height * 0.25;
+    final horizontalPadding = screen.width * 0.04;
     final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
-   final popularBooks = allBooks.where((b) => !b.isUserBook).take(9).toList();
+    final popularBooks = allBooks.where((b) => !b.isUserBook).take(9).toList();
     final userBooks = allBooks.where((b) => b.isUserBook == true).toList();
     final favoriteBooks = allBooks.where((b) => b.isFavorite).toList();
 
@@ -59,17 +60,24 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    Widget buildBookList(List<Book> books, double height) {
+    Widget buildBookList(List<Book> books) {
+      final cardWidth = isLandscape ? screen.width * 0.18 : screen.width * 0.34;
+      final cardHeight = cardWidth / 0.75 + 60;
+
       return SizedBox(
-        height: height + 30,
-        child: ListView.builder(
+        height: cardHeight,
+        child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: books.length,
           padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-          itemBuilder: (context, index) => BookCard(
-            book: books[index],
-            onUpdate: _loadBooksFromDatabase,
+          itemBuilder: (context, index) => SizedBox(
+            width: isLandscape ? screen.width * 0.2 : screen.width * 0.35,
+            child: BookCard(
+              book: books[index],
+              onUpdate: _loadBooksFromDatabase,
+            ),
           ),
+          separatorBuilder: (_, __) => SizedBox(width: screen.width * 0.02),
         ),
       );
     }
@@ -102,12 +110,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     buildSectionTitle("Currently reading", null),
                     readingBooks.isEmpty
                         ? buildEmptyText("No books available")
-                        : buildBookList(readingBooks, sectionHeight),
+                        : buildBookList(readingBooks),
 
                     buildSectionTitle("Popular now", () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const PopularPage()));
                     }),
-                    buildBookList(popularBooks, sectionHeight),
+                    buildBookList(popularBooks,),
 
                     buildSectionTitle("Your favorites", () {
                      // final homeState = context.findAncestorStateOfType<HomePageState>();
@@ -117,14 +125,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     }),
                     favoriteBooks.isEmpty
                         ? buildEmptyText("No favorites yet")
-                        : buildBookList(favoriteBooks, sectionHeight),
+                        : buildBookList(favoriteBooks,),
 
                     buildSectionTitle("Your books", () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const LibraryPage()));
                     }),
                     userBooks.isEmpty
                         ? buildEmptyText("No books added yet")
-                        : buildBookList(userBooks, sectionHeight),
+                        : buildBookList(userBooks,),
 
                     // aggiungi uno spazio finale
                     SizedBox(height: screen.height * 0.05),
