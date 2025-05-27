@@ -475,14 +475,18 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       setState(() {
                         selectedState = 'Completed';
                         completedDate = selectedDate;
+                        book.dateCompleted = selectedDate;
                       });
+                      await DatabaseHelper.instance.insertBook(book);
                     }
                     // Se viene premuto cancel, non faccio nulla
                   } else {
                     setState(() {
                       selectedState = newValue!;
                       completedDate = null;
+                      book.dateCompleted = null;
                     });
+                    await DatabaseHelper.instance.insertBook(book);
                   }
                 },
                 selectedItemBuilder: (context) {
