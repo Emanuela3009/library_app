@@ -238,10 +238,10 @@ class _BookDetailPageState extends State<BookDetailPage> {
     super.dispose();
   }
 
-  Future<DateTime?> _showMonthYearPicker(BuildContext context) async {
-    final initialDate = widget.book.dateCompleted ?? DateTime.now();
-    int selectedMonth = initialDate.month;
-    int selectedYear = initialDate.year;
+  Future<DateTime?> _showMonthYearPicker(BuildContext context, {DateTime? initialDate}) async {
+  final baseDate = initialDate ?? DateTime.now();
+  int selectedMonth = baseDate.month;
+  int selectedYear = baseDate.year;
 
     return showDialog<DateTime>(
       context: context,
@@ -351,6 +351,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         selectedState = _normalizeState(updated.userState) ?? 'To Read';
                         rating = updated.rating ?? 0;
                         commentController.text = updated.comment ?? '';
+                        completedDate = updated.dateCompleted;
                         _checkImageFileExists();
                       });
                     }
@@ -391,7 +392,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           )
                         : (_fileExists == true
                             ? Image.file(
-                                File(_fullImagePath!), // ✅ QUI
+                                File(_fullImagePath!), 
                                 height: imageHeight,
                                 width: imageWidth,
                                 fit: BoxFit.contain,
@@ -434,6 +435,10 @@ class _BookDetailPageState extends State<BookDetailPage> {
               SizedBox(height: spacing),
               Text(book.plot, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify),
               SizedBox(height: spacing),
+              Text(book.genre, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                fontStyle: FontStyle.italic,
+              ),),
+              SizedBox(height: spacing),
               Text("Your review", style: Theme.of(context).textTheme.titleMedium),
               Row(
                 children: List.generate(
@@ -470,7 +475,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                     .toList(),
                 onChanged: (newValue) async {
                   if (newValue == 'Completed') {
-                    final selectedDate = await _showMonthYearPicker(context);
+                    final selectedDate = await _showMonthYearPicker(context, initialDate: completedDate);
                     if (selectedDate != null) {
                       setState(() {
                         selectedState = 'Completed';

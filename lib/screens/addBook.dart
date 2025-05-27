@@ -37,7 +37,8 @@ class _AddBookPageState extends State<AddBookPage> {
       plotController.text = book.plot;
       selectedGenre = book.genre;
       selectedState = widget.book?.userState ?? 'To Read';
-
+      completedDate = book.dateCompleted; 
+      
       if (!book.imagePath.startsWith('assets')) {
         _imageFileName = book.imagePath; // qui ci deve essere solo il nome file
       }
@@ -160,7 +161,7 @@ class _AddBookPageState extends State<AddBookPage> {
                     .toList(),
                 onChanged: (newValue) async {
                   if (newValue == 'Completed') {
-                    final selectedDate = await _showMonthYearPicker(context);
+                    final selectedDate = await _showMonthYearPicker(context, initialDate: completedDate);
                     if (selectedDate != null) {
                       setState(() {
                         selectedState = 'Completed';
@@ -254,10 +255,10 @@ class _AddBookPageState extends State<AddBookPage> {
   }
 }
 
-Future<DateTime?> _showMonthYearPicker(BuildContext context) async {
-  final now = DateTime.now();
-  int selectedMonth = now.month;
-  int selectedYear = now.year;
+Future<DateTime?> _showMonthYearPicker(BuildContext context, {DateTime? initialDate} ) async {
+  final baseDate = initialDate ?? DateTime.now();
+  int selectedMonth = baseDate.month;
+  int selectedYear = baseDate.year;
 
   return showDialog<DateTime>(
     context: context,
