@@ -20,7 +20,7 @@ class HomePageState extends State<HomePage> {
   int _homeScreenKey = 0;
 
   final List<String> _titles = [
-  'Search',
+  'Search Books',
   'Categories',
   'Book Library',
   'Your Favorites',

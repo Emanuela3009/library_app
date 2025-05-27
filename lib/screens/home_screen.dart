@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final screen = MediaQuery.of(context).size;
     final isLandscape = screen.width > screen.height;
     final sectionHeight = isLandscape ? screen.height * 0.4 : screen.height * 0.25;
@@ -99,7 +98,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          return SingleChildScrollView(
+        return Scrollbar(
+          thumbVisibility: true,
+          thickness: 4,
+          radius: const Radius.circular(8),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: Padding(
@@ -132,15 +136,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     }),
                     userBooks.isEmpty
                         ? buildEmptyText("No books added yet")
+
                         : buildBookList(userBooks,),
 
                     // aggiungi uno spazio finale
                     SizedBox(height: screen.height * 0.05),
+
                   ],
                 ),
               ),
             ),
-          );
+          ),
+        );
         },
       ),
     );
