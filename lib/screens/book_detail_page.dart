@@ -428,13 +428,16 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   children: [
                     Text(book.title, style: Theme.of(context).textTheme.titleMedium, textAlign: TextAlign.center),
                     const SizedBox(height: 4),
+                    if (book.author.trim().isNotEmpty)
                     Text(book.author, style: Theme.of(context).textTheme.bodyLarge),
                   ],
                 ),
               ),
               SizedBox(height: spacing),
+              if (book.plot.trim().isNotEmpty)
               Text(book.plot, style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.justify),
               SizedBox(height: spacing),
+              if (book.genre.trim().isNotEmpty)
               Text(book.genre, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 fontStyle: FontStyle.italic,
               ),),
@@ -460,6 +463,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
               ),
               SizedBox(height: spacing),
+              if (commentController.text.trim().isNotEmpty)
               TextField(
                 controller: commentController,
                 decoration: InputDecoration(
