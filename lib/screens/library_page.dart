@@ -23,7 +23,24 @@ class _LibraryPageState extends State<LibraryPage> {
 
   Future<void> _loadBooks() async {
     final all = await DatabaseHelper.instance.getAllBooks();
-    final books = all.where((b) => b.isUserBook).toList(); // Solo libri aggiunti manualmente
+    final books = all
+    .where((b) => b.isUserBook)
+    .toList()
+  ..sort((a, b) {
+    final regex = RegExp(r'^\d+');
+    final aMatch = regex.stringMatch(a.title);
+    final bMatch = regex.stringMatch(b.title);
+
+    if (aMatch != null && bMatch != null) {
+      return int.parse(aMatch).compareTo(int.parse(bMatch)); // numerico
+    } else if (aMatch != null) {
+      return -1; // a è numerico, viene prima
+    } else if (bMatch != null) {
+      return 1; // b è numerico, viene prima
+    } else {
+      return a.title.toLowerCase().compareTo(b.title.toLowerCase()); // alfabetico
+    }
+  });
     setState(() {
       allBooks = books;
     });
