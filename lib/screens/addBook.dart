@@ -38,7 +38,7 @@ class _AddBookPageState extends State<AddBookPage> {
       selectedGenre = book.genre;
       selectedState = widget.book?.userState ?? 'To Read';
       completedDate = book.dateCompleted; 
-      
+
       if (!book.imagePath.startsWith('assets')) {
         _imageFileName = book.imagePath; // qui ci deve essere solo il nome file
       }
@@ -135,7 +135,8 @@ class _AddBookPageState extends State<AddBookPage> {
               SizedBox(height: verticalSpace),
               DropdownButtonFormField<String>(
                 value: selectedGenre,
-                items: ['Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror', 'Gothic', 'Fable']
+                items: ['Adventure', 'Biography', 'Comic', 'Crime', 'Drama', 'Fable', 'Fantasy', 'Gothic', 'History', 'Horror', 'Mystery', 'Poetry', 'Romance',
+                'Satire', 'Sci-Fi', 'Thriller', 'Tragedy',]
                     .map((genre) => DropdownMenuItem(value: genre, child: Text(genre)))
                     .toList(),
                 onChanged: (value) {

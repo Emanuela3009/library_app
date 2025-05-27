@@ -95,13 +95,23 @@ class _MyActivityPageState extends State<MyActivityPage> {
     final double chartHeight = size.height * 0.3;
     final double spacing = size.height * 0.015;
     final genreColorMap = {
-      'Fantasy': const Color.fromARGB(255, 174, 147, 221),
-      'Romance': const Color.fromARGB(255, 236, 106, 149),
       'Adventure': Colors.orange,
-      'Sci-Fi': const Color.fromARGB(255, 132, 212, 248),
-      'Horror': const Color.fromARGB(255, 237, 104, 95),
-      'Gothic': const Color.fromARGB(255, 58, 88, 132),
-      'Fable': const Color.fromARGB(255, 102, 187, 106),
+      'Biography': Color.fromARGB(255, 120, 144, 156), // grigio-blu sobrio
+      'Comic': Color.fromARGB(255, 255, 202, 40),      // giallo brillante
+      'Crime': Color.fromARGB(255, 84, 110, 122),       // blu acciaio scuro
+      'Drama': Color.fromARGB(255, 255, 138, 101),      // corallo tenue
+      'Fable': Color.fromARGB(255, 102, 187, 106),      // verde
+      'Fantasy': Color.fromARGB(255, 174, 147, 221),    // viola
+      'Gothic': Color.fromARGB(255, 58, 88, 132),       // blu gotico
+      'History': Color.fromARGB(255, 161, 136, 127),    // marrone chiaro
+      'Horror': Color.fromARGB(255, 237, 104, 95),      // rosso sangue
+      'Mystery': Color.fromARGB(255, 121, 85, 72),      // marrone scuro
+      'Poetry': Color.fromARGB(255, 255, 183, 77),      // arancione tenue
+      'Romance': Color.fromARGB(255, 236, 106, 149),    // rosa acceso
+      'Satire': Color.fromARGB(255, 255, 112, 67),      // arancio satira
+      'Sci-Fi': Color.fromARGB(255, 132, 212, 248),     // azzurro
+      'Thriller': Color.fromARGB(255, 94, 53, 177),     // viola scuro
+      'Tragedy': Color.fromARGB(255, 149, 117, 205),    // lavanda drammatica
     };
 
     return Scaffold(
@@ -386,18 +396,28 @@ class _GenrePieChart extends StatelessWidget {
     final total = data.values.fold<int>(0, (a, b) => a + b).toDouble();
 
     final genreColorMap = {
-      'Fantasy': const Color.fromARGB(255, 174, 147, 221),
-      'Romance': const Color.fromARGB(255, 236, 106, 149),
-      'Adventure': Colors.orange,
-      'Sci-Fi': const Color.fromARGB(255, 132, 212, 248),
-      'Horror': const Color.fromARGB(255, 237, 104, 95),
-      'Gothic': const Color.fromARGB(255, 58, 88, 132),
-      'Fable': const Color.fromARGB(255, 102, 187, 106),
+    'Adventure': Colors.orange,
+    'Biography': Color.fromARGB(255, 120, 144, 156), // grigio-blu sobrio
+    'Comic': Color.fromARGB(255, 255, 202, 40),      // giallo brillante
+    'Crime': Color.fromARGB(255, 84, 110, 122),       // blu acciaio scuro
+    'Drama': Color.fromARGB(255, 255, 138, 101),      // corallo tenue
+    'Fable': Color.fromARGB(255, 102, 187, 106),      // verde
+    'Fantasy': Color.fromARGB(255, 174, 147, 221),    // viola
+    'Gothic': Color.fromARGB(255, 58, 88, 132),       // blu gotico
+    'History': Color.fromARGB(255, 161, 136, 127),    // marrone chiaro
+    'Horror': Color.fromARGB(255, 237, 104, 95),      // rosso sangue
+    'Mystery': Color.fromARGB(255, 121, 85, 72),      // marrone scuro
+    'Poetry': Color.fromARGB(255, 255, 183, 77),      // arancione tenue
+    'Romance': Color.fromARGB(255, 236, 106, 149),    // rosa acceso
+    'Satire': Color.fromARGB(255, 255, 112, 67),      // arancio satira
+    'Sci-Fi': Color.fromARGB(255, 132, 212, 248),     // azzurro
+    'Thriller': Color.fromARGB(255, 94, 53, 177),     // viola scuro
+    'Tragedy': Color.fromARGB(255, 149, 117, 205),    // lavanda drammatica
     };
 
     return PieChart(
       PieChartData(
-        sections: data.entries.map((entry) {
+      sections: data.entries.map((entry) {
           final genre = entry.key;
           final value = entry.value;
           final percent = (value / total * 100).toStringAsFixed(1);
