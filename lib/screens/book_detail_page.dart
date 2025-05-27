@@ -298,7 +298,8 @@ class _BookDetailPageState extends State<BookDetailPage> {
     final screenHeight = screen.height;
     final isLandscape = screenWidth > screenHeight;
     final horizontalPadding = screenWidth * 0.05;
-    final imageHeight = screenHeight * 0.6;
+    final imageHeight = isLandscape ? screenHeight * 0.7 : screenHeight * 0.6;
+    final imageWidth = isLandscape ? screenWidth * 0.5 : screenWidth;
     final double spacing = screen.height * 0.02;
     final double iconSize = screen.width * 0.07;
 
@@ -386,20 +387,20 @@ class _BookDetailPageState extends State<BookDetailPage> {
                             book.imagePath,
                             height: imageHeight,
                             width: double.infinity,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                           )
                         : (_fileExists == true
                             ? Image.file(
                                 File(_fullImagePath!), // ✅ QUI
                                 height: imageHeight,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
+                                width: imageWidth,
+                                fit: BoxFit.contain,
                               )
                             : Image.asset(
                                 'assets/books/placeholder.jpg',
                                 height: imageHeight,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
+                                width: imageWidth,
+                                fit: BoxFit.contain,
                               )),
                   ),
                   Positioned(
