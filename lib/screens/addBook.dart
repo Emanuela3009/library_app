@@ -130,7 +130,6 @@ class _AddBookPageState extends State<AddBookPage> {
               TextFormField(
                 controller: plotController,
                 decoration: const InputDecoration(labelText: 'Plot'),
-                maxLines: 3,
               ),
               SizedBox(height: verticalSpace),
               DropdownButtonFormField<String>(
