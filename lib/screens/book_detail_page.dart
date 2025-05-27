@@ -316,9 +316,10 @@ class _BookDetailPageState extends State<BookDetailPage> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
+           if (book.isUserBook)
             IconButton(
-                icon: Icon(Icons.edit, size: iconSize),
-                onPressed: () async {
+                icon: Icon(Icons.edit, size: iconSize,),
+                onPressed: book.isUserBook ? () async {
                   //Prima salva le modifiche locali
                   book.comment = commentController.text;
                   book.rating = rating;
@@ -353,7 +354,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       });
                     }
                   }
-                },
+                } : null ,
               ),
             if (book.id != null)
               IconButton(icon: Icon(Icons.delete, size: iconSize), onPressed: _confirmDelete),
