@@ -59,7 +59,6 @@ class _MyActivityPageState extends State<MyActivityPage> {
 
     genreCounts.clear();
     final filteredBooks = books.where((b) =>
-      b.isUserBook &&
       (b.userState == 'Reading' || b.userState == 'Completed') &&
       b.genre.trim().isNotEmpty).toList();
 
