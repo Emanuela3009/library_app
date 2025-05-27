@@ -38,7 +38,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final horizontalPadding = screen.width * 0.04;
     final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
     final popularBooks = allBooks.where((b) => !b.isUserBook).take(9).toList();
-    final userBooks = allBooks.where((b) => b.isUserBook == true).toList();
+    final userBooks = allBooks
+    .where((b) => b.isUserBook == true)
+    .toList()
+    ..sort((a, b) => b.id!.compareTo(a.id!));
     final favoriteBooks = allBooks.where((b) => b.isFavorite).toList();
 
     Widget buildSectionTitle(String title, VoidCallback? onTap) {
