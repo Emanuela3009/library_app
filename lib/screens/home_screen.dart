@@ -60,17 +60,28 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     Widget buildBookList(List<Book> books) {
-      final cardWidth = isLandscape ? screen.width * 0.18 : screen.width * 0.34;
-      final cardHeight = cardWidth / 0.75 + 60;
+      final screen = MediaQuery.of(context).size;
+      final isLandscape = screen.width > screen.height;
+      final isTablet = screen.shortestSide >= 600;
+
+      final cardWidth = isTablet
+          ? (isLandscape ? screen.width * 0.18 : screen.width * 0.22)
+          : (isLandscape ? screen.width * 0.2 : screen.width * 0.35);
+
+      final coverAspectRatio = 3 / 4.5;
+      final imageHeight = cardWidth / coverAspectRatio;
+
+      // Calcolo responsive dell'altezza massima della card
+      final cardHeight = imageHeight + (isTablet ? 65 : 60);
 
       return SizedBox(
         height: cardHeight,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: books.length,
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+          padding: EdgeInsets.symmetric(horizontal: screen.width * 0.04),
           itemBuilder: (context, index) => SizedBox(
-            width: isLandscape ? screen.width * 0.2 : screen.width * 0.35,
+            width: cardWidth,
             child: BookCard(
               book: books[index],
               onUpdate: _loadBooksFromDatabase,
