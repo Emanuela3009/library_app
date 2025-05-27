@@ -90,7 +90,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           'Choose or Create Category',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1E2A78),
+                                color: const Color.fromARGB(255, 0, 0, 0),
                               ),
                         ),
                       ),
@@ -114,8 +114,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
                             .toList(),
                         onChanged: (val) => setState(() => selectedCategory = val),
                       ),
-                      const SizedBox(height: 20),
-                      Divider(thickness: 1, color: Colors.grey[300]),
                       const SizedBox(height: 20),
                       Text(
                         'Create new category',
@@ -191,7 +189,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1E2A78),
+                              backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             ),
