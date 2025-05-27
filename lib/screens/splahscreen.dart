@@ -49,6 +49,7 @@ class _SplashPageState extends State<SplashPage>
     return Scaffold(
       body: Stack(
         children: [
+          if (_showContent)
           const HomePage(), // oppure HomePage() se preferisci
           if (!_showContent)
             AnimatedBuilder(
