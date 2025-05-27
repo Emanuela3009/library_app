@@ -108,15 +108,23 @@ class _MyActivityPageState extends State<MyActivityPage> {
               fontWeight: FontWeight.bold,
             )),
             SizedBox(
-              height: size.height * 0.14,
-              child: Row(
-                children: [
-                  _infoCard("Completed", readCount, size),
-                  _infoCard("Reading", readingCount, size),
-                  _infoCard("To Read", toReadCount, size),
-                ],
-              ),
-            ),
+            height: size.width > size.height ? null : size.height * 0.14,
+            child: size.width > size.height
+                ? Row(
+                    children: [
+                      Expanded(child: _infoCard("Completed", readCount, size)),
+                      Expanded(child: _infoCard("Reading", readingCount, size)),
+                      Expanded(child: _infoCard("To Read", toReadCount, size)),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      _infoCard("Completed", readCount, size),
+                      _infoCard("Reading", readingCount, size),
+                      _infoCard("To Read", toReadCount, size),
+                    ],
+                  ),
+          ),
             SizedBox(height: spacing * 2),
             Text("Your reading taste", style: Theme.of(context).textTheme.titleMedium),
             SizedBox(height: spacing),
