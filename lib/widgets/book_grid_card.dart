@@ -64,23 +64,20 @@ class _BookGridCardState extends State<BookGridCard> {
       // asset image
       imageWidget = Image.asset(
         widget.book.imagePath,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
+        fit: BoxFit.contain,
+        alignment: Alignment.center,
       );
     } else if (_fileExists == true && _fullImagePath != null) {
       imageWidget = Image.file(
         File(_fullImagePath!),
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
+        fit: BoxFit.contain,
+        alignment: Alignment.center,
       );
     } else {
       imageWidget = Image.asset(
         'assets/books/placeholder.jpg',
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
+        fit: BoxFit.contain,
+        alignment: Alignment.center,
       );
     }
 
@@ -139,12 +136,13 @@ class _BookGridCardState extends State<BookGridCard> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
+          if (widget.book.author.trim().isNotEmpty)
           Text(
             widget.book.author,
             style: Theme.of(context).textTheme.bodyMedium,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-          ),
+          ),    
           Text(
             '⭐ ${widget.book.rating ?? 0}/5',
             style: TextStyle(

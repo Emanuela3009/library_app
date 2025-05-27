@@ -49,16 +49,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
     String? errorText;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Categories',
-          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        centerTitle: true,
-      ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: padding, vertical: padding),
         child: GridView.builder(
