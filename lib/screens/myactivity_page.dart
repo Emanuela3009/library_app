@@ -21,6 +21,13 @@ class _MyActivityPageState extends State<MyActivityPage> {
   Map<String, int> booksPerMonth = {};
   int selectedYear = DateTime.now().year;
 
+  Widget _fixedWidthCard(String label, int count, Size size) {
+  return SizedBox(
+    width: size.width < 400 ? size.width * 0.7 : 180, // adattabile
+    child: _infoCard(label, count, size),
+  );
+}
+
   List<int> get availableYears {
     final currentYear = DateTime.now().year;
     return List.generate(5, (i) => currentYear - i);
@@ -98,33 +105,56 @@ class _MyActivityPageState extends State<MyActivityPage> {
     };
 
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: size.width * 0.05, vertical: spacing),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Reading Progress Summary", style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: const Color.fromARGB(255, 0, 0, 0),
-              fontWeight: FontWeight.bold,
+
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWideScreen = constraints.maxWidth > 600;
+
+          return SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: isWideScreen ? 32 : 16,
+              vertical: 16,
+            ),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isWideScreen ? 700 : double.infinity,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text("Reading Progress Summary", style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: const Color.fromARGB(255, 0, 0, 0),
+                fontWeight: FontWeight.bold,
             )),
-            SizedBox(
-            height: (MediaQuery.of(context).orientation == Orientation.landscape || size.shortestSide < 600) ? null : size.height * 0.14,
-            child: (MediaQuery.of(context).orientation == Orientation.landscape || size.shortestSide < 600)
-                ? Row(
+            const SizedBox(height: 12),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final double maxWidth = constraints.maxWidth;
+                final bool isVerySmall = maxWidth < 370;
+                final bool isWide = maxWidth > 700;
+
+                final double cardWidth = isVerySmall
+                    ? maxWidth * 0.9
+                    : isWide
+                        ? 220
+                        : maxWidth / 3 - 16;
+
+                return Center(
+                  child: Wrap(
+                    spacing: 16,
+                    runSpacing: 16,
+                    alignment: WrapAlignment.center,
                     children: [
-                      Expanded(child: _infoCard("Completed", readCount, size)),
-                      Expanded(child: _infoCard("Reading", readingCount, size)),
-                      Expanded(child: _infoCard("To Read", toReadCount, size)),
-                    ],
-                  )
-                : Row(
-                    children: [
-                      _infoCard("Completed", readCount, size),
-                      _infoCard("Reading", readingCount, size),
-                      _infoCard("To Read", toReadCount, size),
+                      SizedBox(width: cardWidth, child: _infoCard("Completed", readCount, size)),
+                      SizedBox(width: cardWidth, child: _infoCard("Reading", readingCount, size)),
+                      SizedBox(width: cardWidth, child: _infoCard("To Read", toReadCount, size)),
                     ],
                   ),
-          ),
+                );
+              },
+            ),
             SizedBox(height: spacing * 2),
             Text("Your reading taste", style: Theme.of(context).textTheme.titleMedium),
             SizedBox(height: spacing),
@@ -287,62 +317,63 @@ class _MyActivityPageState extends State<MyActivityPage> {
                                   belowBarData: BarAreaData(show: false),
                                 ),
                               ],
-                              lineTouchData: LineTouchData(enabled: false),
-                            ),
-                          ),
+                                ),
+                              ),
                         );
-                      },
-                    ),
-                  ],
-                );
-              },
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
+        );
+      },
+    ),
+  );
+}
+
+  Widget _infoCard(String label, int count, Size size) {
+    return SizedBox(
+      width: 200,
+      height: 100,
+      child: Card(
+        color: const Color.fromARGB(255, 249, 246, 252),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '$count',
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
-  Widget _infoCard(String label, int count, Size size) {
-  return Expanded(
-    child: Card(
-      color: const Color.fromARGB(255, 249, 246, 252),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: size.height * 0.02,
-          horizontal: size.width * 0.01,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: size.width * 0.035,
-                color: Colors.black54,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: size.height * 0.008),
-            FittedBox(
-              child: Text(
-                '$count',
-                style: TextStyle(
-                  fontSize: size.width * 0.06,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
 }
 
 class _GenrePieChart extends StatelessWidget {
