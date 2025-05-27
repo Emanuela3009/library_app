@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
@@ -100,6 +101,21 @@ class _SearchPageState extends State<SearchPage> {
     _searchController.clear();
     _filterBooks('');
   }
+
+  Future<Widget> _buildImageWidget(Book book) async {
+  final path = await book.getImageFullPath();
+  if (path == null) {
+    return Image.asset(book.imagePath, fit: BoxFit.cover);
+  }
+  final file = File(path);
+  final exists = await file.exists();
+  if (exists) {
+    return Image.file(file, fit: BoxFit.cover);
+  } else {
+    return Image.asset('assets/books/placeholder.jpg', fit: BoxFit.cover);
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -252,33 +268,37 @@ class _SearchPageState extends State<SearchPage> {
                           ),
                           child: Row(
                             children: [
-                              Stack(
-                                children: [
-                                  Container(
-                                    width: 90,
-                                    height: 130,
-                                    decoration: BoxDecoration(
+                              FutureBuilder<Widget>(
+                              future: _buildImageWidget(book),
+                              builder: (context, snapshot) {
+                                return Stack(
+                                  children: [
+                                    ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
-                                      image: DecorationImage(
-                                        image: AssetImage(book.imagePath),
-                                        fit: BoxFit.cover,
+                                      child: Container(
+                                        width: 90,
+                                        height: 130,
+                                        child: snapshot.hasData
+                                            ? snapshot.data
+                                            : const Center(child: CircularProgressIndicator()),
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    top: 6,
-                                    right: 6,
-                                    child: GestureDetector(
-                                      onTap: () => _toggleFavorite(book),
-                                      child: Icon(
-                                        book.isFavorite ? Icons.favorite : Icons.favorite_border,
-                                        color: book.isFavorite ? Colors.pink : Colors.grey,
-                                        size: 20,
+                                    Positioned(
+                                      top: 6,
+                                      right: 6,
+                                      child: GestureDetector(
+                                        onTap: () => _toggleFavorite(book),
+                                        child: Icon(
+                                          book.isFavorite ? Icons.favorite : Icons.favorite_border,
+                                          color: book.isFavorite ? Colors.pink : Colors.grey,
+                                          size: 20,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  ],
+                                );
+                              },
+                            ),
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
