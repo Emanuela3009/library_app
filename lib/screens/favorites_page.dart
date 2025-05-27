@@ -26,7 +26,24 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Future<void> _loadFavorites() async {
     final books = await DatabaseHelper.instance.getAllBooks();
     setState(() {
-      favoriteBooks = books.where((book) => book.isFavorite).toList();
+      favoriteBooks = books
+          .where((book) => book.isFavorite)
+          .toList()
+        ..sort((a, b) {
+          final regex = RegExp(r'^\d+');
+          final aMatch = regex.stringMatch(a.title);
+          final bMatch = regex.stringMatch(b.title);
+
+          if (aMatch != null && bMatch != null) {
+            return int.parse(aMatch).compareTo(int.parse(bMatch));
+          } else if (aMatch != null) {
+            return -1;
+          } else if (bMatch != null) {
+            return 1;
+          } else {
+            return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+          }
+        });
     });
   }
 
