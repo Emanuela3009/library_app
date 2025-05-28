@@ -5,6 +5,7 @@ import '../models/book.dart';
 import '../models/category.dart';
 import '../data/database_helper.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/cupertino.dart';
 import 'addBook.dart';
 
 class BookDetailPage extends StatefulWidget {
@@ -109,9 +110,19 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        items: allCategories
-                            .map((cat) => DropdownMenuItem(value: cat, child: Text(cat.name)))
-                            .toList(),
+                        items: allCategories.map((cat) {
+                          return DropdownMenuItem<Category>(
+                          value: cat,
+                          child: Text(
+                          cat.name,
+                          style: const TextStyle(
+                          fontSize: 18 ,
+                          fontWeight: FontWeight.normal, // forza normale
+                          color: Colors.black,
+                          ),
+                        ),
+                      );
+                      }).toList(),
                         onChanged: (val) => setState(() => selectedCategory = val),
                       ),
                       const SizedBox(height: 20),
@@ -509,14 +520,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
                 style: const TextStyle(
                   fontSize: 16,
-                  height: 1.4,
+                  height: 1.2,
                   color: Colors.black,
                 ),
               ),
               SizedBox(height: spacing),
               ElevatedButton.icon(
                 onPressed: () => _showCategoryDialog(context),
-                icon: const Icon(Icons.category),
+                icon: const Icon(CupertinoIcons.collections),
                 label: const Text("Choose Category"),
               ),
             ],

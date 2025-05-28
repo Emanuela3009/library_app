@@ -8,19 +8,18 @@ class AppTheme {
         scaffoldBackgroundColor: Colors.white,
         primaryColor: Colors.black,
 
-           colorScheme: const ColorScheme.light(
-              primary: Colors.black,
-              onPrimary: Colors.white,
-              secondary: Colors.grey,
-              onSecondary: Colors.black,
-              background: Colors.white,
-              surface: Colors.white,
-              onBackground: Colors.black,
-              onSurface: Colors.black,
-              error: Colors.red,
-              onError: Colors.white,
-            ),
-
+        colorScheme: const ColorScheme.light(
+          primary: Colors.black,
+          onPrimary: Colors.white,
+          secondary: Colors.grey,
+          onSecondary: Colors.black,
+          background: Colors.white,
+          surface: Colors.white,
+          onBackground: Colors.black,
+          onSurface: Colors.black,
+          error: Colors.red,
+          onError: Colors.white,
+        ),
 
         textTheme: const TextTheme(
           headlineLarge: TextStyle(
@@ -45,6 +44,13 @@ class AppTheme {
           labelSmall: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
+            color: Colors.black,
+          ),
+        ),
+
+        dropdownMenuTheme: const DropdownMenuThemeData(
+          textStyle: TextStyle(
+            fontWeight: FontWeight.normal,
             color: Colors.black,
           ),
         ),
