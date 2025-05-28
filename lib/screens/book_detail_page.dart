@@ -463,9 +463,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
               ),
               SizedBox(height: spacing),
-              if (commentController.text.trim().isNotEmpty)
               TextField(
-                controller: commentController,
                 decoration: InputDecoration(
                   hintText: 'Leave a comment',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
