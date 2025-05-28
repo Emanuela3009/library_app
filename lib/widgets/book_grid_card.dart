@@ -145,18 +145,24 @@ class _BookGridCardState extends State<BookGridCard> {
           ),    
           Text(
             '⭐ ${widget.book.rating ?? 0}/5',
-            style: TextStyle(
-              color: Colors.purple,
-              fontSize: screenWidth * 0.035,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.purple,
+                  fontWeight: FontWeight.w600,
+                  fontSize: screenWidth < 500 ? 13 : 15,
+                ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          Text(
-            widget.book.userState ?? '',
-            style: TextStyle(
-              fontSize: screenWidth * 0.035,
-              color: Colors.black54,
+          if ((widget.book.userState ?? '').trim().isNotEmpty)
+            Text(
+              widget.book.userState!,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.black87,
+                    fontSize: screenWidth < 500 ? 13 : 15,
+                  ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
         ],
       ),
     );

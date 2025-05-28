@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
 import 'book_detail_page.dart';
+import '../widgets/book_grid_card.dart';
 
 class PopularPage extends StatefulWidget {
   const PopularPage({super.key});
@@ -22,7 +23,24 @@ class _PopularPageState extends State<PopularPage> {
   Future<void> _loadPopularBooks() async {
     final books = await DatabaseHelper.instance.getAllBooks();
     setState(() {
-      popularBooks = books.where((b) => b.isUserBook == false).toList();
+      popularBooks = books
+          .where((b) => b.isUserBook == false)
+          .toList()
+        ..sort((a, b) {
+          final regex = RegExp(r'^\d+');
+          final aMatch = regex.stringMatch(a.title);
+          final bMatch = regex.stringMatch(b.title);
+
+          if (aMatch != null && bMatch != null) {
+            return int.parse(aMatch).compareTo(int.parse(bMatch)); // numerico crescente
+          } else if (aMatch != null) {
+            return -1; // a è numerico, viene prima
+          } else if (bMatch != null) {
+            return 1; // b è numerico, viene prima
+          } else {
+            return a.title.toLowerCase().compareTo(b.title.toLowerCase()); // alfabetico
+          }
+        });
     });
   }
 
@@ -48,10 +66,16 @@ class _PopularPageState extends State<PopularPage> {
                 : GridView.builder(
                   itemCount: popularBooks.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: (screen.width ~/ 200).clamp(2, 4),
+                    crossAxisCount: (screen.width >= 1200)
+                        ? 5
+                        : (screen.width >= 900)
+                            ? 4
+                            : (screen.width >= 600)
+                                ? 3
+                                : 2,
                     mainAxisSpacing: spacing,
                     crossAxisSpacing: spacing,
-                    childAspectRatio: screen.width > 600 ? 0.6 : 0.68,
+                    childAspectRatio: 3 / 4.5,
                   ),
                   itemBuilder: (context, index) {
                     final book = popularBooks[index];
@@ -65,88 +89,13 @@ class _PopularPageState extends State<PopularPage> {
                         );
                         _loadPopularBooks(); // aggiorna al ritorno
                       },
-                      child: Container(
-                        padding: EdgeInsets.all(spacing * 0.5),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(
-                                      book.imagePath,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 6,
-                                    right: 6,
-                                    child: Icon(
-                                      book.isFavorite
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color:
-                                          book.isFavorite
-                                              ? Colors.pink
-                                              : Colors.grey,
-                                      size: screen.width * 0.05,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: spacing * 0.5),
-                            Text(
-                              book.title,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14 * fontScale,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              book.author,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontSize: 13 * fontScale,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              '⭐ ${book.rating?.toStringAsFixed(1) ?? '0.0'}/5',
-                              style: TextStyle(
-                                color: Colors.purple,
-                                fontSize: 13 * fontScale,
-                              ),
-                            ),
-                            Text(
-                              book.userState ?? '',
-                              style: TextStyle(
-                                fontSize: 12 * fontScale,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
+                      child: BookGridCard(
+                        book: book,
+                        onFavoriteToggle: _loadPopularBooks,
                       ),
                     );
                   },
-                ),
+                )
       ),
     );
   }
