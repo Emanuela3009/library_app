@@ -266,12 +266,22 @@ class _MyActivityPageState extends State<MyActivityPage> {
 
                         return SizedBox(
                           height: chartHeight,
-                          child: LineChart(
-                            LineChartData(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: SizedBox(
+                              width: 700, // larghezza fissa del grafico, non cambia in orizzontale
+                              child: LineChart(
+                                LineChartData(
                               minY: 0,
                               maxY: ((maxCount + 4) ~/ 5) * 5.0,
                               gridData: FlGridData(
                                 show: true,
+                                drawVerticalLine: true,
+                                  verticalInterval: 1,
+                                  getDrawingVerticalLine: (_) => FlLine(
+                                    color: Colors.grey.shade300,
+                                    strokeWidth: 1,
+                                  ),
                                 drawHorizontalLine: true,
                                 drawVerticalLine: true,
                                 verticalInterval: 1,
@@ -291,18 +301,24 @@ class _MyActivityPageState extends State<MyActivityPage> {
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
                                     showTitles: true,
-                                    getTitlesWidget: (value, _) {
+                                    interval: 1, // forza una label per ogni valore intero (0-11)
+                                    getTitlesWidget: (value, meta) {
                                       final index = value.toInt();
-                                      if (index >= 0 && index < 12) {
-                                        final label = DateFormat('MMM', 'en_US').format(DateTime(0, index + 1));
-                                        return Padding(
-                                          padding: const EdgeInsets.only(top: 6),
-                                          child: Text(label, style: const TextStyle(fontSize: 10)),
-                                        );
-                                      }
-                                      return const Text('');
+                                      if (index < 0 || index > 11) return const SizedBox.shrink();
+                                      const monthLabels = [
+                                        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                                      ];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(top: 6),
+                                        child: Text(monthLabels[index], style: const TextStyle(fontSize: 10)),
+                                      );
                                     },
+<<<<<<< Updated upstream
                                     interval : 1,
+=======
+                                    reservedSize: 28,
+>>>>>>> Stashed changes
                                   ),
                                 ),
                                 rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -328,6 +344,8 @@ class _MyActivityPageState extends State<MyActivityPage> {
                               ],
                                 ),
                               ),
+                            ),
+                          ),
                         );
                             },
                           ),
