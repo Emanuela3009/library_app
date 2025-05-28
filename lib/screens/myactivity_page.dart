@@ -264,30 +264,31 @@ class _MyActivityPageState extends State<MyActivityPage> {
                         final months = List.generate(12, (i) => DateFormat('yyyy-MM').format(DateTime(selectedYear, i + 1)));
                         final maxCount = filtered.isEmpty ? 0 : filtered.values.reduce((a, b) => a > b ? a : b);
 
+                        final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+                        final chartWidth = isLandscape ? 700.0 : MediaQuery.of(context).size.width - 32;
+
                         return SizedBox(
                           height: chartHeight,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: SizedBox(
-                              width: 700, // larghezza fissa del grafico, non cambia in orizzontale
+                          child: SizedBox(
+                            width: chartWidth,
                               child: LineChart(
                                 LineChartData(
                               minY: 0,
                               maxY: ((maxCount + 4) ~/ 5) * 5.0,
                               gridData: FlGridData(
                                 show: true,
-                                drawVerticalLine: true,
-                                  verticalInterval: 1,
-                                  getDrawingVerticalLine: (_) => FlLine(
-                                    color: Colors.grey.shade300,
-                                    strokeWidth: 1,
-                                  ),
                                 drawHorizontalLine: true,
                                 drawVerticalLine: true,
-                                verticalInterval: 1,
+                                verticalInterval: 1, 
                                 horizontalInterval: 5,
-                                getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.shade300, strokeWidth:1),
-                                getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.shade300, strokeWidth: 1),
+                                getDrawingHorizontalLine: (value) => FlLine(
+                                  color: Colors.grey.shade300,
+                                  strokeWidth: 1,
+                                ),
+                                getDrawingVerticalLine: (value) => FlLine(
+                                  color: Colors.grey.shade300,
+                                  strokeWidth: 1,
+                                ),
                               ),
                               titlesData: FlTitlesData(
                                 leftTitles: AxisTitles(
@@ -313,12 +314,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
                                         padding: const EdgeInsets.only(top: 6),
                                         child: Text(monthLabels[index], style: const TextStyle(fontSize: 10)),
                                       );
-                                    },
-<<<<<<< Updated upstream
-                                    interval : 1,
-=======
-                                    reservedSize: 28,
->>>>>>> Stashed changes
+                                    }
                                   ),
                                 ),
                                 rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -345,8 +341,8 @@ class _MyActivityPageState extends State<MyActivityPage> {
                                 ),
                               ),
                             ),
-                          ),
-                        );
+                          );
+                        
                             },
                           ),
                         ],
