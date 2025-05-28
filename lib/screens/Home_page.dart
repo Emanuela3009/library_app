@@ -61,8 +61,6 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     final isLandscape = mq.orientation == Orientation.landscape;
-    final horizontalPadding = mq.size.width * 0.03;
-    final verticalPadding = mq.size.height * 0.01;
     return Scaffold(
       appBar: AppBar(
         title: Text(
