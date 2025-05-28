@@ -102,21 +102,6 @@ class _SearchPageState extends State<SearchPage> {
     _filterBooks('');
   }
 
-  Future<Widget> _buildImageWidget(Book book) async {
-  final path = await book.getImageFullPath();
-  if (path == null) {
-    return Image.asset(book.imagePath, fit: BoxFit.cover);
-  }
-  final file = File(path);
-  final exists = await file.exists();
-  if (exists) {
-    return Image.file(file, fit: BoxFit.cover);
-  } else {
-    return Image.asset('assets/books/placeholder.jpg', fit: BoxFit.cover);
-  }
-}
-
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -132,7 +117,7 @@ class _SearchPageState extends State<SearchPage> {
               onChanged: _filterBooks,
               decoration: InputDecoration(
                 hintText: 'Search by title or author',
-                hintStyle: TextStyle(color: Color(0xFF7C7C7C)),
+                hintStyle: const TextStyle(color: Color(0xFF7C7C7C)),
                 prefixIcon: const Icon(Icons.search, color: Color(0xFF000000)),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -264,40 +249,91 @@ class _SearchPageState extends State<SearchPage> {
                           decoration: BoxDecoration(
                             color: Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              )
+                            ],
                           ),
                           child: Row(
                             children: [
-                              FutureBuilder<Widget>(
-                              future: _buildImageWidget(book),
-                              builder: (context, snapshot) {
-                                return Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Container(
-                                        width: 90,
-                                        height: 130,
-                                        child: snapshot.hasData
-                                            ? snapshot.data
-                                            : const Center(child: CircularProgressIndicator()),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      top: 6,
-                                      right: 6,
-                                      child: GestureDetector(
-                                        onTap: () => _toggleFavorite(book),
+                              Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: FutureBuilder<String?>(
+                                    future: book.getImageFullPath(),
+                                    builder: (context, snapshot) {
+                                      final double imageHeight = 130;
+                                      final double imageWidth = 90;
+                                      Widget imageWidget;
+
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        imageWidget = Container(
+                                          height: imageHeight,
+                                          width: imageWidth,
+                                          color: Colors.grey.shade200,
+                                          child: const Center(child: CircularProgressIndicator(strokeWidth: 1.5)),
+                                        );
+                                      } else {
+                                        final path = snapshot.data;
+                                        if (path != null && File(path).existsSync()) {
+                                          imageWidget = Image.file(
+                                            File(path),
+                                            height: imageHeight,
+                                            width: imageWidth,
+                                            fit: BoxFit.cover,
+                                          );
+                                        } else if (book.imagePath.isNotEmpty &&
+                                            book.imagePath != 'assets/books/placeholder.jpg') {
+                                          imageWidget = Image.asset(
+                                            book.imagePath,
+                                            height: imageHeight,
+                                            width: imageWidth,
+                                            fit: BoxFit.cover,
+                                          );
+                                        } else {
+                                          imageWidget = Image.asset(
+                                            'assets/books/placeholder.jpg',
+                                            height: imageHeight,
+                                            width: imageWidth,
+                                            fit: BoxFit.cover,
+                                          );
+                                        }
+                                      }
+
+                                      return imageWidget;
+                                    },
+                                  ),
+                                ),
+                                // Cuore visibile sempre in alto a destra
+                                Positioned(
+                                  top: 6,
+                                  right: 6,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(100),
+                                      onTap: () async {
+                                        setState(() {
+                                          book.isFavorite = !book.isFavorite;
+                                        });
+                                        await DatabaseHelper.instance.insertBook(book);
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4),
                                         child: Icon(
                                           book.isFavorite ? Icons.favorite : Icons.favorite_border,
-                                          color: book.isFavorite ? Colors.pink : Colors.grey,
+                                           color: book.isFavorite ? Colors.pink : Colors.grey,
                                           size: 20,
                                         ),
                                       ),
                                     ),
-                                  ],
-                                );
-                              },
+                                  ),
+                                ),
+                              ],
                             ),
                               Expanded(
                                 child: Padding(
