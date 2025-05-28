@@ -21,12 +21,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
   Map<String, int> booksPerMonth = {};
   int selectedYear = DateTime.now().year;
 
-  Widget _fixedWidthCard(String label, int count, Size size) {
-  return SizedBox(
-    width: size.width < 400 ? size.width * 0.7 : 180, // adattabile
-    child: _infoCard(label, count, size),
-  );
-}
+ 
 
   List<int> get availableYears {
     final currentYear = DateTime.now().year;

@@ -1,9 +1,5 @@
-// ✅ FILE: main.dart (con reset opzionale del database e messaggio di conferma)
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart'; // <--- aggiunto import
 import 'core/theme.dart';
-import 'screens/Home_page.dart';
 import 'data/database_helper.dart';
 import 'data/fake_books.dart';
 import 'data/fake_categories.dart';
@@ -11,21 +7,11 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'screens/splahscreen.dart';
 
-Future<void> printFilesInDocuments() async {
-  final dir = await getApplicationDocumentsDirectory();
-  final files = dir.listSync();
-  print('Files in Documents:');
-  for (var file in files) {
-    print(file.path);
-  }
-}
+
 
 void main() async {
-  print("App started");
-  WidgetsFlutterBinding.ensureInitialized();
 
-  // Stampo i file nella directory Documents per debug
-  await printFilesInDocuments();
+  WidgetsFlutterBinding.ensureInitialized();
 
   final dbPath = await getDatabasesPath();
   final path = join(dbPath, 'library_app.db');
@@ -42,6 +28,14 @@ void main() async {
   await DatabaseHelper.instance.populateInitialCategories(fakeCategories);
 
   runApp(const MyApp());
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+  // Ignora gli errori specifici dell'immagine mancante
+  if (!details.exceptionAsString().contains('Unable to load asset')) {
+    FlutterError.dumpErrorToConsole(details);
+  }
+};
+
 }
 
 class MyApp extends StatelessWidget {

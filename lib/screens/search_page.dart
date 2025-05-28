@@ -90,12 +90,7 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  void _toggleFavorite(Book book) async {
-    setState(() {
-      book.isFavorite = !book.isFavorite;
-    });
-    await DatabaseHelper.instance.insertBook(book);
-  }
+ 
 
   void _clearSearch() {
     _searchController.clear();
@@ -262,52 +257,51 @@ class _SearchPageState extends State<SearchPage> {
                               Stack(
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: FutureBuilder<String?>(
-                                    future: book.getImageFullPath(),
-                                    builder: (context, snapshot) {
-                                      final double imageHeight = 130;
-                                      final double imageWidth = 90;
-                                      Widget imageWidget;
+                            borderRadius: BorderRadius.circular(8),
+                            child: FutureBuilder<String?>(
+                              future: book.getImageFullPath(),
+                              builder: (context, snapshot) {
+                                final double imageHeight = 130;
+                                final double imageWidth = 90;
+                                Widget imageWidget;
 
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        imageWidget = Container(
-                                          height: imageHeight,
-                                          width: imageWidth,
-                                          color: Colors.grey.shade200,
-                                          child: const Center(child: CircularProgressIndicator(strokeWidth: 1.5)),
-                                        );
-                                      } else {
-                                        final path = snapshot.data;
-                                        if (path != null && File(path).existsSync()) {
-                                          imageWidget = Image.file(
-                                            File(path),
-                                            height: imageHeight,
-                                            width: imageWidth,
-                                            fit: BoxFit.cover,
-                                          );
-                                        } else if (book.imagePath.isNotEmpty &&
-                                            book.imagePath != 'assets/books/placeholder.jpg') {
-                                          imageWidget = Image.asset(
-                                            book.imagePath,
-                                            height: imageHeight,
-                                            width: imageWidth,
-                                            fit: BoxFit.cover,
-                                          );
-                                        } else {
-                                          imageWidget = Image.asset(
-                                            'assets/books/placeholder.jpg',
-                                            height: imageHeight,
-                                            width: imageWidth,
-                                            fit: BoxFit.cover,
-                                          );
-                                        }
-                                      }
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  imageWidget = Container(
+                                    height: imageHeight,
+                                    width: imageWidth,
+                                    color: Colors.grey.shade200,
+                                    child: const Center(child: CircularProgressIndicator(strokeWidth: 1.5)),
+                                  );
+                                } else {
+                                  final path = snapshot.data;
+                                  if (path != null && File(path).existsSync()) {
+                                    imageWidget = Image.file(
+                                      File(path),
+                                      height: imageHeight,
+                                      width: imageWidth,
+                                      fit: BoxFit.cover,
+                                    );
+                                  } else if (book.imagePath.startsWith('assets/') ) {
+                                    imageWidget = Image.asset(
+                                      book.imagePath,
+                                      height: imageHeight,
+                                      width: imageWidth,
+                                      fit: BoxFit.cover,
+                                    );
+                                  } else {
+                                    imageWidget = Image.asset(
+                                      'assets/books/placeholder.jpg',
+                                      height: imageHeight,
+                                      width: imageWidth,
+                                      fit: BoxFit.cover,
+                                    );
+                                  }
+                                }
 
-                                      return imageWidget;
-                                    },
-                                  ),
-                                ),
+                                return imageWidget;
+                              },
+                            ),
+                          ),
                                 // Cuore visibile sempre in alto a destra
                                 Positioned(
                                   top: 6,

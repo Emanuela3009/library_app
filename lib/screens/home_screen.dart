@@ -3,7 +3,6 @@ import '../models/book.dart';
 import '../data/database_helper.dart';
 import '../widgets/book_card.dart';
 import 'library_page.dart';
-import 'Home_page.dart';
 import 'popular_page.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -33,8 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
-    final isLandscape = screen.width > screen.height;
-    final sectionHeight = isLandscape ? screen.height * 0.4 : screen.height * 0.25;
     final horizontalPadding = screen.width * 0.04;
     final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
     final popularBooks = allBooks.where((b) => !b.isUserBook).take(9).toList();
