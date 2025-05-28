@@ -273,7 +273,10 @@ class _MyActivityPageState extends State<MyActivityPage> {
                               gridData: FlGridData(
                                 show: true,
                                 drawHorizontalLine: true,
+                                drawVerticalLine: true,
+                                verticalInterval: 1,
                                 horizontalInterval: 5,
+                                getDrawingVerticalLine: (value) => FlLine(color: Colors.grey.shade300, strokeWidth:1),
                                 getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.shade300, strokeWidth: 1),
                               ),
                               titlesData: FlTitlesData(
@@ -299,6 +302,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
                                       }
                                       return const Text('');
                                     },
+                                    interval : 1,
                                   ),
                                 ),
                                 rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
