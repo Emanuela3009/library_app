@@ -225,6 +225,21 @@ class _AddBookPageState extends State<AddBookPage> {
               ElevatedButton.icon(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
+                    final existingBooks = await DatabaseHelper.instance.getAllBooks();
+                    final newTitle = titleController.text.trim().toLowerCase();
+
+                    final isDuplicate = existingBooks.any((book) {
+                      if (widget.book != null && book.id == widget.book!.id) return false; // se stai modificando
+                      return book.title.trim().toLowerCase() == newTitle;
+                    });
+
+                    if (isDuplicate) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("A book with this title already exists.")),
+                    );
+                    return;
+                    }
+
                     final updatedBook = Book(
                       id: widget.book?.id,
                       title: titleController.text,
