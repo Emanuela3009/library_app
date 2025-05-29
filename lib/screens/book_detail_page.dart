@@ -365,6 +365,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                         completedDate = updated.dateCompleted;
                         _checkImageFileExists();
                       });
+                      Navigator.pop(context, true);
                     }
                   }
                 } : null ,

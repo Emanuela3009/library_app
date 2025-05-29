@@ -24,11 +24,19 @@ class _BookGridCardState extends State<BookGridCard> {
     _resolveImagePath();
   }
 
+  @override
+  void didUpdateWidget(covariant BookGridCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.book.imagePath != widget.book.imagePath) {
+      _resolveImagePath(); // Ricalcola immagine se il path è cambiato
+    }
+  }
+
   Future<void> _resolveImagePath() async {
     if (widget.book.imagePath.startsWith('assets/')) {
       setState(() {
         _fullImagePath = null;
-        _fileExists = null; // è asset
+        _fileExists = null;
       });
       return;
     }
@@ -37,9 +45,9 @@ class _BookGridCardState extends State<BookGridCard> {
     if (path.startsWith('/private/')) {
       path = path.replaceFirst('/private', '');
     }
+
     final dir = await getApplicationDocumentsDirectory();
 
-    // Se il path è già completo
     if (path.startsWith(dir.path)) {
       _fullImagePath = path;
     } else {
@@ -49,6 +57,10 @@ class _BookGridCardState extends State<BookGridCard> {
     final file = File(_fullImagePath!);
     final exists = await file.exists();
 
+  if (exists) {
+  PaintingBinding.instance.imageCache.clear();
+  PaintingBinding.instance.imageCache.clearLiveImages();
+}
     setState(() {
       _fileExists = exists;
     });
@@ -61,7 +73,6 @@ class _BookGridCardState extends State<BookGridCard> {
     Widget imageWidget;
 
     if (_fileExists == null) {
-      // asset image
       imageWidget = Image.asset(
         widget.book.imagePath,
         fit: BoxFit.contain,
@@ -70,8 +81,10 @@ class _BookGridCardState extends State<BookGridCard> {
     } else if (_fileExists == true && _fullImagePath != null) {
       imageWidget = Image.file(
         File(_fullImagePath!),
+        key: UniqueKey(), // 🔁 Forza il rebuild
         fit: BoxFit.contain,
         alignment: Alignment.center,
+        gaplessPlayback: false,
       );
     } else {
       imageWidget = Image.asset(
@@ -111,13 +124,11 @@ class _BookGridCardState extends State<BookGridCard> {
                     borderRadius: BorderRadius.circular(20),
                     onTap: () async {
                       widget.book.isFavorite = !widget.book.isFavorite;
-                      // Aggiorna DB
                       await DatabaseHelper.instance.insertBook(widget.book);
-                      // Aggiorna UI in pagina (callback)
                       if (widget.onFavoriteToggle != null) {
                         widget.onFavoriteToggle!();
                       }
-                      setState(() {}); // per aggiornare icona
+                      setState(() {});
                     },
                     child: Icon(
                       widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -137,12 +148,12 @@ class _BookGridCardState extends State<BookGridCard> {
             overflow: TextOverflow.ellipsis,
           ),
           if (widget.book.author.trim().isNotEmpty)
-          Text(
-            widget.book.author,
-            style: Theme.of(context).textTheme.bodyMedium,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),    
+            Text(
+              widget.book.author,
+              style: Theme.of(context).textTheme.bodyMedium,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           Text(
             '⭐ ${widget.book.rating ?? 0}/5',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(

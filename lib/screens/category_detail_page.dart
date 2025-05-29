@@ -101,13 +101,15 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                     final book = books[index];
                     return GestureDetector(
                       onTap: () async {
-                        await Navigator.push(
+                       final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => BookDetailPage(book: book),
                           ),
                         );
-                        _loadBooks(); // aggiorna lista dopo modifica
+                        if (result is Book) {
+  _loadBooks(); // Ricarica i libri aggiornati
+} // aggiorna lista dopo modifica
                       },
                       child: BookGridCard(
                         book: book,

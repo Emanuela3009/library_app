@@ -4,6 +4,7 @@ import '../data/database_helper.dart';
 import '../widgets/book_grid_card.dart'; // Importa il widget riutilizzabile
 import 'book_detail_page.dart';
 
+
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
 
@@ -45,6 +46,7 @@ class _LibraryPageState extends State<LibraryPage> {
     });
   }
 
+  
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -79,15 +81,21 @@ class _LibraryPageState extends State<LibraryPage> {
                   final book = allBooks[index];
                   return GestureDetector(
                     onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => BookDetailPage(book: book),
-                        ),
-                      );
-                      _loadBooks(); // aggiorna lista al ritorno
+                      final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BookDetailPage(book: book),
+                                              ),
+                        );
+                        if (result == true) {
+  setState(() {
+    allBooks.clear(); // ✅ svuota lista prima
+  });
+  await _loadBooks(); // ✅ ricarica da DB con immagine aggiornata
+}
                     },
                     child: BookGridCard(
+                      key: ValueKey('${book.id}_${DateTime.now().millisecondsSinceEpoch}'),
                       book: book,
                       onFavoriteToggle: _loadBooks,
                     ),
