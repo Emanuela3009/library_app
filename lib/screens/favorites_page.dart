@@ -1,11 +1,8 @@
-import 'book_detail_page.dart';
 import 'package:flutter/material.dart';
 import '../models/book.dart';
 import '../data/database_helper.dart';
 import '../widgets/book_grid_card.dart';
-
-
-
+import 'book_detail_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -47,24 +44,21 @@ class _FavoritesPageState extends State<FavoritesPage> {
     });
   }
 
+  int _getCrossAxisCount(double width) {
+    if (width >= 1200) return 5;
+    if (width >= 900) return 4;
+    if (width >= 600) return 3;
+    return 2;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
-    // Numero colonne dinamico in base alla larghezza, minimo 2 colonne
-    int crossAxisCount = 2;
-    if (screenWidth >= 1200) {
-      crossAxisCount = 5;
-    } else if (screenWidth >= 900) {
-      crossAxisCount = 4;
-    } else if (screenWidth >= 600) {
-      crossAxisCount = 3;
-    }
-
+    final screen = MediaQuery.of(context).size;
+    final crossAxisCount = _getCrossAxisCount(screen.width);
     final padding = screenWidth * 0.04;
 
     return Scaffold(
-      
       body: Padding(
         padding: EdgeInsets.all(padding),
         child: favoriteBooks.isEmpty
@@ -87,7 +81,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           builder: (_) => BookDetailPage(book: book),
                         ),
                       );
-                      _loadFavorites(); // aggiorna lista al ritorno
+                      _loadFavorites(); 
                     },
                     child: BookGridCard(
                       book: book,
