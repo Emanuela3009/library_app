@@ -81,7 +81,6 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   assets:
-    - assets/category/
     - assets/books/
     - assets/icon/
 
