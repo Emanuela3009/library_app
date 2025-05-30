@@ -88,11 +88,11 @@ class _LibraryPageState extends State<LibraryPage> {
                                               ),
                         );
                         if (result == true) {
-  setState(() {
-    allBooks.clear(); // ✅ svuota lista prima
-  });
-  await _loadBooks(); // ✅ ricarica da DB con immagine aggiornata
-}
+                          setState(() {
+                            allBooks.clear(); // ✅ svuota lista prima
+                          });
+                          await _loadBooks(); // ✅ ricarica da DB con immagine aggiornata
+                        }
                     },
                     child: BookGridCard(
                       key: ValueKey('${book.id}_${DateTime.now().millisecondsSinceEpoch}'),
