@@ -50,19 +50,17 @@ class _SplashPageState extends State<SplashPage>
       body: Stack(
         children: [
           if (_showContent)
-          const HomePage(), // oppure HomePage() se preferisci
+          const HomePage(), 
           if (!_showContent)
             AnimatedBuilder(
               animation: _animation,
               builder: (context, child) {
                 return Row(
                   children: [
-                    // Sinistra: retro copertina (fermo)
                     Container(
                       width: MediaQuery.of(context).size.width / 2,
                       color: Colors.brown[200],
                     ),
-                    // Destra: copertina animata che si apre
                     Transform(
                       alignment: Alignment.centerLeft,
                       transform: Matrix4.identity()

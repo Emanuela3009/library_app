@@ -1,4 +1,3 @@
-//widget per gestire il fatto che quando premo un icona dell'AppBar cambia colore (sempre rispettando il tema)
 import 'package:flutter/material.dart';
 
 class AppBarIconButton extends StatelessWidget {
@@ -21,7 +20,7 @@ class AppBarIconButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 28,
-          color: Theme.of(context).appBarTheme.iconTheme?.color, // usa colore da tema
+          color: Theme.of(context).appBarTheme.iconTheme?.color, 
         ),
       ),
     );

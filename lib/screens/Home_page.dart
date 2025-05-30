@@ -50,7 +50,7 @@ class HomePageState extends State<HomePage> {
     });
   }
 
-  // Serve a home_screen.dart per navigare!
+
   void setIndex(int index) {
     setState(() {
       _currentIndex = index;
