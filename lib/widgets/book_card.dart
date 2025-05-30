@@ -65,7 +65,6 @@ class _BookCardState extends State<BookCard> {
         if (result == true) {
            await _checkFileExists();
           if (widget.onUpdate != null) widget.onUpdate!();
-          // ricarica immagine aggiornata
         }
       },
       child: Container(
@@ -73,7 +72,7 @@ class _BookCardState extends State<BookCard> {
         margin: const EdgeInsets.only(right: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min, // previene overflow
+          mainAxisSize: MainAxisSize.min, 
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
@@ -107,7 +106,7 @@ class _BookCardState extends State<BookCard> {
             ),
             const SizedBox(height: 6),
             SizedBox(
-              height: 36, // assicura spazio sufficiente per 2 righe
+              height: 36, 
               child: Text(
                 widget.book.title,
                 textAlign: TextAlign.center,

@@ -13,15 +13,11 @@ class MyActivityPage extends StatefulWidget {
 
 class _MyActivityPageState extends State<MyActivityPage> {
   List<Book> allBooks = [];
-  int readCount = 0;
-  int readingCount = 0;
-  int toReadCount = 0;
+  int readCount = 0, readingCount = 0, toReadCount = 0;
   double averageRating = 0.0;
   Map<String, int> genreCounts = {};
   Map<String, int> booksPerMonth = {};
   int selectedYear = DateTime.now().year;
-
- 
 
   List<int> get availableYears {
     final currentYear = DateTime.now().year;
@@ -80,7 +76,6 @@ class _MyActivityPageState extends State<MyActivityPage> {
         booksPerMonth[key] = (booksPerMonth[key] ?? 0) + 1;
       }
     }
-
     setState(() {});
   }
 
@@ -91,22 +86,22 @@ class _MyActivityPageState extends State<MyActivityPage> {
     final double spacing = size.height * 0.015;
     final genreColorMap = {
       'Adventure': Colors.orange,
-      'Biography': Color.fromARGB(255, 120, 144, 156), // grigio-blu sobrio
-      'Comic': Color.fromARGB(255, 255, 202, 40),      // giallo brillante
-      'Crime': Color.fromARGB(255, 84, 110, 122),       // blu acciaio scuro
-      'Drama': Color.fromARGB(255, 255, 138, 101),      // corallo tenue
-      'Fable': Color.fromARGB(255, 102, 187, 106),      // verde
-      'Fantasy': Color.fromARGB(255, 174, 147, 221),    // viola
-      'Gothic': Color.fromARGB(255, 58, 88, 132),       // blu gotico
-      'History': Color.fromARGB(255, 161, 136, 127),    // marrone chiaro
-      'Horror': Color.fromARGB(255, 237, 104, 95),      // rosso sangue
-      'Mystery': Color.fromARGB(255, 121, 85, 72),      // marrone scuro
-      'Poetry': Color.fromARGB(255, 255, 183, 77),      // arancione tenue
-      'Romance': Color.fromARGB(255, 236, 106, 149),    // rosa acceso
-      'Satire': Color.fromARGB(255, 255, 112, 67),      // arancio satira
-      'Sci-Fi': Color.fromARGB(255, 132, 212, 248),     // azzurro
-      'Thriller': Color.fromARGB(255, 94, 53, 177),     // viola scuro
-      'Tragedy': Color.fromARGB(255, 149, 117, 205),    // lavanda drammatica
+      'Biography': Color.fromARGB(255, 120, 144, 156), 
+      'Comic': Color.fromARGB(255, 255, 202, 40),      
+      'Crime': Color.fromARGB(255, 84, 110, 122),       
+      'Drama': Color.fromARGB(255, 255, 138, 101),      
+      'Fable': Color.fromARGB(255, 102, 187, 106),      
+      'Fantasy': Color.fromARGB(255, 174, 147, 221),   
+      'Gothic': Color.fromARGB(255, 58, 88, 132),       
+      'History': Color.fromARGB(255, 161, 136, 127),    
+      'Horror': Color.fromARGB(255, 237, 104, 95),      
+      'Mystery': Color.fromARGB(255, 121, 85, 72),      
+      'Poetry': Color.fromARGB(255, 255, 183, 77),      
+      'Romance': Color.fromARGB(255, 236, 106, 149),   
+      'Satire': Color.fromARGB(255, 255, 112, 67),      
+      'Sci-Fi': Color.fromARGB(255, 132, 212, 248),     
+      'Thriller': Color.fromARGB(255, 94, 53, 177),     
+      'Tragedy': Color.fromARGB(255, 149, 117, 205),    
     };
 
     return Scaffold(
@@ -302,7 +297,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
                                     showTitles: true,
-                                    interval: 1, // forza una label per ogni valore intero (0-11)
+                                    interval: 1, 
                                     getTitlesWidget: (value, meta) {
                                       final index = value.toInt();
                                       if (index < 0 || index > 11) return const SizedBox.shrink();
@@ -410,22 +405,22 @@ class _GenrePieChart extends StatelessWidget {
 
     final genreColorMap = {
     'Adventure': Colors.orange,
-    'Biography': Color.fromARGB(255, 120, 144, 156), // grigio-blu sobrio
-    'Comic': Color.fromARGB(255, 255, 202, 40),      // giallo brillante
-    'Crime': Color.fromARGB(255, 84, 110, 122),       // blu acciaio scuro
-    'Drama': Color.fromARGB(255, 255, 138, 101),      // corallo tenue
-    'Fable': Color.fromARGB(255, 102, 187, 106),      // verde
-    'Fantasy': Color.fromARGB(255, 174, 147, 221),    // viola
-    'Gothic': Color.fromARGB(255, 58, 88, 132),       // blu gotico
-    'History': Color.fromARGB(255, 161, 136, 127),    // marrone chiaro
-    'Horror': Color.fromARGB(255, 237, 104, 95),      // rosso sangue
-    'Mystery': Color.fromARGB(255, 121, 85, 72),      // marrone scuro
-    'Poetry': Color.fromARGB(255, 255, 183, 77),      // arancione tenue
-    'Romance': Color.fromARGB(255, 236, 106, 149),    // rosa acceso
-    'Satire': Color.fromARGB(255, 255, 112, 67),      // arancio satira
-    'Sci-Fi': Color.fromARGB(255, 132, 212, 248),     // azzurro
-    'Thriller': Color.fromARGB(255, 94, 53, 177),     // viola scuro
-    'Tragedy': Color.fromARGB(255, 149, 117, 205),    // lavanda drammatica
+    'Biography': Color.fromARGB(255, 120, 144, 156), 
+    'Comic': Color.fromARGB(255, 255, 202, 40),      
+    'Crime': Color.fromARGB(255, 84, 110, 122),       
+    'Drama': Color.fromARGB(255, 255, 138, 101),      
+    'Fable': Color.fromARGB(255, 102, 187, 106),   
+    'Fantasy': Color.fromARGB(255, 174, 147, 221),   
+    'Gothic': Color.fromARGB(255, 58, 88, 132),       
+    'History': Color.fromARGB(255, 161, 136, 127),    
+    'Horror': Color.fromARGB(255, 237, 104, 95),   
+    'Mystery': Color.fromARGB(255, 121, 85, 72),      
+    'Poetry': Color.fromARGB(255, 255, 183, 77),      
+    'Romance': Color.fromARGB(255, 236, 106, 149),    
+    'Satire': Color.fromARGB(255, 255, 112, 67),      
+    'Sci-Fi': Color.fromARGB(255, 132, 212, 248),    
+    'Thriller': Color.fromARGB(255, 94, 53, 177),   
+    'Tragedy': Color.fromARGB(255, 149, 117, 205),    
     };
 
     return PieChart(

@@ -94,8 +94,6 @@ return LayoutBuilder(
   builder: (context, constraints) {
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
-    final screenHeight = screenSize.height;
-    final double iconSize = (screenWidth + screenHeight) * 0.03 > 30 ? 30 : (screenWidth + screenHeight) * 0.03;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -135,7 +133,7 @@ return LayoutBuilder(
                     child: Icon(
                       widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,
                       color: widget.book.isFavorite ? Colors.pink : Colors.grey,
-                      size: iconSize,
+                      size: 20,
                     ),
                   ),
                 ),

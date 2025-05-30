@@ -32,13 +32,13 @@ class _PopularPageState extends State<PopularPage> {
           final bMatch = regex.stringMatch(b.title);
 
           if (aMatch != null && bMatch != null) {
-            return int.parse(aMatch).compareTo(int.parse(bMatch)); // numerico crescente
+            return int.parse(aMatch).compareTo(int.parse(bMatch)); 
           } else if (aMatch != null) {
-            return -1; // a è numerico, viene prima
+            return -1;
           } else if (bMatch != null) {
-            return 1; // b è numerico, viene prima
+            return 1; 
           } else {
-            return a.title.toLowerCase().compareTo(b.title.toLowerCase()); // alfabetico
+            return a.title.toLowerCase().compareTo(b.title.toLowerCase()); 
           }
         });
     });
@@ -49,13 +49,14 @@ class _PopularPageState extends State<PopularPage> {
     final screen = MediaQuery.of(context).size;
     final double spacing = screen.width * 0.04;
     final double padding = screen.width * 0.05;
-    final double fontScale = screen.width / 400;
+    final maxCardWidth = 200.0;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Popular Books",
-          style: TextStyle(fontSize: 18 * fontScale),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+         
         ),
       ),
       body: Padding(
@@ -65,14 +66,8 @@ class _PopularPageState extends State<PopularPage> {
                 ? const Center(child: Text("No popular books available"))
                 : GridView.builder(
                   itemCount: popularBooks.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: (screen.width >= 1200)
-                        ? 5
-                        : (screen.width >= 900)
-                            ? 4
-                            : (screen.width >= 600)
-                                ? 3
-                                : 2,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: maxCardWidth,
                     mainAxisSpacing: spacing,
                     crossAxisSpacing: spacing,
                     childAspectRatio: 3 / 4.5,
@@ -87,7 +82,7 @@ class _PopularPageState extends State<PopularPage> {
                             builder: (_) => BookDetailPage(book: book),
                           ),
                         );
-                        _loadPopularBooks(); // aggiorna al ritorno
+                        _loadPopularBooks(); 
                       },
                       child: BookGridCard(
                         book: book,

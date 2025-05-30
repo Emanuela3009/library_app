@@ -32,13 +32,13 @@ class _LibraryPageState extends State<LibraryPage> {
     final bMatch = regex.stringMatch(b.title);
 
     if (aMatch != null && bMatch != null) {
-      return int.parse(aMatch).compareTo(int.parse(bMatch)); // numerico
+      return int.parse(aMatch).compareTo(int.parse(bMatch)); 
     } else if (aMatch != null) {
-      return -1; // a è numerico, viene prima
+      return -1; 
     } else if (bMatch != null) {
-      return 1; // b è numerico, viene prima
+      return 1; 
     } else {
-      return a.title.toLowerCase().compareTo(b.title.toLowerCase()); // alfabetico
+      return a.title.toLowerCase().compareTo(b.title.toLowerCase()); 
     }
   });
     setState(() {
@@ -50,18 +50,8 @@ class _LibraryPageState extends State<LibraryPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
-    // Numero colonne dinamico in base alla larghezza, minimo 2 colonne
-    int crossAxisCount = 2;
-    if (screenWidth >= 1200) {
-      crossAxisCount = 5;
-    } else if (screenWidth >= 900) {
-      crossAxisCount = 4;
-    } else if (screenWidth >= 600) {
-      crossAxisCount = 3;
-    }
-
     final padding = screenWidth * 0.04;
+    final maxCardWidth = 200.0;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Library")),
@@ -71,8 +61,8 @@ class _LibraryPageState extends State<LibraryPage> {
             ? const Center(child: Text("No books added yet"))
             : GridView.builder(
                 itemCount: allBooks.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                 maxCrossAxisExtent: maxCardWidth,
                   mainAxisSpacing: padding,
                   crossAxisSpacing: padding,
                   childAspectRatio: 3 / 4.5,
@@ -89,9 +79,9 @@ class _LibraryPageState extends State<LibraryPage> {
                         );
                         if (result == true) {
                           setState(() {
-                            allBooks.clear(); // ✅ svuota lista prima
+                            allBooks.clear(); 
                           });
-                          await _loadBooks(); // ✅ ricarica da DB con immagine aggiornata
+                          await _loadBooks(); 
                         }
                     },
                     child: BookGridCard(

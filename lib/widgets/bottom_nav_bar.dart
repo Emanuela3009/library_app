@@ -17,8 +17,6 @@ class BottomNavBar extends StatelessWidget {
     final shortestSide = screen.shortestSide;
     final isTablet = shortestSide >= 600;
     final isLandscape = screen.width > screen.height;
-
-    // Imposta dimensioni dinamiche
     final double iconSize = isTablet
         ? 30
         : isLandscape
