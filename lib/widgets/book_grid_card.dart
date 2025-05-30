@@ -28,7 +28,7 @@ class _BookGridCardState extends State<BookGridCard> {
   void didUpdateWidget(covariant BookGridCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.book.imagePath != widget.book.imagePath) {
-      _resolveImagePath(); // Ricalcola immagine se il path è cambiato
+      _resolveImagePath(); 
     }
   }
 
@@ -47,20 +47,19 @@ class _BookGridCardState extends State<BookGridCard> {
     }
 
     final dir = await getApplicationDocumentsDirectory();
-
     if (path.startsWith(dir.path)) {
       _fullImagePath = path;
     } else {
       _fullImagePath = '${dir.path}/${path.split('/').last}';
     }
-
     final file = File(_fullImagePath!);
     final exists = await file.exists();
 
-  if (exists) {
-  PaintingBinding.instance.imageCache.clear();
-  PaintingBinding.instance.imageCache.clearLiveImages();
-}
+    if (exists) {
+    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache.clearLiveImages();
+   }
+
     setState(() {
       _fileExists = exists;
     });
@@ -68,8 +67,6 @@ class _BookGridCardState extends State<BookGridCard> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     Widget imageWidget;
 
     if (_fileExists == null) {
@@ -81,7 +78,7 @@ class _BookGridCardState extends State<BookGridCard> {
     } else if (_fileExists == true && _fullImagePath != null) {
       imageWidget = Image.file(
         File(_fullImagePath!),
-        key: UniqueKey(), // 🔁 Forza il rebuild
+        key: UniqueKey(), 
         fit: BoxFit.contain,
         alignment: Alignment.center,
         gaplessPlayback: false,
@@ -93,7 +90,12 @@ class _BookGridCardState extends State<BookGridCard> {
         alignment: Alignment.center,
       );
     }
-
+return LayoutBuilder(
+  builder: (context, constraints) {
+    final screenSize = MediaQuery.of(context).size;
+    final screenWidth = screenSize.width;
+    final screenHeight = screenSize.height;
+    final double iconSize = (screenWidth + screenHeight) * 0.03 > 30 ? 30 : (screenWidth + screenHeight) * 0.03;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -133,7 +135,7 @@ class _BookGridCardState extends State<BookGridCard> {
                     child: Icon(
                       widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,
                       color: widget.book.isFavorite ? Colors.pink : Colors.grey,
-                      size: screenWidth * 0.05,
+                      size: iconSize,
                     ),
                   ),
                 ),
@@ -176,6 +178,9 @@ class _BookGridCardState extends State<BookGridCard> {
             ),
         ],
       ),
+    
     );
+  },
+);
   }
 }

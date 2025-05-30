@@ -65,8 +65,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
             ? const Center(child: Text("No favorites yet"))
             : GridView.builder(
                 itemCount: favoriteBooks.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
                   mainAxisSpacing: padding,
                   crossAxisSpacing: padding,
                   childAspectRatio: 3 / 4.5,
