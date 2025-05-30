@@ -44,18 +44,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
     });
   }
 
-  int _getCrossAxisCount(double width) {
-    if (width >= 1200) return 5;
-    if (width >= 900) return 4;
-    if (width >= 600) return 3;
-    return 2;
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screen = MediaQuery.of(context).size;
-    final crossAxisCount = _getCrossAxisCount(screen.width);
     final padding = screenWidth * 0.04;
 
     return Scaffold(

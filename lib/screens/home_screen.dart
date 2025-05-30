@@ -15,12 +15,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<Book> allBooks = [];
-@override
-void didChangeAppLifecycleState(AppLifecycleState state) {
-  if (state == AppLifecycleState.resumed) {
-    _loadBooksFromDatabase();
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadBooksFromDatabase();
+    }
   }
-}
   @override
   void initState() {
     super.initState();
@@ -28,11 +28,12 @@ void didChangeAppLifecycleState(AppLifecycleState state) {
     WidgetsBinding.instance.addObserver(this);
   }
 
-@override
-void dispose() {
-  WidgetsBinding.instance.removeObserver(this);
-  super.dispose();
-}
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   Future<void> _loadBooksFromDatabase() async {
   final books = await DatabaseHelper.instance.getAllBooks();
   if (!mounted) return;
@@ -57,10 +58,7 @@ void didChangeDependencies() {
     final horizontalPadding = screen.width * 0.04;
     final readingBooks = allBooks.where((b) => b.userState == 'Reading').toList();
     final popularBooks = allBooks.where((b) => !b.isUserBook).take(9).toList();
-    final userBooks = allBooks
-    .where((b) => b.isUserBook == true)
-    .toList()
-    ..sort((a, b) => b.id!.compareTo(a.id!));
+    final userBooks = allBooks.where((b) => b.isUserBook == true).toList()..sort((a, b) => b.id!.compareTo(a.id!));
     final favoriteBooks = allBooks.where((b) => b.isFavorite).toList();
 
     Widget buildSectionTitle(String title, VoidCallback? onTap) {
@@ -82,7 +80,6 @@ void didChangeDependencies() {
     }
 
     Widget buildBookList(List<Book> books) {
-      final screen = MediaQuery.of(context).size;
       final isLandscape = screen.width > screen.height;
       final isTablet = screen.shortestSide >= 600;
 
@@ -92,8 +89,6 @@ void didChangeDependencies() {
 
       final coverAspectRatio = 3 / 4.5;
       final imageHeight = cardWidth / coverAspectRatio;
-
-      // Calcolo responsive dell'altezza massima della card
       final cardHeight = imageHeight + (isTablet ? 65 : 60);
 
       return SizedBox(
@@ -105,7 +100,7 @@ void didChangeDependencies() {
           itemBuilder: (context, index) => SizedBox(
             width: cardWidth,
             child: BookCard(
-               key: ValueKey(books[index].id.toString() + (books[index].imagePath ?? '')),
+              key: ValueKey(books[index].id.toString() + (books[index].imagePath ?? '')),
               book: books[index],
               onUpdate: _loadBooksFromDatabase,
             ),
@@ -154,10 +149,7 @@ void didChangeDependencies() {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const PopularPage()));
                     }),
                     buildBookList(popularBooks,),
-
                     buildSectionTitle("Your favorites", () {
-                     // final homeState = context.findAncestorStateOfType<HomePageState>();
-                      //homeState?.setIndex(3);
                       widget.onTabChanged(3);
 
                     }),
@@ -167,13 +159,13 @@ void didChangeDependencies() {
 
                     buildSectionTitle("Your books", () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const LibraryPage()))
-                      .then((_) => _loadBooksFromDatabase());                    }),
+                      .then((_) => _loadBooksFromDatabase());
+                    }),
                     userBooks.isEmpty
                         ? buildEmptyText("No books added yet")
 
                         : buildBookList(userBooks,),
 
-                    // aggiungi uno spazio finale
                     SizedBox(height: screen.height * 0.05),
 
                   ],
