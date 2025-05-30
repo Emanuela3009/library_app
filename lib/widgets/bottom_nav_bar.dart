@@ -13,14 +13,32 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+    final shortestSide = screen.shortestSide;
+    final isTablet = shortestSide >= 600;
+    final isLandscape = screen.width > screen.height;
+
+    // Imposta dimensioni dinamiche
+    final double iconSize = isTablet
+        ? 30
+        : isLandscape
+            ? 22
+            : 26;
+
+    final double fontSize = isTablet
+        ? 14
+        : isLandscape
+            ? 11
+            : 12;
+
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.white,
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.grey.shade500,
-      selectedFontSize: 12,
-      unselectedFontSize: 12,
-      iconSize: 26,
+      selectedFontSize: fontSize,
+      unselectedFontSize: fontSize,
+      iconSize: iconSize,
       showUnselectedLabels: true,
       currentIndex: currentIndex,
       onTap: onTap,
