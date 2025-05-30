@@ -24,7 +24,7 @@ class _AddBookPageState extends State<AddBookPage> {
   String selectedGenre = 'Fantasy';
   DateTime? completedDate;
   File? _selectedImage;
-  String? _imageFileName; // SALVA solo nome file
+  String? _imageFileName; 
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -40,7 +40,7 @@ class _AddBookPageState extends State<AddBookPage> {
       completedDate = book.dateCompleted; 
 
       if (!book.imagePath.startsWith('assets')) {
-        _imageFileName = book.imagePath; // qui ci deve essere solo il nome file
+        _imageFileName = book.imagePath; 
       }
     }
   }
@@ -74,26 +74,16 @@ class _AddBookPageState extends State<AddBookPage> {
   }
 
   Future<void> _pickImage(ImageSource source) async {
-    print('Picking image from $source');
     final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
     if (pickedFile != null) {
       final appDir = await getApplicationDocumentsDirectory();
-
-      // Genera un nome unico per il file
       final fileName = 'book_cover_${DateTime.now().millisecondsSinceEpoch}${path.extension(pickedFile.path)}';
-
-      // Percorso completo nel Documents
       final savedImagePath = path.join(appDir.path, fileName);
-
-      // Copia il file temporaneo nella directory persistente
       final savedImage = await File(pickedFile.path).copy(savedImagePath);
-
-      print('Saved image path: ${savedImage.path}');
-      print('File exists: ${await savedImage.exists()}');
 
       setState(() {
         _selectedImage = savedImage;
-        _imageFileName = fileName; // SALVO SOLO nome file, NON il path completo
+        _imageFileName = fileName; 
       });
     }
   }
@@ -150,7 +140,7 @@ class _AddBookPageState extends State<AddBookPage> {
                 ),
                 style: const TextStyle(
                   fontSize: 16,
-                  height: 1.4, // migliora leggibilità di lettere con discendenti
+                  height: 1.4, 
                   color: Colors.black,
                 ),
               ),
@@ -169,7 +159,6 @@ class _AddBookPageState extends State<AddBookPage> {
                         completedDate = selectedDate;
                       });
                     }
-                    // Se viene premuto cancel o toccato fuori, NON cambiare nulla
                   } else {
                     setState(() {
                       selectedState = newValue!;
@@ -180,7 +169,7 @@ class _AddBookPageState extends State<AddBookPage> {
                 selectedItemBuilder: (context) {
                   return ['To Read', 'Reading', 'Completed']
                       .map((state) => Text(selectedState))
-                      .toList(); // forza la visualizzazione coerente
+                      .toList(); 
                 },
                 decoration: const InputDecoration(
                   labelText: 'State',
@@ -229,7 +218,7 @@ class _AddBookPageState extends State<AddBookPage> {
                     final newTitle = titleController.text.trim().toLowerCase();
 
                     final isDuplicate = existingBooks.any((book) {
-                      if (widget.book != null && book.id == widget.book!.id) return false; // se stai modificando
+                      if (widget.book != null && book.id == widget.book!.id) return false;
                       return book.title.trim().toLowerCase() == newTitle;
                     });
 
@@ -255,7 +244,6 @@ class _AddBookPageState extends State<AddBookPage> {
                       comment: widget.book?.comment,
                       dateCompleted: selectedState == 'Completed' ? completedDate : null,
                     );
-                    print('Saving book with imagePath: ${updatedBook.imagePath}');
                     await DatabaseHelper.instance.insertBook(updatedBook);
                     Navigator.pop(context, updatedBook);
                   }
