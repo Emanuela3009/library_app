@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../models/category.dart';
 import '../../models/book.dart';
+import '../../models/category.dart';
 import '../../data/database_helper.dart';
-import '../../widgets/book_grid_card.dart'; // Importa il widget riutilizzabile
+import '../../widgets/book_grid_card.dart';
 import 'book_detail_page.dart';
 
 class CategoryDetailPage extends StatefulWidget {
@@ -95,7 +95,7 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                     maxCrossAxisExtent: isWideScreen ? 300 : 250,
                     mainAxisSpacing: padding,
                     crossAxisSpacing: padding,
-                    childAspectRatio: 3 / 4.5, // stesso ratio di BookGridCard
+                    childAspectRatio: 3 / 4.5, 
                   ),
                   itemBuilder: (context, index) {
                     final book = books[index];
@@ -108,8 +108,8 @@ class _CategoryDetailPageState extends State<CategoryDetailPage> {
                           ),
                         );
                         if (result is Book) {
-  _loadBooks(); // Ricarica i libri aggiornati
-} // aggiorna lista dopo modifica
+                          _loadBooks(); 
+                        } 
                       },
                       child: BookGridCard(
                         book: book,

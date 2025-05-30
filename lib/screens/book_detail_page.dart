@@ -10,9 +10,7 @@ import 'addBook.dart';
 
 class BookDetailPage extends StatefulWidget {
   final Book book;
-
   const BookDetailPage({super.key, required this.book});
-
   @override
   State<BookDetailPage> createState() => _BookDetailPageState();
 }
@@ -20,7 +18,6 @@ class BookDetailPage extends StatefulWidget {
 class _BookDetailPageState extends State<BookDetailPage> {
   late Book book;
   String? _fullImagePath;
-
   List<Category> allCategories = [];
   int rating = 0;
   String comment = '';
@@ -45,8 +42,8 @@ class _BookDetailPageState extends State<BookDetailPage> {
   final path = await book.getImageFullPath();
   if (path == null) {
       setState(() {
-      _fileExists = null;
-      _fullImagePath = null;
+       _fileExists = null;
+       _fullImagePath = null;
     });
      return;
   } 
@@ -75,6 +72,9 @@ class _BookDetailPageState extends State<BookDetailPage> {
 
     showDialog(
       context: context,
+       barrierDismissible: true,
+      useSafeArea: true,
+      useRootNavigator: true,
       builder: (context) {
         return Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
@@ -114,13 +114,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                           return DropdownMenuItem<Category>(
                           value: cat,
                           child: Text(
-                          cat.name,
-                          style: const TextStyle(
-                          fontSize: 18 ,
-                          fontWeight: FontWeight.normal, // forza normale
-                          color: Colors.black,
-                          ),
-                        ),
+                          cat.name),
                       );
                       }).toList(),
                         onChanged: (val) => setState(() => selectedCategory = val),
@@ -312,7 +306,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
     final imageHeight = isLandscape ? screenHeight * 0.7 : screenHeight * 0.6;
     final imageWidth = isLandscape ? screenWidth * 0.5 : screenWidth;
     final double spacing = screen.height * 0.02;
-    final double iconSize = screen.width * 0.07;
+    final double iconSize = (screenWidth + screenHeight) * 0.03 > 30 ? 30 : (screenWidth + screenHeight) * 0.03;
 
     return WillPopScope(
       onWillPop: () async {
@@ -332,7 +326,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
             IconButton(
                 icon: Icon(Icons.edit, size: iconSize,),
                 onPressed: book.isUserBook ? () async {
-                  //Prima salva le modifiche locali
                   book.comment = commentController.text;
                   book.rating = rating;
                   if (selectedState == 'Completed' && book.userState != 'Completed') {
@@ -340,20 +333,14 @@ class _BookDetailPageState extends State<BookDetailPage> {
                   }
                   book.userState = selectedState;
                   await DatabaseHelper.instance.insertBook(book);
-
-                  //Poi ricarica il libro aggiornato dal DB
                   final refreshedBook = await DatabaseHelper.instance.getBookById(book.id!);
                   if (refreshedBook == null) return;
-
-                  // ✏️ Vai alla schermata di modifica con il libro aggiornato
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => AddBookPage(book: refreshedBook),
                     ),
                   );
-
-                  // Quando torni, aggiorna la UI
                   if (result is Book) {
                     final updated = await DatabaseHelper.instance.getBookById(result.id!);
                     if (updated != null) {
@@ -483,7 +470,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 ),
                 onChanged: (val) {
                   book.comment = val;
-                  DatabaseHelper.instance.insertBook(book); // salva subito
+                  DatabaseHelper.instance.insertBook(book); 
                 },
               ),
               SizedBox(height: spacing),
@@ -503,7 +490,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
                       });
                       await DatabaseHelper.instance.insertBook(book);
                     }
-                    // Se viene premuto cancel, non faccio nulla
                   } else {
                     setState(() {
                       selectedState = newValue!;
@@ -516,7 +502,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
                 selectedItemBuilder: (context) {
                   return ['To Read', 'Reading', 'Completed']
                       .map((state) => Text(selectedState))
-                      .toList(); // forza la visualizzazione coerente
+                      .toList(); 
                 },
                 decoration: const InputDecoration(
                   labelText: 'State',
@@ -547,7 +533,6 @@ class _BookDetailPageState extends State<BookDetailPage> {
 class MonthYear {
   final int month;
   final int year;
-
   MonthYear({required this.month, required this.year});
 }
 
