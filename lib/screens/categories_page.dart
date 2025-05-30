@@ -195,11 +195,6 @@ class _CategoriesPageState extends State<CategoriesPage> {
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          // Calcolo dinamico del numero di colonne nel GridView
-          final crossAxisCount = isTablet
-              ? (screen.width ~/ 250).clamp(2, 6)
-              : 2;
-
           return Scrollbar(
             thumbVisibility: true,
             thickness: 4,
