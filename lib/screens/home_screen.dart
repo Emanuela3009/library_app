@@ -166,8 +166,8 @@ void didChangeDependencies() {
                         : buildBookList(favoriteBooks,),
 
                     buildSectionTitle("Your books", () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const LibraryPage()));
-                    }),
+Navigator.push(context, MaterialPageRoute(builder: (_) => const LibraryPage()))
+  .then((_) => _loadBooksFromDatabase());                    }),
                     userBooks.isEmpty
                         ? buildEmptyText("No books added yet")
 
