@@ -233,7 +233,7 @@ class _BookDetailPageState extends State<BookDetailPage> {
               await DatabaseHelper.instance.deleteBook(widget.book.id!);
               if (!context.mounted) return;
               Navigator.pop(context);
-              Navigator.pop(context);
+              Navigator.pop(context, true);
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Book deleted")));
             },
             child: const Text("Delete"),
@@ -476,10 +476,15 @@ class _BookDetailPageState extends State<BookDetailPage> {
               ),
               SizedBox(height: spacing),
               TextField(
+                controller: commentController,
                 decoration: InputDecoration(
                   hintText: 'Leave a comment',
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                 ),
+                onChanged: (val) {
+                  book.comment = val;
+                  DatabaseHelper.instance.insertBook(book); // salva subito
+                },
               ),
               SizedBox(height: spacing),
               DropdownButtonFormField<String>(
