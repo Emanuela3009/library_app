@@ -51,18 +51,22 @@ class _BookCardState extends State<BookCard> {
     if (_fileExists == null) {
       imageWidget = Image.asset(widget.book.imagePath, fit: BoxFit.cover);
     } else if (_fileExists == true && _fullImagePath != null) {
-      imageWidget = Image.file(File(_fullImagePath!), fit: BoxFit.cover);
+      imageWidget = Image.file(File(_fullImagePath!), fit: BoxFit.cover,  key: UniqueKey(),);
     } else {
       imageWidget = Image.asset('assets/books/placeholder.jpg', fit: BoxFit.cover);
     }
 
     return GestureDetector(
       onTap: () async {
-        await Navigator.push(
+        final result =await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => BookDetailPage(book: widget.book)),
         );
-        if (widget.onUpdate != null) widget.onUpdate!();
+        if (result == true) {
+           await _checkFileExists();
+          if (widget.onUpdate != null) widget.onUpdate!();
+          // ricarica immagine aggiornata
+        }
       },
       child: Container(
         width: 110,
@@ -88,6 +92,7 @@ class _BookCardState extends State<BookCard> {
                           widget.book.isFavorite = !widget.book.isFavorite;
                           await DatabaseHelper.instance.insertBook(widget.book);
                           if (widget.onUpdate != null) widget.onUpdate!();
+                          await _checkFileExists();
                         },
                         child: Icon(
                           widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,

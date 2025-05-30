@@ -13,21 +13,43 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   List<Book> allBooks = [];
-
+@override
+void didChangeAppLifecycleState(AppLifecycleState state) {
+  if (state == AppLifecycleState.resumed) {
+    _loadBooksFromDatabase();
+  }
+}
   @override
   void initState() {
     super.initState();
     _loadBooksFromDatabase();
+    WidgetsBinding.instance.addObserver(this);
   }
 
+@override
+void dispose() {
+  WidgetsBinding.instance.removeObserver(this);
+  super.dispose();
+}
   Future<void> _loadBooksFromDatabase() async {
-    final books = await DatabaseHelper.instance.getAllBooks();
-    setState(() {
-      allBooks = books;
-    });
-  }
+  final books = await DatabaseHelper.instance.getAllBooks();
+  if (!mounted) return;
+  setState(() {
+    allBooks = books;
+  });
+}
+
+
+@override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  ModalRoute.of(context)?.addScopedWillPopCallback(() async {
+    await _loadBooksFromDatabase();
+    return true;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
           itemBuilder: (context, index) => SizedBox(
             width: cardWidth,
             child: BookCard(
+               key: ValueKey(books[index].id.toString() + (books[index].imagePath ?? '')),
               book: books[index],
               onUpdate: _loadBooksFromDatabase,
             ),
