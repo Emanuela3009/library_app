@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:fl_chart/fl_chart.dart'; //import per i grafici
 import '../models/book.dart';
 import '../data/database_helper.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart'; //import per formattare la data in formato "yyyy-MM"
 
 class MyActivityPage extends StatefulWidget {
   const MyActivityPage({super.key});
@@ -11,14 +11,16 @@ class MyActivityPage extends StatefulWidget {
   State<MyActivityPage> createState() => _MyActivityPageState();
 }
 
+//stato della pagina
 class _MyActivityPageState extends State<MyActivityPage> {
   List<Book> allBooks = [];
   int readCount = 0, readingCount = 0, toReadCount = 0;
   double averageRating = 0.0;
-  Map<String, int> genreCounts = {};
+  Map<String, int> genreCounts = {}; 
   Map<String, int> booksPerMonth = {};
-  int selectedYear = DateTime.now().year;
+  int selectedYear = DateTime.now().year; //anno iniziale mostrato
 
+  //ritorna gli ultimi 5 anni, compreso l'anno corrente 
   List<int> get availableYears {
     final currentYear = DateTime.now().year;
     return List.generate(5, (i) => currentYear - i);
@@ -27,13 +29,16 @@ class _MyActivityPageState extends State<MyActivityPage> {
   @override
   void initState() {
     super.initState();
-    _loadStats();
+    _loadStats(); //recupero i dati 
   }
 
+
+  //funzione che legge e calcola tutte le statistiche utili 
   Future<void> _loadStats() async {
     final books = await DatabaseHelper.instance.getAllBooks();
     allBooks = books;
 
+    //conteggio libri in base allo stato di lettura "to read" / "reading" / "completed" ; per i libri della sezione "popular now" viene considerato solo lo stato "reading" o "completed"
     readCount = books.where((b) =>
       b.userState == 'Completed' &&
       (b.isUserBook || b.userState != 'To Read')
@@ -49,12 +54,14 @@ class _MyActivityPageState extends State<MyActivityPage> {
       b.isUserBook
     ).length;
 
+    //calcolo della media delle valutazioni solo dei libri con stato di lettura "completed" (tutti i libri)
     final completedBooks = books.where((b) => b.userState == 'Completed').toList();
     if (completedBooks.isNotEmpty) {
       final ratings = completedBooks.map((b) => b.rating ?? 0).toList();
       averageRating = ratings.reduce((a, b) => a + b) / ratings.length;
     }
 
+    //calcolo per la distribuzione per genere (di tutti i libri "reading" o "completed")
     genreCounts.clear();
     final filteredBooks = books.where((b) =>
       (b.userState == 'Reading' || b.userState == 'Completed') &&
@@ -70,6 +77,7 @@ class _MyActivityPageState extends State<MyActivityPage> {
         .where((b) => b.userState == 'Completed' && b.dateCompleted != null)
         .toList();
 
+    //calcolo dei libri completati per mese e per l'anno selezionato 
     for (var book in completedBooksWithDate) {
       if (book.dateCompleted!.year == selectedYear) {
         final key = DateFormat('yyyy-MM').format(book.dateCompleted!);
@@ -79,11 +87,15 @@ class _MyActivityPageState extends State<MyActivityPage> {
     setState(() {});
   }
 
+
+  //interfaccia utente 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final double chartHeight = size.height * 0.3;
     final double spacing = size.height * 0.015;
+
+    //colori assegnati per genere 
     final genreColorMap = {
       'Adventure': Colors.orange,
       'Biography': Color.fromARGB(255, 120, 144, 156), 
@@ -106,22 +118,22 @@ class _MyActivityPageState extends State<MyActivityPage> {
 
     return Scaffold(
 
-      body: LayoutBuilder(
+      body: LayoutBuilder( //layout responsive
         builder: (context, constraints) {
-          final isWideScreen = constraints.maxWidth > 600;
+          final isWideScreen = constraints.maxWidth > 600; //cambio layout se la larghezza è >600 pixel
 
-          return SingleChildScrollView(
+          return SingleChildScrollView( //pagina scrollabile
             padding: EdgeInsets.symmetric(
               horizontal: isWideScreen ? 32 : 16,
               vertical: 16,
             ),
-            child: Align(
+            child: Align( 
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   maxWidth: isWideScreen ? 700 : double.infinity,
                 ),
-                child: Column(
+                child: Column( //tutti gli elementi costruiti (allineati e centrati) tenuti in colonna
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 Text("Reading Progress Summary", style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -394,6 +406,8 @@ class _MyActivityPageState extends State<MyActivityPage> {
   }
 }
 
+
+//grafico per la visualizzazione della distribuzione per genere
 class _GenrePieChart extends StatelessWidget {
   final Map<String, int> data;
 
@@ -423,7 +437,7 @@ class _GenrePieChart extends StatelessWidget {
     'Tragedy': Color.fromARGB(255, 149, 117, 205),    
     };
 
-    return PieChart(
+    return PieChart( //costruzione grafico con i dati disponibili 
       PieChartData(
       sections: data.entries.map((entry) {
           final genre = entry.key;
