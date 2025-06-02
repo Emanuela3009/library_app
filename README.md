@@ -1,6 +1,16 @@
 # library_app
 
-A new Flutter project.
+Library App è un’app mobile multipiattaforma sviluppata in Flutter, pensata per offrire agli
+utenti un sistema moderno, intuitivo e personalizzabile per la gestione della propria libreria
+personale. In un’epoca in cui la lettura digitale è sempre più diffusa, l’app risponde
+all’esigenza di avere uno strumento efficace per organizzare, monitorare e analizzare le
+proprie abitudini di lettura.
+L’app consente di catalogare i libri, seguirne lo stato di lettura, aggiungere valutazioni, note
+personali e assegnarle a categorie personalizzate. Inoltre, una sezione dedicata all’analisi
+statistica permette all’utente di riflettere sul proprio percorso di lettura attraverso dati visivi e
+significativi.
+
+GRUPPO 20
 
 ## Getting Started
 
