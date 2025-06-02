@@ -4,7 +4,7 @@ import '../data/database_helper.dart';
 import '../widgets/book_grid_card.dart'; // Importa il widget riutilizzabile
 import 'book_detail_page.dart';
 
-
+// Schermata che mostra tutti i libri aggiunti manualmente dall'utente
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
 
@@ -15,38 +15,38 @@ class LibraryPage extends StatefulWidget {
 class _LibraryPageState extends State<LibraryPage> {
   List<Book> allBooks = [];
 
+  //Inizializza lo stato e carica i libri dal database.
   @override
   void initState() {
     super.initState();
     _loadBooks();
   }
 
+  // Metodo asincrono che carica i libri dal database locale e li ordina
   Future<void> _loadBooks() async {
     final all = await DatabaseHelper.instance.getAllBooks();
-    final books = all
-    .where((b) => b.isUserBook)
-    .toList()
-  ..sort((a, b) {
-    final regex = RegExp(r'^\d+');
-    final aMatch = regex.stringMatch(a.title);
-    final bMatch = regex.stringMatch(b.title);
+    final books =
+        all.where((b) => b.isUserBook).toList()..sort((a, b) {
+          final regex = RegExp(r'^\d+');
+          final aMatch = regex.stringMatch(a.title);
+          final bMatch = regex.stringMatch(b.title);
 
-    if (aMatch != null && bMatch != null) {
-      return int.parse(aMatch).compareTo(int.parse(bMatch)); 
-    } else if (aMatch != null) {
-      return -1; 
-    } else if (bMatch != null) {
-      return 1; 
-    } else {
-      return a.title.toLowerCase().compareTo(b.title.toLowerCase()); 
-    }
-  });
+          if (aMatch != null && bMatch != null) {
+            return int.parse(aMatch).compareTo(int.parse(bMatch));
+          } else if (aMatch != null) {
+            return -1;
+          } else if (bMatch != null) {
+            return 1;
+          } else {
+            return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+          }
+        });
     setState(() {
       allBooks = books;
     });
   }
 
-  
+  //Costruisce la UI della pagina: mostra i libri in una griglia o un messaggio se la lista è vuota
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -57,41 +57,44 @@ class _LibraryPageState extends State<LibraryPage> {
       appBar: AppBar(title: const Text("Library")),
       body: Padding(
         padding: EdgeInsets.all(padding),
-        child: allBooks.isEmpty
-            ? const Center(child: Text("No books added yet"))
-            : GridView.builder(
-                itemCount: allBooks.length,
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                 maxCrossAxisExtent: maxCardWidth,
-                  mainAxisSpacing: padding,
-                  crossAxisSpacing: padding,
-                  childAspectRatio: 3 / 4.5,
-                ),
-                itemBuilder: (context, index) {
-                  final book = allBooks[index];
-                  return GestureDetector(
-                    onTap: () async {
-                      final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BookDetailPage(book: book),
-                                              ),
+        child:
+            allBooks.isEmpty
+                ? const Center(child: Text("No books added yet"))
+                : GridView.builder(
+                  itemCount: allBooks.length,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: maxCardWidth,
+                    mainAxisSpacing: padding,
+                    crossAxisSpacing: padding,
+                    childAspectRatio: 3 / 4.5,
+                  ),
+                  itemBuilder: (context, index) {
+                    final book = allBooks[index];
+                    return GestureDetector(
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BookDetailPage(book: book),
+                          ),
                         );
                         if (result == true) {
                           setState(() {
-                            allBooks.clear(); 
+                            allBooks.clear();
                           });
-                          await _loadBooks(); 
+                          await _loadBooks();
                         }
-                    },
-                    child: BookGridCard(
-                      key: ValueKey('${book.id}_${DateTime.now().millisecondsSinceEpoch}'),
-                      book: book,
-                      onFavoriteToggle: _loadBooks,
-                    ),
-                  );
-                },
-              ),
+                      },
+                      child: BookGridCard(
+                        key: ValueKey(
+                          '${book.id}_${DateTime.now().millisecondsSinceEpoch}',
+                        ),
+                        book: book,
+                        onFavoriteToggle: _loadBooks,
+                      ),
+                    );
+                  },
+                ),
       ),
     );
   }
