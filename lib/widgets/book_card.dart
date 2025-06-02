@@ -4,9 +4,11 @@ import '../models/book.dart';
 import '../screens/book_detail_page.dart';
 import '../data/database_helper.dart';
 
+/* Widget che rappresenta una card verticale per mostrare un libro.
+   Include immagine, titolo, icona per i preferiti e navigazione al dettaglio. */
 class BookCard extends StatefulWidget {
-  final Book book;
-  final VoidCallback? onUpdate;
+  final Book book; // Dati del libro da visualizzare
+  final VoidCallback? onUpdate; // Callback per aggiornare la lista chiamante
 
   const BookCard({super.key, required this.book, this.onUpdate});
 
@@ -18,12 +20,14 @@ class _BookCardState extends State<BookCard> {
   bool? _fileExists;
   String? _fullImagePath;
 
+  // Controlla se esiste un file immagine personalizzato per il libro.
   @override
   void initState() {
     super.initState();
     _checkFileExists();
   }
 
+  // Verifica la presenza fisica dell'immagine locale del libro.
   Future<void> _checkFileExists() async {
     final path = await widget.book.getImageFullPath();
 
@@ -44,6 +48,8 @@ class _BookCardState extends State<BookCard> {
     });
   }
 
+  /* Costruisce la UI della card libro, con immagine, titolo e cuore.
+     Gestisce il tap per navigare alla BookDetailPage e aggiornare il libro. */
   @override
   Widget build(BuildContext context) {
     Widget imageWidget;
@@ -51,19 +57,28 @@ class _BookCardState extends State<BookCard> {
     if (_fileExists == null) {
       imageWidget = Image.asset(widget.book.imagePath, fit: BoxFit.cover);
     } else if (_fileExists == true && _fullImagePath != null) {
-      imageWidget = Image.file(File(_fullImagePath!), fit: BoxFit.cover,  key: UniqueKey(),);
+      imageWidget = Image.file(
+        File(_fullImagePath!),
+        fit: BoxFit.cover,
+        key: UniqueKey(),
+      );
     } else {
-      imageWidget = Image.asset('assets/books/placeholder.jpg', fit: BoxFit.cover);
+      imageWidget = Image.asset(
+        'assets/books/placeholder.jpg',
+        fit: BoxFit.cover,
+      );
     }
 
     return GestureDetector(
       onTap: () async {
-        final result =await Navigator.push(
+        final result = await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => BookDetailPage(book: widget.book)),
+          MaterialPageRoute(
+            builder: (context) => BookDetailPage(book: widget.book),
+          ),
         );
         if (result == true) {
-           await _checkFileExists();
+          await _checkFileExists();
           if (widget.onUpdate != null) widget.onUpdate!();
         }
       },
@@ -72,8 +87,9 @@ class _BookCardState extends State<BookCard> {
         margin: const EdgeInsets.only(right: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min, 
+          mainAxisSize: MainAxisSize.min,
           children: [
+            // Immagine con bordo arrotondato e cuore in alto a destra
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: AspectRatio(
@@ -94,8 +110,11 @@ class _BookCardState extends State<BookCard> {
                           await _checkFileExists();
                         },
                         child: Icon(
-                          widget.book.isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: widget.book.isFavorite ? Colors.red : Colors.grey,
+                          widget.book.isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color:
+                              widget.book.isFavorite ? Colors.red : Colors.grey,
                           size: 20,
                         ),
                       ),
@@ -104,16 +123,19 @@ class _BookCardState extends State<BookCard> {
                 ),
               ),
             ),
+
             const SizedBox(height: 6),
+
+            // Titolo del libro (massimo 2 righe)
             SizedBox(
-              height: 36, 
+              height: 36,
               child: Text(
                 widget.book.title,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),

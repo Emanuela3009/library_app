@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+/* Widget personalizzato per la BottomNavigationBar.
+   Mostra 5 icone con label: Search, Categories, Home, Favorites, Activity.
+   Supporta adattamento responsive per tablet e landscape. */
 class BottomNavBar extends StatelessWidget {
-  final int currentIndex;
-  final Function(int) onTap;
+  final int currentIndex; // Indice attualmente selezionato
+  final Function(int) onTap; // Callback al tap su un item
 
   const BottomNavBar({
     super.key,
@@ -11,21 +14,27 @@ class BottomNavBar extends StatelessWidget {
     required this.onTap,
   });
 
+  /* Costruisce la bottom navigation con icone e label personalizzati.
+     Adatta dimensioni in base al tipo di dispositivo e orientamento. */
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
     final shortestSide = screen.shortestSide;
     final isTablet = shortestSide >= 600;
     final isLandscape = screen.width > screen.height;
-    final double iconSize = isTablet
-        ? 30
-        : isLandscape
+
+    // Dimensioni dinamiche per icone e testo
+    final double iconSize =
+        isTablet
+            ? 30
+            : isLandscape
             ? 22
             : 26;
 
-    final double fontSize = isTablet
-        ? 14
-        : isLandscape
+    final double fontSize =
+        isTablet
+            ? 14
+            : isLandscape
             ? 11
             : 12;
 
