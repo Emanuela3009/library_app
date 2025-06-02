@@ -4,6 +4,11 @@ import '../models/book.dart';
 import '../data/database_helper.dart';
 import 'book_detail_page.dart';
 
+/*
+ * Pagina di ricerca avanzata con filtri e ordinamento.
+ * Permette di cercare i libri per titolo o autore,
+ * e filtrare per stato, genere e valutazione.
+*/
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -21,12 +26,14 @@ class _SearchPageState extends State<SearchPage> {
   String? _selectedGenre;
   int _selectedRating = -1;
 
+  // Inizializza lo stato e carica i libri dal database.
   @override
   void initState() {
     super.initState();
     _loadBooks();
   }
 
+  // Carica tutti i libri dal database locale e applica i filtri correnti.
   Future<void> _loadBooks() async {
     final books = await DatabaseHelper.instance.getAllBooks();
     setState(() {
@@ -35,10 +42,13 @@ class _SearchPageState extends State<SearchPage> {
     _filterBooks(_searchController.text);
   }
 
+  // Applica i filtri di ricerca: testo, stato, genere, rating, ordinamento.
   void _filterBooks(String query) {
     final lowerQuery = query.toLowerCase();
     setState(() {
       List<Book> filtered = _allBooks;
+
+      // Ricerca con ranking basato su corrispondenza parziale del titolo/autore
       if (lowerQuery.isNotEmpty) {
         List<MapEntry<Book, int>> rankedBooks = [];
         for (var book in _allBooks) {
@@ -66,8 +76,11 @@ class _SearchPageState extends State<SearchPage> {
         rankedBooks.sort((a, b) => a.value.compareTo(b.value));
         filtered = rankedBooks.map((e) => e.key).toList();
       }
+
+      // Applica i filtri aggiuntivi
       if (_selectedStatus != null && _selectedStatus != 'All') {
-        filtered = filtered.where((b) => b.userState == _selectedStatus).toList();
+        filtered =
+            filtered.where((b) => b.userState == _selectedStatus).toList();
       }
       if (_selectedGenre != null && _selectedGenre != 'All') {
         filtered = filtered.where((b) => b.genre == _selectedGenre).toList();
@@ -75,28 +88,38 @@ class _SearchPageState extends State<SearchPage> {
       if (_selectedRating != -1) {
         filtered = filtered.where((b) => b.rating == _selectedRating).toList();
       }
+
+      // Reset se non c’è alcun filtro attivo
       if (lowerQuery.isEmpty &&
           (_selectedStatus == null || _selectedStatus == 'All') &&
           (_selectedGenre == null || _selectedGenre == 'All') &&
           _selectedRating == -1) {
         filtered = _allBooks;
       }
+
+      // Ordinamento A-Z o Z-A
       if (_searchType == 'A-Z') {
-        filtered.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+        filtered.sort(
+          (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+        );
       } else if (_searchType == 'Z-A') {
-        filtered.sort((a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
+        filtered.sort(
+          (a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()),
+        );
       }
+
       _filteredBooks = filtered;
     });
   }
 
- 
-
+  // Pulisce il campo di ricerca e rimuove i filtri testuali.
   void _clearSearch() {
     _searchController.clear();
     _filterBooks('');
   }
 
+  // Costruisce l’interfaccia della schermata di ricerca,
+  // con filtri, dropdown, risultati e gestione dei preferiti.
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -104,9 +127,13 @@ class _SearchPageState extends State<SearchPage> {
 
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: screenHeight * 0.015),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.05,
+          vertical: screenHeight * 0.015,
+        ),
         child: Column(
           children: [
+            // Campo di ricerca
             TextField(
               controller: _searchController,
               onChanged: _filterBooks,
@@ -114,15 +141,22 @@ class _SearchPageState extends State<SearchPage> {
                 hintText: 'Search by title or author',
                 hintStyle: const TextStyle(color: Color(0xFF7C7C7C)),
                 prefixIcon: const Icon(Icons.search, color: Color(0xFF000000)),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: Color(0xFF000000)),
-                        onPressed: _clearSearch,
-                      )
-                    : null,
+                suffixIcon:
+                    _searchController.text.isNotEmpty
+                        ? IconButton(
+                          icon: const Icon(
+                            Icons.clear,
+                            color: Color(0xFF000000),
+                          ),
+                          onPressed: _clearSearch,
+                        )
+                        : null,
                 filled: true,
                 fillColor: const Color.fromARGB(20, 0, 0, 0),
-                contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 16,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: Color(0xFF000000)),
@@ -136,6 +170,8 @@ class _SearchPageState extends State<SearchPage> {
               ),
             ),
             const SizedBox(height: 16),
+
+            // Dropdown per filtri e ordinamento
             Column(
               children: [
                 Row(
@@ -172,7 +208,14 @@ class _SearchPageState extends State<SearchPage> {
                       child: _buildDropdown(
                         label: "Genre",
                         value: _selectedGenre,
-                        items: ['All', 'Fantasy', 'Romance', 'Adventure', 'Sci-Fi', 'Horror'],
+                        items: [
+                          'All',
+                          'Fantasy',
+                          'Romance',
+                          'Adventure',
+                          'Sci-Fi',
+                          'Horror',
+                        ],
                         onChanged: (val) {
                           _selectedGenre = val!;
                           _filterBooks(_searchController.text);
@@ -197,7 +240,14 @@ class _SearchPageState extends State<SearchPage> {
                             return DropdownMenuItem(
                               value: rating,
                               child: Row(
-                                children: List.generate(rating, (_) => const Icon(Icons.star, color: Colors.amber, size: 18)),
+                                children: List.generate(
+                                  rating,
+                                  (_) => const Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    size: 18,
+                                  ),
+                                ),
                               ),
                             );
                           }),
@@ -209,173 +259,195 @@ class _SearchPageState extends State<SearchPage> {
               ],
             ),
             const SizedBox(height: 16),
+
+            // Titolo della sezione risultati
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
                   _searchController.text.isEmpty ? 'Recommended' : 'Results',
-                  style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: Color(0xFF000000)),
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF000000),
+                  ),
                 ),
               ),
             ),
+
+            // Lista risultati o messaggio se vuota
             _filteredBooks.isEmpty
                 ? const Center(
-                    child: Text(
-                      'No results found',
-                      style: TextStyle(color: Color(0xFF7C7C7C)),
-                    ),
-                  )
-                : ListView.separated(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: _filteredBooks.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final book = _filteredBooks[index];
-                      return GestureDetector(
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => BookDetailPage(book: book)),
-                          );
-                          _loadBooks();
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              )
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Stack(
-                              children: [
-                                ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: FutureBuilder<String?>(
-                              future: book.getImageFullPath(),
-                              builder: (context, snapshot) {
-                                final double imageHeight = 130;
-                                final double imageWidth = 90;
-                                Widget imageWidget;
-
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  imageWidget = Container(
-                                    height: imageHeight,
-                                    width: imageWidth,
-                                    color: Colors.grey.shade200,
-                                    child: const Center(child: CircularProgressIndicator(strokeWidth: 1.5)),
-                                  );
-                                } else {
-                                  final path = snapshot.data;
-                                  if (path != null && File(path).existsSync()) {
-                                    imageWidget = Image.file(
-                                      File(path),
-                                      height: imageHeight,
-                                      width: imageWidth,
-                                      fit: BoxFit.cover,
-                                    );
-                                  } else if (book.imagePath.startsWith('assets/') ) {
-                                    imageWidget = Image.asset(
-                                      book.imagePath,
-                                      height: imageHeight,
-                                      width: imageWidth,
-                                      fit: BoxFit.cover,
-                                    );
-                                  } else {
-                                    imageWidget = Image.asset(
-                                      'assets/books/placeholder.jpg',
-                                      height: imageHeight,
-                                      width: imageWidth,
-                                      fit: BoxFit.cover,
-                                    );
-                                  }
-                                }
-
-                                return imageWidget;
-                              },
-                            ),
-                          ),
-                                // Cuore visibile sempre in alto a destra
-                                Positioned(
-                                  top: 6,
-                                  right: 6,
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(100),
-                                      onTap: () async {
-                                        setState(() {
-                                          book.isFavorite = !book.isFavorite;
-                                        });
-                                        await DatabaseHelper.instance.insertBook(book);
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4),
-                                        child: Icon(
-                                          book.isFavorite ? Icons.favorite : Icons.favorite_border,
-                                           color: book.isFavorite ? Colors.pink : Colors.grey,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        book.title,
-                                        style: const TextStyle(
-                                          color: Color(0xFF000000),
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        book.author,
-                                        style: const TextStyle(color: Color(0xFF7C7C7C)),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Row(
-                                        children: List.generate(5, (i) {
-                                          return Icon(
-                                            i < (book.rating ?? 0) ? Icons.star : Icons.star_border,
-                                            color: Colors.amber,
-                                            size: 20,
-                                          );
-                                        }),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+                  child: Text(
+                    'No results found',
+                    style: TextStyle(color: Color(0xFF7C7C7C)),
                   ),
+                )
+                : ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: _filteredBooks.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final book = _filteredBooks[index];
+                    return GestureDetector(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BookDetailPage(book: book),
+                          ),
+                        );
+                        _loadBooks();
+                      },
+                      child: _buildBookCard(book),
+                    );
+                  },
+                ),
           ],
         ),
       ),
     );
   }
 
+  /// Costruisce il widget di una singola card libro con immagine e info.
+  Widget _buildBookCard(Book book) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Immagine libro + cuore
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: FutureBuilder<String?>(
+                  future: book.getImageFullPath(),
+                  builder: (context, snapshot) {
+                    final double imageHeight = 130;
+                    final double imageWidth = 90;
+                    Widget imageWidget;
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      imageWidget = Container(
+                        height: imageHeight,
+                        width: imageWidth,
+                        color: Colors.grey.shade200,
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 1.5),
+                        ),
+                      );
+                    } else {
+                      final path = snapshot.data;
+                      if (path != null && File(path).existsSync()) {
+                        imageWidget = Image.file(
+                          File(path),
+                          height: imageHeight,
+                          width: imageWidth,
+                          fit: BoxFit.cover,
+                        );
+                      } else if (book.imagePath.startsWith('assets/')) {
+                        imageWidget = Image.asset(
+                          book.imagePath,
+                          height: imageHeight,
+                          width: imageWidth,
+                          fit: BoxFit.cover,
+                        );
+                      } else {
+                        imageWidget = Image.asset(
+                          'assets/books/placeholder.jpg',
+                          height: imageHeight,
+                          width: imageWidth,
+                          fit: BoxFit.cover,
+                        );
+                      }
+                    }
+
+                    return imageWidget;
+                  },
+                ),
+              ),
+              // Icona preferito
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(100),
+                    onTap: () async {
+                      setState(() {
+                        book.isFavorite = !book.isFavorite;
+                      });
+                      await DatabaseHelper.instance.insertBook(book);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        book.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: book.isFavorite ? Colors.pink : Colors.grey,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Info libro
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    book.title,
+                    style: const TextStyle(
+                      color: Color(0xFF000000),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    book.author,
+                    style: const TextStyle(color: Color(0xFF7C7C7C)),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: List.generate(5, (i) {
+                      return Icon(
+                        i < (book.rating ?? 0) ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                        size: 20,
+                      );
+                    }),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Crea un dropdown stilizzato per i filtri.
   DropdownButtonFormField<String> _buildDropdown({
     required String label,
     required String? value,
@@ -388,13 +460,21 @@ class _SearchPageState extends State<SearchPage> {
       iconEnabledColor: const Color(0xFF000000),
       style: const TextStyle(color: Color(0xFF000000)),
       onChanged: onChanged,
-      items: items.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(),
+      items:
+          items.map((v) => DropdownMenuItem(value: v, child: Text(v))).toList(),
     );
   }
 
+  /// Restituisce lo stile per i campi dei dropdown.
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
-      label: Text(label, style: const TextStyle(color: Color(0xFF7C7C7C), fontWeight: FontWeight.w500)),
+      label: Text(
+        label,
+        style: const TextStyle(
+          color: Color(0xFF7C7C7C),
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       border: const OutlineInputBorder(),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       enabledBorder: const OutlineInputBorder(

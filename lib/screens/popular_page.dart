@@ -4,6 +4,7 @@ import '../data/database_helper.dart';
 import 'book_detail_page.dart';
 import '../widgets/book_grid_card.dart';
 
+//Pagina che mostra i libri "Popular" (non aggiunti dall’utente manualmente).
 class PopularPage extends StatefulWidget {
   const PopularPage({super.key});
 
@@ -14,36 +15,37 @@ class PopularPage extends StatefulWidget {
 class _PopularPageState extends State<PopularPage> {
   List<Book> popularBooks = [];
 
+  // Inizializza la pagina e carica i libri popolari dal database
   @override
   void initState() {
     super.initState();
     _loadPopularBooks();
   }
 
+  // Carica i libri non inseriti dall’utente (isUserBook == false), li ordina per numeri iniziali nel titolo o in ordine alfabetico, e aggiorna lo stato.
   Future<void> _loadPopularBooks() async {
     final books = await DatabaseHelper.instance.getAllBooks();
     setState(() {
-      popularBooks = books
-          .where((b) => b.isUserBook == false)
-          .toList()
-        ..sort((a, b) {
-          final regex = RegExp(r'^\d+');
-          final aMatch = regex.stringMatch(a.title);
-          final bMatch = regex.stringMatch(b.title);
+      popularBooks =
+          books.where((b) => b.isUserBook == false).toList()..sort((a, b) {
+            final regex = RegExp(r'^\d+');
+            final aMatch = regex.stringMatch(a.title);
+            final bMatch = regex.stringMatch(b.title);
 
-          if (aMatch != null && bMatch != null) {
-            return int.parse(aMatch).compareTo(int.parse(bMatch)); 
-          } else if (aMatch != null) {
-            return -1;
-          } else if (bMatch != null) {
-            return 1; 
-          } else {
-            return a.title.toLowerCase().compareTo(b.title.toLowerCase()); 
-          }
-        });
+            if (aMatch != null && bMatch != null) {
+              return int.parse(aMatch).compareTo(int.parse(bMatch));
+            } else if (aMatch != null) {
+              return -1;
+            } else if (bMatch != null) {
+              return 1;
+            } else {
+              return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+            }
+          });
     });
   }
 
+  //Costruisce la UI della pagina "Popular": se non ci sono libri mostra un messaggio,  altrimenti una griglia responsive con le card dei libri.
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.of(context).size;
@@ -56,7 +58,6 @@ class _PopularPageState extends State<PopularPage> {
         title: Text(
           "Popular Books",
           style: const TextStyle(fontWeight: FontWeight.bold),
-         
         ),
       ),
       body: Padding(
@@ -82,7 +83,7 @@ class _PopularPageState extends State<PopularPage> {
                             builder: (_) => BookDetailPage(book: book),
                           ),
                         );
-                        _loadPopularBooks(); 
+                        _loadPopularBooks();
                       },
                       child: BookGridCard(
                         book: book,
@@ -90,7 +91,7 @@ class _PopularPageState extends State<PopularPage> {
                       ),
                     );
                   },
-                )
+                ),
       ),
     );
   }
