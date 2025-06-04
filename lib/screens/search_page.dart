@@ -49,33 +49,59 @@ class _SearchPageState extends State<SearchPage> {
       List<Book> filtered = _allBooks;
 
       // Ricerca con ranking basato su corrispondenza parziale del titolo/autore
-      if (lowerQuery.isNotEmpty) {
-        List<MapEntry<Book, int>> rankedBooks = [];
-        for (var book in _allBooks) {
-          final titleWords = book.title.toLowerCase().split(' ');
-          final authorWords = book.author.toLowerCase().split(' ');
-          int? bestMatch;
+      if (lowerQuery.trim().isNotEmpty) {
+      List<MapEntry<Book, int>> rankedBooks = [];
+      final String query = lowerQuery.trim();
+
+      for (var book in _allBooks) {
+        final String title = book.title.toLowerCase().trim();
+        final String author = book.author.toLowerCase().trim();
+
+        int? matchRank;
+
+        // Caso 1: la query è una frase (contiene almeno uno spazio)
+        if (query.contains(' ')) {
+          int titleIndex = title.indexOf(query);
+          if (titleIndex != -1) {
+            matchRank = titleIndex;
+          } else {
+            int authorIndex = author.indexOf(query);
+            if (authorIndex != -1) {
+              matchRank = 1000 + authorIndex;
+            }
+          }
+        } 
+        // Caso 2: la query è una parola singola → match per parola iniziale
+        else {
+          final titleWords = title.split(' ');
           for (int i = 0; i < titleWords.length; i++) {
-            if (titleWords[i].startsWith(lowerQuery)) {
-              bestMatch = i;
+            if (titleWords[i].startsWith(query)) {
+              matchRank = i;
               break;
             }
           }
-          if (bestMatch == null) {
+
+          if (matchRank == null) {
+            final authorWords = author.split(' ');
             for (int i = 0; i < authorWords.length; i++) {
-              if (authorWords[i].startsWith(lowerQuery)) {
-                bestMatch = titleWords.length + i;
+              if (authorWords[i].startsWith(query)) {
+                matchRank = 1000 + i;
                 break;
               }
             }
           }
-          if (bestMatch != null) {
-            rankedBooks.add(MapEntry(book, bestMatch));
-          }
         }
-        rankedBooks.sort((a, b) => a.value.compareTo(b.value));
-        filtered = rankedBooks.map((e) => e.key).toList();
+
+        if (matchRank != null) {
+          rankedBooks.add(MapEntry(book, matchRank));
+        }
       }
+
+      // Ordina i risultati in base alla priorità
+      rankedBooks.sort((a, b) => a.value.compareTo(b.value));
+      filtered = rankedBooks.map((e) => e.key).toList();
+    }
+
 
       // Applica i filtri aggiuntivi
       if (_selectedStatus != null && _selectedStatus != 'All') {
